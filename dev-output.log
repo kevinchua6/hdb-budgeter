@@ -1,0 +1,15 @@
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.202:3000
+✓ Ready in 417ms
+
+ GET / 200 in 885ms (next.js: 775ms, application-code: 109ms)
+ GET /api/prices?flatType=4+ROOM&maxWalkMin=10&minFloor=1&maxFloor=999&months=24 500 in 167ms (next.js: 69ms, application-code: 98ms)
+ GET /api/prices?flatType=4+ROOM&maxWalkMin=10&minFloor=2&maxFloor=999&months=24 500 in 76ms (next.js: 4ms, application-code: 72ms)
+ GET /api/prices?flatType=4+ROOM&maxWalkMin=10&minFloor=1&maxFloor=999&months=24 500 in 44ms (next.js: 3ms, application-code: 41ms)
+ GET /api/prices?flatType=4+ROOM&maxWalkMin=5&minFloor=1&maxFloor=999&months=24 500 in 41ms (next.js: 3ms, application-code: 38ms)
+ GET /api/prices?flatType=4+ROOM&maxWalkMin=5&minFloor=1&maxFloor=999&months=24 500 in 39ms (next.js: 3ms, application-code: 37ms)
+ GET /api/prices?flatType=4+ROOM&maxWalkMin=10&minFloor=1&maxFloor=999&months=24 500 in 41ms (next.js: 3ms, application-code: 38ms)
+ GET /api/prices?flatType=4+ROOM&maxWalkMin=15&minFloor=1&maxFloor=999&months=24 500 in 39ms (next.js: 3ms, application-code: 36ms)
+ GET /api/prices?flatType=1+ROOM&maxWalkMin=15&minFloor=1&maxFloor=999&months=24 500 in 47ms (next.js: 3ms, application-code: 44ms)
+ GET / 200 in 74ms (next.js: 48ms, application-code: 26ms)
