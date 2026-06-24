@@ -3,7 +3,7 @@
 // Geocoding results are cached in data/geocache.json (resumable if interrupted).
 // Usage: bun scripts/02-geocode-seed.ts
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
-import { Database } from "bun:sqlite";
+import Database from "better-sqlite3";
 import { nearestStation } from "../src/lib/stations";
 
 mkdirSync("data", { recursive: true });
@@ -138,11 +138,11 @@ for (let i = 0; i < toGeocode.length; i++) {
   if (result === "error") {
     errors++;
     backoffs++;
-    await Bun.sleep(5000);  // back off 5s on rate-limit signal
+    await new Promise<void>((r) => setTimeout(r, 5000));  // back off 5s on rate-limit signal
   } else {
     cache[key] = result;
     if (result === "no_results") noResults++; else geocoded++;
-    await Bun.sleep(800);  // 800ms = ~1.25 req/s, just under the limit
+    await new Promise<void>((r) => setTimeout(r, 800));  // 800ms = ~1.25 req/s, just under the limit
   }
 
   // Progress every 25 blocks
@@ -166,7 +166,7 @@ if (!seedOnly) {
 // ── Seed database ─────────────────────────────────────────────────────────────
 
 const sqlite = new Database("hdb.db");
-sqlite.run(`CREATE TABLE IF NOT EXISTS transactions (
+sqlite.exec(`CREATE TABLE IF NOT EXISTS transactions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   month TEXT NOT NULL,
   flat_type TEXT NOT NULL,
@@ -178,8 +178,8 @@ sqlite.run(`CREATE TABLE IF NOT EXISTS transactions (
   station_code TEXT,
   walking_minutes REAL
 )`);
-sqlite.run(`CREATE INDEX IF NOT EXISTS idx_filter ON transactions (station_code, flat_type, storey_min, month)`);
-sqlite.run("DELETE FROM transactions");
+sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_filter ON transactions (station_code, flat_type, storey_min, month)`);
+sqlite.exec("DELETE FROM transactions");
 console.log("\nSeeding database...");
 
 function parseStorey(range: string): [number, number] {
