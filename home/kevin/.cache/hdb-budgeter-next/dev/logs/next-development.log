@@ -1,0 +1,8 @@
+{"timestamp":"00:00:00.922","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:00.922","source":"Server","level":"LOG","message":"  We detected TypeScript in your project and reconfigured your tsconfig.json file for you."}
+{"timestamp":"00:00:00.922","source":"Server","level":"LOG","message":"  The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:\n"}
+{"timestamp":"00:00:00.922","source":"Server","level":"LOG","message":"  \t- include was updated to add '/home/kevin/.cache/hdb-budgeter-next/types/**/*.ts'"}
+{"timestamp":"00:00:00.923","source":"Server","level":"LOG","message":"  \t- include was updated to add '/home/kevin/.cache/hdb-budgeter-next/dev/types/**/*.ts'"}
+{"timestamp":"00:00:00.923","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:01.186","source":"Server","level":"WARN","message":"⚠ Slow filesystem detected. The benchmark took 236ms. If /mnt/e/Projects/hdb-budgeter/home/kevin/.cache/hdb-budgeter-next/dev is a network drive, consider moving it to a local folder.\nSee more: https://nextjs.org/docs/app/guides/local-development"}
+{"timestamp":"00:00:01.233","source":"Server","level":"LOG","message":""}

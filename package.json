@@ -2,41 +2,38 @@
   "name": "hdb-budgeter",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "dev": "bun next dev",
-    "build": "bun node_modules/next/dist/bin/next build",
-    "start": "bun node_modules/next/dist/bin/next start",
+    "dev": "node node_modules/next/dist/bin/next dev",
+    "build": "node node_modules/next/dist/bin/next build",
+    "start": "node node_modules/next/dist/bin/next start",
     "lint": "eslint",
-    "setup:map": "bun scripts/process-map-html.ts",
-    "setup:download": "bun scripts/01-download.ts",
-    "setup:seed": "bun scripts/02-geocode-seed.ts",
-    "setup:seed-only": "bun scripts/02-geocode-seed.ts --seed-only",
-    "setup": "bun run setup:map && bun run setup:download && bun run setup:seed"
+    "setup:map": "tsx scripts/process-map-html.ts",
+    "setup:download": "tsx scripts/01-download.ts",
+    "setup:seed": "tsx scripts/02-geocode-seed.ts",
+    "setup:seed-only": "tsx scripts/02-geocode-seed.ts --seed-only",
+    "setup": "npm run setup:map && npm run setup:download && npm run setup:seed"
   },
   "dependencies": {
+    "better-sqlite3": "^11",
     "drizzle-orm": "^0.45.2",
-    "lightningcss-linux-x64-gnu": "^1.32.0",
     "next": "16.2.9",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/better-sqlite3": "^7",
+    "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
+    "tsx": "^4",
     "typescript": "^5"
-  },
-  "ignoreScripts": [
-    "sharp",
-    "unrs-resolver"
-  ],
-  "trustedDependencies": [
-    "sharp",
-    "unrs-resolver"
-  ]
+  }
 }
