@@ -32,3 +32,8 @@ body {
 #map-container {
   min-height: 100%;
 }
+
+/* Hide bus interchange icons (Material Icons font not loaded) */
+.bus {
+  display: none !important;
+}
