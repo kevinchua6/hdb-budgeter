@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { transactions } from "@/lib/schema";
 import { and, eq, gte, lte, isNotNull, sql } from "drizzle-orm";
+import { STATIONS } from "@/lib/stations";
+
+// Map each station code → all codes at the same physical location
+const siblings = new Map<string, string[]>();
+for (const s of STATIONS) {
+  const group = STATIONS.filter((o) => o.lat === s.lat && o.lng === s.lng).map((o) => o.code);
+  siblings.set(s.code, group);
+}
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +48,12 @@ export async function GET(req: NextRequest) {
 
     const result: Record<string, number> = {};
     for (const r of rows) {
-      if (r.stationCode) result[r.stationCode] = Math.round(r.avgPrice);
+      if (!r.stationCode) continue;
+      const price = Math.round(r.avgPrice);
+      result[r.stationCode] = price;
+      for (const sib of siblings.get(r.stationCode) ?? []) {
+        result[sib] = price;
+      }
     }
 
     return NextResponse.json(result);
