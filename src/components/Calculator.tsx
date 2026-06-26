@@ -87,17 +87,17 @@ export default function Calculator() {
       <div className="max-w-lg mx-auto px-4 py-6 space-y-5">
 
         <div>
-          <h2 className="text-white font-semibold text-base tracking-wide">HDB Savings Calculator</h2>
-          <p className="text-white/35 text-sm mt-0.5">Estimate how much cash you need to buy a resale flat</p>
+          <h2 className="text-gradient font-semibold text-xl tracking-tight">HDB Savings Calculator</h2>
+          <p className="text-white/40 text-sm mt-1">Estimate how much cash you need to buy a resale flat</p>
         </div>
 
-        <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 space-y-4">
+        <div className="glass rounded-2xl p-4 space-y-4">
           <Field label="HDB Resale Price" value={hdbPrice} onChange={setHdbPrice} placeholder="500000" />
           <Field label="Renovation Budget" value={renoPrice} onChange={setRenoPrice} placeholder="50000" />
         </div>
 
         {hasInput && (
-          <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 space-y-3">
+          <div className="glass rounded-2xl p-4 space-y-3">
             <span className="text-white/35 text-[10px] font-medium uppercase tracking-widest">Breakdown</span>
             <div className="space-y-3 pt-1">
               {price > 0 && (
@@ -111,9 +111,9 @@ export default function Calculator() {
               {reno > 0 && <Row label="Renovation" value={reno} />}
             </div>
             <div className="border-t border-white/[0.08] pt-3 space-y-1.5">
-              <div className="flex items-baseline justify-between">
-                <span className="text-white/50 text-sm">Minimum cash savings</span>
-                <span className="text-emerald-300 font-bold text-xl tabular-nums">{fmt(cashNeeded)}</span>
+              <div className="flex items-baseline justify-between rounded-xl bg-gradient-to-r from-emerald-500/15 to-emerald-500/[0.04] border border-emerald-500/20 px-3.5 py-3">
+                <span className="text-emerald-100/70 text-sm">Minimum cash savings</span>
+                <span className="text-gradient font-bold text-2xl tabular-nums">{fmt(cashNeeded)}</span>
               </div>
               {price > 0 && (
                 <div className="flex items-baseline justify-between">
@@ -128,7 +128,7 @@ export default function Calculator() {
           </div>
         )}
 
-        <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 space-y-3">
+        <div className="glass rounded-2xl p-4 space-y-3">
           <span className="text-white/35 text-[10px] font-medium uppercase tracking-widest">
             Additional Considerations
           </span>

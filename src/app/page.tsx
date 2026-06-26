@@ -123,7 +123,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-[100dvh] bg-[#171827] overflow-hidden">
+    <div className="app-bg flex h-[100dvh] overflow-hidden">
 
       {/* Desktop sidebar */}
       <nav className="hidden sm:flex flex-col items-center py-5 w-[60px] border-r border-white/[0.07] shrink-0">
@@ -161,18 +161,18 @@ export default function Home() {
 
               {/* Brand */}
               <div className="text-center mb-8 px-1">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_3px_rgba(52,211,153,0.45)]" />
-                  <h1 className="text-white font-semibold text-xl tracking-wide">HDB Budgeter</h1>
+                <div className="mx-auto mb-4 grid place-items-center w-12 h-12 rounded-2xl bg-gradient-to-b from-emerald-400/25 to-emerald-500/10 border border-emerald-400/30 shadow-[0_8px_24px_-8px_rgba(16,185,129,0.6)]">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_3px_rgba(52,211,153,0.55)]" />
                 </div>
-                <p className="text-white/40 text-sm leading-snug">
+                <h1 className="text-gradient font-semibold text-2xl tracking-tight">HDB Budgeter</h1>
+                <p className="text-white/45 text-sm leading-snug mt-1.5">
                   Singapore resale prices
                   <br className="sm:hidden" /> by MRT station
                 </p>
               </div>
 
               {/* Filter card */}
-              <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-5 flex flex-col gap-5">
+              <div className="glass rounded-2xl p-5 flex flex-col gap-5">
 
                 <div className="flex flex-col gap-2.5">
                   <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Flat type</span>
@@ -209,7 +209,7 @@ export default function Home() {
 
                 <button
                   onClick={goToMap}
-                  className="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.97] text-white font-semibold text-sm transition-all shadow-lg shadow-emerald-500/20 mt-1"
+                  className="btn-primary w-full py-3.5 rounded-xl text-white font-semibold text-sm mt-1"
                 >
                   View prices on map →
                 </button>

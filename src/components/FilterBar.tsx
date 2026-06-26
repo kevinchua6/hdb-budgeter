@@ -26,7 +26,7 @@ export default function FilterBar({ filters, onChange }: Props) {
     onChange({ ...filters, [k]: v });
 
   return (
-    <div className="flex flex-wrap items-center gap-x-5 gap-y-3 bg-[#12132280] backdrop-blur-sm border-b border-white/10 px-5 py-3 shrink-0">
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-3 bg-white/[0.025] backdrop-blur-md border-b border-white/10 px-5 py-3 shrink-0">
 
       {/* Flat Type */}
       <div className="flex flex-col gap-1.5">

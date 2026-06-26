@@ -2,14 +2,87 @@
 @import "./mrt-map.css";
 
 :root {
-  --background: #171827;
+  --background: #101020;
   --foreground: #ededed;
+  --accent: #10b981;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---- Ambient app background: layered radial glows over deep base ---- */
+.app-bg {
+  background-color: #101020;
+  background-image:
+    radial-gradient(1100px 640px at 6% -10%, rgba(16, 185, 129, 0.13), transparent 58%),
+    radial-gradient(900px 720px at 110% -4%, rgba(56, 135, 255, 0.10), transparent 56%),
+    radial-gradient(820px 640px at 52% 118%, rgba(147, 97, 255, 0.09), transparent 60%);
+}
+
+/* ---- Reusable glass surface ---- */
+.glass {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.022));
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.05) inset,
+    0 18px 40px -22px rgba(0, 0, 0, 0.7);
+}
+
+/* Slightly lighter inset surface for nested rows/fields */
+.glass-inset {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* ---- Gradient brand text ---- */
+.text-gradient {
+  background: linear-gradient(120deg, #ffffff 0%, #d1fae5 45%, #6ee7b7 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ---- Primary action button ---- */
+.btn-primary {
+  background: linear-gradient(180deg, #34d399, #10b981);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.25) inset,
+    0 10px 24px -8px rgba(16, 185, 129, 0.55);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+.btn-primary:hover {
+  filter: brightness(1.06);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.3) inset,
+    0 14px 30px -8px rgba(16, 185, 129, 0.65);
+}
+.btn-primary:active {
+  transform: scale(0.975);
+}
+
+/* ---- Custom scrollbars (dark theme) ---- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+*::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.13);
+  border-radius: 99px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.24);
+  background-clip: content-box;
 }
 
 /* Price labels injected by MrtMap component */
@@ -18,14 +91,16 @@ body {
   font-size: 10px;
   font-weight: 600;
   color: #6ee7b7;
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.28);
-  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 5px;
   padding: 1px 5px;
   margin-left: 3px;
   white-space: nowrap;
   vertical-align: middle;
   letter-spacing: 0.02em;
+  box-shadow: 0 1px 6px -2px rgba(16, 185, 129, 0.4);
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 /*
@@ -55,8 +130,9 @@ body {
   cursor: pointer;
 }
 [data-station-code]:hover .price-label {
-  background: rgba(16, 185, 129, 0.22);
-  border-color: rgba(16, 185, 129, 0.5);
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.34), rgba(16, 185, 129, 0.2));
+  border-color: rgba(16, 185, 129, 0.6);
+  box-shadow: 0 2px 12px -2px rgba(16, 185, 129, 0.6);
 }
 
 /* Hide bus interchange icons (Material Icons font not loaded) */
