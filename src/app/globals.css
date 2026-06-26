@@ -9,20 +9,20 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
 /* Price labels injected by MrtMap component */
 .price-label {
   display: inline-block;
-  font-size: 9px;
-  font-weight: 700;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
-  padding: 0 3px;
-  margin-left: 2px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #6ee7b7;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin-left: 3px;
   white-space: nowrap;
   vertical-align: middle;
   letter-spacing: 0.02em;
@@ -33,7 +33,74 @@ body {
   min-height: 100%;
 }
 
+/* Touch-friendly scroll container for the MRT map */
+.map-touch-scroll {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+}
+
+/* Clickable station elements */
+[data-station-code] {
+  cursor: pointer;
+}
+[data-station-code]:hover .price-label {
+  background: rgba(16, 185, 129, 0.22);
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
 /* Hide bus interchange icons (Material Icons font not loaded) */
 .bus {
   display: none !important;
+}
+
+/* CC (Circle Line) arc: wider border to bridge small gaps to nearby station dots */
+#circle-line .cc-large {
+  border-width: 10px;
+}
+
+/* Station numbers: ensure consistent line-height matching circle height (20px content) */
+#mrt-map-singapore ul.stations span.station-nr.small {
+  line-height: 20px;
+}
+
+/* Left-spot circles: shift up to match circle's own margin-top: -5px */
+#mrt-map-singapore ul.stations.left-spot span.station-nr.small {
+  margin-top: -5px;
+}
+
+/* Right-spot circles: shift up to match circle's own margin-top: -3px */
+#mrt-map-singapore ul.stations.right-spot span.station-nr.small {
+  margin-top: -3px;
+}
+
+/* LRT circles are smaller (16px) — override the generic shifts above */
+#mrt-map-singapore ul.stations.lrt span.station-nr.small {
+  margin-top: 0;
+  line-height: 16px;
+}
+
+/*
+ * Fix CC23–29 station circles to track the CC arc geometry.
+ * The original margin-right values overcorrect, placing circles too far right.
+ * Correct values derived from cc-large center (922.5, 742.5), radius 380.5px,
+ * with ul-left=466 and ul max-content-width ≈ 91px (ul-right ≈ 557px).
+ */
+ul.stations.right-spot.cc-names.ccs23-29 li:nth-child(2) {
+  margin-right: -8px;
+}
+ul.stations.right-spot.cc-names.ccs23-29 li:nth-child(3) {
+  margin-right: -17px;
+}
+ul.stations.right-spot.cc-names.ccs23-29 li:nth-child(4) {
+  margin-right: -29px;
+}
+ul.stations.right-spot.cc-names.ccs23-29 li:nth-child(5) {
+  margin-right: -45px;
+}
+ul.stations.right-spot.cc-names.ccs23-29 li:nth-child(6) {
+  margin-right: -65px;
+}
+ul.stations.right-spot.cc-names.ccs23-29 li:nth-child(7) {
+  margin-right: -90px;
+  margin-top: -9px;
 }

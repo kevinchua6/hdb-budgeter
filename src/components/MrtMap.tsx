@@ -3,9 +3,10 @@ import { useEffect, useRef, useState } from "react";
 
 interface Props {
   prices: Record<string, number>;
+  onStationClick?: (code: string) => void;
 }
 
-export default function MrtMap({ prices }: Props) {
+export default function MrtMap({ prices, onStationClick }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [htmlLoaded, setHtmlLoaded] = useState(false);
 
@@ -40,8 +41,19 @@ export default function MrtMap({ prices }: Props) {
     });
   }, [prices, htmlLoaded]);
 
+  const handleClick = (e: React.MouseEvent) => {
+    const el = (e.target as HTMLElement).closest("[data-station-code]") as HTMLElement | null;
+    if (el?.dataset.stationCode) {
+      onStationClick?.(el.dataset.stationCode);
+    }
+  };
+
   return (
-    <div id="map-container" className="overflow-x-auto">
+    <div
+      id="map-container"
+      className="overflow-auto"
+      onClick={handleClick}
+    >
       {!htmlLoaded && (
         <div className="flex items-center justify-center h-64 text-white/40 text-sm">
           Loading map…
