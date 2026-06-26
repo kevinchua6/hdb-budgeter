@@ -85,22 +85,31 @@ body {
   background-clip: content-box;
 }
 
-/* Price labels injected by MrtMap component */
+/* Overlay layer that holds all price labels above the map artwork */
+.price-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 200;
+}
+
+/* Price labels injected by MrtMap component (absolutely placed under each dot) */
 .price-label {
+  position: absolute;
+  transform: translateX(-50%);
   display: inline-block;
   font-size: 10px;
   font-weight: 600;
   color: #6ee7b7;
-  background: linear-gradient(180deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  /* Solid dark base + green tint so labels stay legible over lines/names */
+  background-color: #0c1620;
+  background-image: linear-gradient(180deg, rgba(16, 185, 129, 0.28), rgba(16, 185, 129, 0.16));
+  border: 1px solid rgba(16, 185, 129, 0.45);
   border-radius: 5px;
   padding: 1px 5px;
-  margin-left: 3px;
   white-space: nowrap;
-  vertical-align: middle;
   letter-spacing: 0.02em;
-  box-shadow: 0 1px 6px -2px rgba(16, 185, 129, 0.4);
-  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.7);
 }
 
 /*
@@ -129,65 +138,8 @@ body {
 [data-station-code] {
   cursor: pointer;
 }
-[data-station-code]:hover .price-label {
-  background: linear-gradient(180deg, rgba(16, 185, 129, 0.34), rgba(16, 185, 129, 0.2));
-  border-color: rgba(16, 185, 129, 0.6);
-  box-shadow: 0 2px 12px -2px rgba(16, 185, 129, 0.6);
-}
 
 /* Hide bus interchange icons (Material Icons font not loaded) */
 .bus {
   display: none !important;
-}
-
-/* CC (Circle Line) arc: wider border to bridge small gaps to nearby station dots */
-#circle-line .cc-large {
-  border-width: 10px;
-}
-
-/* Station numbers: ensure consistent line-height matching circle height (20px content) */
-#mrt-map-singapore ul.stations span.station-nr.small {
-  line-height: 20px;
-}
-
-/* Left-spot circles: shift up to match circle's own margin-top: -5px */
-#mrt-map-singapore ul.stations.left-spot span.station-nr.small {
-  margin-top: -5px;
-}
-
-/* Right-spot circles: shift up to match circle's own margin-top: -3px */
-#mrt-map-singapore ul.stations.right-spot span.station-nr.small {
-  margin-top: -3px;
-}
-
-/* LRT circles are smaller (16px) — override the generic shifts above */
-#mrt-map-singapore ul.stations.lrt span.station-nr.small {
-  margin-top: 0;
-  line-height: 16px;
-}
-
-/*
- * Fix CC23–29 station circles to track the CC arc geometry.
- * The original margin-right values overcorrect, placing circles too far right.
- * Correct values derived from cc-large center (922.5, 742.5), radius 380.5px,
- * with ul-left=466 and ul max-content-width ≈ 91px (ul-right ≈ 557px).
- */
-ul.stations.right-spot.cc-names.ccs23-29 li:nth-child(2) {
-  margin-right: -8px;
-}
-ul.stations.right-spot.cc-names.ccs23-29 li:nth-child(3) {
-  margin-right: -17px;
-}
-ul.stations.right-spot.cc-names.ccs23-29 li:nth-child(4) {
-  margin-right: -29px;
-}
-ul.stations.right-spot.cc-names.ccs23-29 li:nth-child(5) {
-  margin-right: -45px;
-}
-ul.stations.right-spot.cc-names.ccs23-29 li:nth-child(6) {
-  margin-right: -65px;
-}
-ul.stations.right-spot.cc-names.ccs23-29 li:nth-child(7) {
-  margin-right: -90px;
-  margin-top: -9px;
 }

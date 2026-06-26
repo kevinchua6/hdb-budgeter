@@ -33,23 +33,60 @@ export default function MrtMap({ prices, onStationClick }: Props) {
       });
   }, []);
 
-  // Inject/update price labels whenever prices change (after HTML is loaded)
+  // Render price labels in a dedicated overlay layer, anchored to each station's
+  // dot center and placed just below it. Drawing them in a separate top layer
+  // (rather than inline inside each <li>) keeps them above the lines/names and
+  // out of the way of the absolutely-positioned station numbers, whose inline
+  // flow position varies per line and caused overlaps.
   useEffect(() => {
     if (!htmlLoaded) return;
     const container = mapRef.current;
     if (!container) return;
+    const mapEl = container.querySelector<HTMLElement>("#mrt-map-singapore");
+    if (!mapEl) return;
 
-    container.querySelectorAll<HTMLElement>(".price-label").forEach((el) => el.remove());
+    let overlay = mapEl.querySelector<HTMLElement>(".price-overlay");
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.className = "price-overlay";
+      mapEl.appendChild(overlay);
+    }
 
-    container.querySelectorAll<HTMLElement>("[data-station-code]").forEach((li) => {
-      const code = li.dataset.stationCode;
-      if (!code || prices[code] == null) return;
+    const position = () => {
+      overlay!.replaceChildren();
+      const mapRect = mapEl.getBoundingClientRect();
+      // The map can be CSS-scaled (responsive); convert screen px → map px.
+      const scale = mapRect.width / mapEl.offsetWidth || 1;
 
-      const label = document.createElement("span");
-      label.className = "price-label";
-      label.textContent = `$${Math.round(prices[code] / 1000)}k`;
-      li.appendChild(label);
-    });
+      container.querySelectorAll<HTMLElement>("[data-station-code]").forEach((li) => {
+        const code = li.dataset.stationCode;
+        if (!code || prices[code] == null) return;
+
+        // The station number sits centered in the dot, so its box gives us the
+        // dot's center reliably across every line layout.
+        const anchor =
+          li.querySelector<HTMLElement>(".station-nr") ||
+          li.querySelector<HTMLElement>("a") ||
+          li;
+        const r = anchor.getBoundingClientRect();
+        if (!r.width && !r.height) return;
+
+        const cx = (r.left + r.width / 2 - mapRect.left) / scale;
+        const cy = (r.top + r.height / 2 - mapRect.top) / scale;
+
+        const label = document.createElement("span");
+        label.className = "price-label";
+        label.textContent = `$${Math.round(prices[code] / 1000)}k`;
+        label.style.left = `${cx}px`;
+        label.style.top = `${cy + 13}px`;
+        overlay!.appendChild(label);
+      });
+    };
+
+    position();
+    // Reposition if the map gets rescaled (e.g. responsive breakpoint).
+    window.addEventListener("resize", position);
+    return () => window.removeEventListener("resize", position);
   }, [prices, htmlLoaded]);
 
   const onPointerDown = (e: React.PointerEvent) => {
