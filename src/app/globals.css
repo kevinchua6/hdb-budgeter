@@ -101,7 +101,6 @@ body {
   font-size: 10px;
   font-weight: 600;
   color: #6ee7b7;
-  /* Solid dark base + green tint so labels stay legible over lines/names */
   background-color: #0c1620;
   background-image: linear-gradient(180deg, rgba(16, 185, 129, 0.28), rgba(16, 185, 129, 0.16));
   border: 1px solid rgba(16, 185, 129, 0.45);
@@ -110,6 +109,9 @@ body {
   white-space: nowrap;
   letter-spacing: 0.02em;
   box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.7);
+  /* Override the overlay's pointer-events:none so label clicks reach handleClick */
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 /*
