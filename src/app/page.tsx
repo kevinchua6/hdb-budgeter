@@ -147,7 +147,7 @@ export default function Home() {
       </nav>
 
       {/* Content area */}
-      <div className="flex-1 flex flex-col min-w-0 pb-14 sm:pb-0">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0 pb-14 sm:pb-0">
 
         {tab === "calc" ? (
           <Calculator />
@@ -219,7 +219,7 @@ export default function Home() {
           </div>
         ) : (
           <main
-            className={`flex-1 flex flex-col transition-all duration-[280ms] ease-in-out ${
+            className={`flex-1 flex flex-col min-h-0 transition-all duration-[280ms] ease-in-out ${
               mapAnim === "in" ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
             }`}
           >
@@ -248,7 +248,7 @@ export default function Home() {
 
             <FilterBar filters={filters} onChange={handleFiltersChange} />
 
-            <div className="flex-1 overflow-auto overscroll-contain map-touch-scroll">
+            <div className="flex-1 min-h-0">
               <MrtMap prices={prices} onStationClick={setSelectedStation} />
             </div>
           </main>

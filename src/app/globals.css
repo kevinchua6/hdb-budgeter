@@ -28,13 +28,24 @@ body {
   letter-spacing: 0.02em;
 }
 
-/* Override map container for full-page layout */
+/*
+ * The MrtMap component owns scrolling/panning. #map-container is now just a
+ * fixed-size block holding the absolutely-positioned map, so the surrounding
+ * .mrt-scroll container can scroll/pan in both axes. Override the legacy rules
+ * that turned it into its own (conflicting) horizontal scroller.
+ */
 #map-container {
-  min-height: 100%;
+  width: 1895px;
+  height: 1240px;
+  max-width: none;
+  overflow: visible;
+}
+#mrt-map-singapore {
+  width: 1895px;
 }
 
-/* Touch-friendly scroll container for the MRT map */
-.map-touch-scroll {
+/* Single touch/drag scroll container for the MRT map */
+.mrt-scroll {
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x pan-y;
 }
