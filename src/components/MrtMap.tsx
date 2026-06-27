@@ -1,10 +1,11 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import {
   TransformWrapper,
   TransformComponent,
   useControls,
 } from "react-zoom-pan-pinch";
+import { stopsFrom, STATION_GROUPS } from "@/lib/stations";
 
 interface Props {
   prices: Record<string, number>;
@@ -48,6 +49,18 @@ export default function MrtMap({ prices, onStationClick }: Props) {
   const [htmlLoaded, setHtmlLoaded] = useState(false);
   const [scale, setScale] = useState(1.0);
   const didMove = useRef(false);
+  const [commuteOrigin, setCommuteOrigin] = useState<string | null>(null);
+  const [commuteMaxStops, setCommuteMaxStops] = useState(5);
+
+  const { reachable, originCodesSet } = useMemo(() => {
+    if (!commuteOrigin) return { reachable: new Map<string, number>(), originCodesSet: new Set<string>() };
+    const group = STATION_GROUPS.find(g => g.name === commuteOrigin);
+    if (!group) return { reachable: new Map<string, number>(), originCodesSet: new Set<string>() };
+    return {
+      reachable: stopsFrom(group.codes, commuteMaxStops),
+      originCodesSet: new Set(group.codes),
+    };
+  }, [commuteOrigin, commuteMaxStops]);
 
   useEffect(() => {
     fetch("/mrt-map.html")
@@ -108,6 +121,21 @@ export default function MrtMap({ prices, onStationClick }: Props) {
       });
   }, [prices, htmlLoaded]);
 
+  // Runs after prices effect (defined after, prices in deps) so new price labels get classes too
+  useEffect(() => {
+    if (!htmlLoaded) return;
+    const container = mapRef.current;
+    if (!container) return;
+    container.querySelectorAll<HTMLElement>("[data-station-code]").forEach((el) => {
+      const code = el.dataset.stationCode!;
+      el.classList.remove("commute-dimmed", "commute-origin");
+      if (commuteOrigin) {
+        if (originCodesSet.has(code)) el.classList.add("commute-origin");
+        else if (!reachable.has(code)) el.classList.add("commute-dimmed");
+      }
+    });
+  }, [htmlLoaded, commuteOrigin, reachable, originCodesSet, prices]);
+
   const handleClick = (e: React.MouseEvent) => {
     if (didMove.current) return;
     const actual = document.elementFromPoint(
@@ -129,6 +157,54 @@ export default function MrtMap({ prices, onStationClick }: Props) {
           Loading map…
         </div>
       )}
+
+      {/* Commute distance panel */}
+      <div
+        className="absolute top-4 left-4 z-50"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="glass backdrop-blur-md rounded-xl p-3 flex flex-col gap-2 w-44">
+          <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">
+            Commute from
+          </span>
+          <select
+            value={commuteOrigin ?? ""}
+            onChange={(e) => setCommuteOrigin(e.target.value || null)}
+            className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40 cursor-pointer hover:border-white/20 transition-colors"
+          >
+            <option value="" className="bg-[#1a1b2e]">
+              Any station
+            </option>
+            {STATION_GROUPS.map((g) => (
+              <option key={g.name} value={g.name} className="bg-[#1a1b2e]">
+                {g.name}
+              </option>
+            ))}
+          </select>
+          {commuteOrigin && (
+            <div className="flex items-center gap-1">
+              <span className="text-white/40 text-[10px] shrink-0">Within</span>
+              <button
+                onClick={() => setCommuteMaxStops((s) => Math.max(1, s - 1))}
+                className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 border border-white/10 text-white/60 hover:text-white text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
+              >
+                −
+              </button>
+              <span className="text-white text-sm font-semibold w-6 text-center tabular-nums">
+                {commuteMaxStops}
+              </span>
+              <button
+                onClick={() => setCommuteMaxStops((s) => Math.min(30, s + 1))}
+                className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 border border-white/10 text-white/60 hover:text-white text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
+              >
+                +
+              </button>
+              <span className="text-white/40 text-[10px] shrink-0">stops</span>
+            </div>
+          )}
+        </div>
+      </div>
+
       <TransformWrapper
         minScale={0.75}
         maxScale={2.5}

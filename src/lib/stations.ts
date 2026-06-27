@@ -194,6 +194,93 @@ function haversineMeters(lat1: number, lng1: number, lat2: number, lng2: number)
   return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+// --- Commute graph ---
+
+const MRT_LINES: readonly string[][] = [
+  ["EW1","EW2","EW3","EW4","EW5","EW6","EW7","EW8","EW9","EW10","EW11","EW12","EW13","EW14","EW15","EW16","EW17","EW18","EW19","EW20","EW21","EW22","EW23","EW24","EW25","EW26","EW27","EW28","EW29","EW30","EW31","EW32","EW33"],
+  ["EW4","CG1","CG2"],
+  ["NS1","NS2","NS3","NS4","NS5","NS7","NS8","NS9","NS10","NS11","NS12","NS13","NS14","NS15","NS16","NS17","NS18","NS19","NS20","NS21","NS22","NS23","NS24","NS25","NS26","NS27","NS28"],
+  ["NE1","NE3","NE4","NE5","NE6","NE7","NE8","NE9","NE10","NE11","NE12","NE13","NE14","NE15","NE16","NE17"],
+  ["CC1","CC2","CC3","CC4","CC5","CC6","CC7","CC8","CC9","CC10","CC11","CC12","CC13","CC14","CC15","CC16","CC17","CC19","CC20","CC21","CC22","CC23","CC24","CC25","CC26","CC27","CC28","CC29"],
+  ["DT1","DT2","DT3","DT5","DT6","DT7","DT8","DT9","DT10","DT11","DT12","DT13","DT14","DT15","DT16","DT17","DT18","DT19","DT20","DT21","DT22","DT23","DT24","DT25","DT26","DT27","DT28","DT29","DT30","DT31","DT32","DT33","DT34","DT35"],
+  ["TE1","TE2","TE3","TE4","TE5","TE6","TE7","TE8","TE9","TE11","TE12","TE13","TE14","TE15","TE16","TE17","TE18","TE19","TE20","TE22","TE23","TE24","TE25","TE26","TE27","TE28","TE29"],
+];
+
+const CC_LINE_IDX = 4; // Circle Line wraps around
+
+type GraphEdge = { neighbor: string; weight: 0 | 1 };
+let _graph: Map<string, GraphEdge[]> | null = null;
+
+function buildGraph(): Map<string, GraphEdge[]> {
+  if (_graph) return _graph;
+  const graph = new Map<string, GraphEdge[]>();
+
+  const addEdge = (a: string, b: string, weight: 0 | 1) => {
+    if (!graph.has(a)) graph.set(a, []);
+    if (!graph.has(b)) graph.set(b, []);
+    graph.get(a)!.push({ neighbor: b, weight });
+    graph.get(b)!.push({ neighbor: a, weight });
+  };
+
+  MRT_LINES.forEach((line, idx) => {
+    for (let i = 0; i < line.length - 1; i++) addEdge(line[i], line[i + 1], 1);
+    if (idx === CC_LINE_IDX) addEdge(line[line.length - 1], line[0], 1);
+  });
+
+  const byName = new Map<string, string[]>();
+  for (const s of STATIONS) {
+    if (!byName.has(s.name)) byName.set(s.name, []);
+    byName.get(s.name)!.push(s.code);
+  }
+  for (const codes of byName.values()) {
+    for (let i = 0; i < codes.length; i++)
+      for (let j = i + 1; j < codes.length; j++)
+        addEdge(codes[i], codes[j], 0);
+  }
+
+  _graph = graph;
+  return graph;
+}
+
+export function stopsFrom(originCodes: string[], maxStops: number): Map<string, number> {
+  const graph = buildGraph();
+  const dist = new Map<string, number>();
+  const buckets: string[][] = Array.from({ length: maxStops + 1 }, () => []);
+
+  for (const code of originCodes) {
+    if (graph.has(code)) {
+      dist.set(code, 0);
+      buckets[0].push(code);
+    }
+  }
+
+  for (let d = 0; d <= maxStops; d++) {
+    for (const node of buckets[d]) {
+      if ((dist.get(node) ?? Infinity) < d) continue;
+      for (const { neighbor, weight } of graph.get(node) ?? []) {
+        const nd = d + weight;
+        if (nd <= maxStops && nd < (dist.get(neighbor) ?? Infinity)) {
+          dist.set(neighbor, nd);
+          buckets[nd].push(neighbor);
+        }
+      }
+    }
+  }
+
+  return dist;
+}
+
+export const STATION_GROUPS: { name: string; codes: string[] }[] = (() => {
+  const byName = new Map<string, string[]>();
+  for (const s of STATIONS) {
+    if (!byName.has(s.name)) byName.set(s.name, []);
+    byName.get(s.name)!.push(s.code);
+  }
+  return [...byName.entries()]
+    .map(([name, codes]) => ({ name, codes }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+})();
+
 export function nearestStation(lat: number, lng: number): { code: string; walkingMinutes: number } {
   let best = STATIONS[0];
   let bestDist = Infinity;

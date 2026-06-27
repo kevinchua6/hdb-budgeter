@@ -145,6 +145,15 @@ body {
 /* Clickable station elements */
 [data-station-code] {
   cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+/* Commute distance highlighting */
+[data-station-code].commute-dimmed {
+  opacity: 0.1;
+}
+[data-station-code].commute-origin {
+  opacity: 1;
 }
 
 /* Hide bus interchange icons (Material Icons font not loaded) */
