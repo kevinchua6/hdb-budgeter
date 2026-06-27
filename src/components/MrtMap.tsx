@@ -1,27 +1,44 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { TransformWrapper, TransformComponent, useControls } from "react-zoom-pan-pinch";
 
 interface Props {
   prices: Record<string, number>;
   onStationClick?: (code: string) => void;
 }
 
+function ZoomControls({ scale }: { scale: number }) {
+  const { zoomIn, zoomOut, resetTransform } = useControls();
+  return (
+    <div className="absolute bottom-4 right-4 z-50 flex flex-col items-center gap-1">
+      <button
+        onClick={() => zoomIn(0.3, 200)}
+        className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 text-white/70 hover:text-white text-base font-light transition-all active:scale-95"
+        title="Zoom in"
+      >+</button>
+      <span className="text-white/40 text-[10px] font-medium w-8 text-center select-none">
+        {Math.round(scale * 100)}%
+      </span>
+      <button
+        onClick={() => zoomOut(0.3, 200)}
+        className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 text-white/70 hover:text-white text-base font-light transition-all active:scale-95"
+        title="Zoom out"
+      >−</button>
+      <button
+        onClick={() => resetTransform()}
+        className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 text-white/40 hover:text-white/70 text-xs transition-all active:scale-95 mt-1"
+        title="Reset view"
+      >⊡</button>
+    </div>
+  );
+}
+
 export default function MrtMap({ prices, onStationClick }: Props) {
-  const scrollRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
   const [htmlLoaded, setHtmlLoaded] = useState(false);
+  const [scale, setScale] = useState(1.0);
+  const didMove = useRef(false);
 
-  // Drag-to-pan state (mouse only; touch uses native scrolling)
-  const drag = useRef<{
-    pointerId: number;
-    startX: number;
-    startY: number;
-    scrollLeft: number;
-    scrollTop: number;
-    moved: boolean;
-  } | null>(null);
-
-  // Fetch map HTML once on mount
   useEffect(() => {
     fetch("/mrt-map.html")
       .then((r) => r.text())
@@ -33,11 +50,6 @@ export default function MrtMap({ prices, onStationClick }: Props) {
       });
   }, []);
 
-  // Render price labels in a dedicated overlay layer anchored to each dot.
-  // We use offsetLeft/offsetTop (layout-relative) instead of getBoundingClientRect
-  // so positioning is correct even while the map container is still animating
-  // (opacity-0 / translate). Labels carry data-station-code so the existing
-  // click handler can open the modal when a label is tapped.
   useEffect(() => {
     if (!htmlLoaded) return;
     const container = mapRef.current;
@@ -52,7 +64,6 @@ export default function MrtMap({ prices, onStationClick }: Props) {
       mapEl.appendChild(overlay);
     }
 
-    // Walk up offsetParent chain to get position relative to `root`.
     const offsetFrom = (el: HTMLElement, root: HTMLElement) => {
       let x = 0, y = 0, cur: HTMLElement | null = el;
       while (cur && cur !== root) {
@@ -75,7 +86,7 @@ export default function MrtMap({ prices, onStationClick }: Props) {
 
       const label = document.createElement("span");
       label.className = "price-label";
-      label.dataset.stationCode = code;   // lets the click handler open the modal
+      label.dataset.stationCode = code;
       label.textContent = `$${Math.round(prices[code] / 1000)}k`;
       label.style.left = `${cx}px`;
       label.style.top = `${cy + 13}px`;
@@ -83,51 +94,8 @@ export default function MrtMap({ prices, onStationClick }: Props) {
     });
   }, [prices, htmlLoaded]);
 
-  const onPointerDown = (e: React.PointerEvent) => {
-    // Only mouse drag-to-pan; let touch/pen use native scrolling.
-    if (e.pointerType !== "mouse" || e.button !== 0) return;
-    const el = scrollRef.current;
-    if (!el) return;
-    drag.current = {
-      pointerId: e.pointerId,
-      startX: e.clientX,
-      startY: e.clientY,
-      scrollLeft: el.scrollLeft,
-      scrollTop: el.scrollTop,
-      moved: false,
-    };
-    el.setPointerCapture(e.pointerId);
-  };
-
-  const onPointerMove = (e: React.PointerEvent) => {
-    const d = drag.current;
-    const el = scrollRef.current;
-    if (!d || !el || e.pointerId !== d.pointerId) return;
-    const dx = e.clientX - d.startX;
-    const dy = e.clientY - d.startY;
-    if (!d.moved && Math.abs(dx) + Math.abs(dy) > 4) d.moved = true;
-    el.scrollLeft = d.scrollLeft - dx;
-    el.scrollTop = d.scrollTop - dy;
-  };
-
-  const endDrag = (e: React.PointerEvent) => {
-    const d = drag.current;
-    const el = scrollRef.current;
-    if (!d || e.pointerId !== d.pointerId) return;
-    el?.releasePointerCapture(e.pointerId);
-    // Keep `moved` readable by the click handler that fires right after,
-    // then clear on the next tick.
-    const moved = d.moved;
-    drag.current = { ...d, moved };
-    setTimeout(() => {
-      drag.current = null;
-    }, 0);
-  };
-
   const handleClick = (e: React.MouseEvent) => {
-    if (drag.current?.moved) return;
-    // setPointerCapture redirects the click's target to the scroll container,
-    // so resolve the real element under the cursor instead.
+    if (didMove.current) return;
     const actual = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
     const el = (actual ?? (e.target as HTMLElement)).closest("[data-station-code]") as HTMLElement | null;
     if (el?.dataset.stationCode) {
@@ -136,23 +104,34 @@ export default function MrtMap({ prices, onStationClick }: Props) {
   };
 
   return (
-    <div
-      ref={scrollRef}
-      className="mrt-scroll h-full w-full overflow-auto overscroll-contain select-none cursor-grab active:cursor-grabbing"
-      onClick={handleClick}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={endDrag}
-      onPointerCancel={endDrag}
-    >
+    <div className="relative h-full w-full select-none" onClick={handleClick}>
       {!htmlLoaded && (
-        <div className="flex items-center justify-center h-64 text-white/40 text-sm">
+        <div className="absolute inset-0 flex items-center justify-center text-white/40 text-sm pointer-events-none">
           Loading map…
         </div>
       )}
-      <div className="inline-block p-6">
-        <div ref={mapRef} id="map-container" />
-      </div>
+      <TransformWrapper
+        minScale={0.3}
+        maxScale={2.5}
+        limitToBounds={false}
+        centerOnInit
+        doubleClick={{ mode: "zoomIn", step: 0.5, animationTime: 200 }}
+        wheel={{ step: 0.08 }}
+        panning={{ velocityDisabled: false }}
+        onTransform={(_, state) => setScale(state.scale)}
+        onPanningStart={() => { didMove.current = false; }}
+        onPanning={() => { didMove.current = true; }}
+      >
+        <TransformComponent
+          wrapperClass="h-full w-full cursor-grab active:cursor-grabbing"
+          wrapperStyle={{ overflow: "hidden" }}
+        >
+          <div className="p-6">
+            <div ref={mapRef} id="map-container" />
+          </div>
+        </TransformComponent>
+        <ZoomControls scale={scale} />
+      </TransformWrapper>
     </div>
   );
 }
