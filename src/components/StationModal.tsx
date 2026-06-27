@@ -80,6 +80,7 @@ export default function StationModal({
       minFloor: String(filters.minFloor),
       maxFloor: String(filters.maxFloor),
       months: String(filters.months),
+      minLeaseYears: String(filters.minLeaseYears),
     });
     fetch(`/api/listings?${params}`)
       .then((r) => r.json())

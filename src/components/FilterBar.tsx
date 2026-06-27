@@ -6,6 +6,7 @@ export interface Filters {
   minFloor: number;
   maxFloor: number;
   months: number;
+  minLeaseYears: number;
 }
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
 const FLAT_TYPES = ["1 ROOM", "2 ROOM", "3 ROOM", "4 ROOM", "5 ROOM", "EXECUTIVE"];
 const WALK_OPTIONS = [5, 10, 15, 20];
 const MONTH_OPTIONS = [6, 12, 24, 36, 60];
+const LEASE_OPTIONS = [0, 50, 60, 70, 80];
 
 function Divider() {
   return <div className="hidden sm:block h-7 w-px bg-white/10 shrink-0" />;
@@ -110,6 +112,28 @@ export default function FilterBar({ filters, onChange }: Props) {
               }`}
             >
               {m < 12 ? `${m}mo` : `${m / 12}yr`}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <Divider />
+
+      {/* Lease remaining */}
+      <div className="flex flex-col gap-1.5">
+        <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Lease left</span>
+        <div className="flex gap-1">
+          {LEASE_OPTIONS.map((y) => (
+            <button
+              key={y}
+              onClick={() => set("minLeaseYears", y)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                filters.minLeaseYears === y
+                  ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/35 shadow-sm"
+                  : "text-white/45 border border-white/10 hover:border-white/20 hover:text-white/70 hover:bg-white/5"
+              }`}
+            >
+              {y === 0 ? "Any" : `≥${y}yr`}
             </button>
           ))}
         </div>

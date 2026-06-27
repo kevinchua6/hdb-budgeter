@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { transactions } from "@/lib/schema";
-import { and, eq, gte, lte, isNotNull, sql } from "drizzle-orm";
+import { and, eq, gte, lte, isNotNull, sql, isNull, or } from "drizzle-orm";
 import { STATIONS } from "@/lib/stations";
 
 // Map each station code → all codes at the same physical location
@@ -15,15 +15,18 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   const p = req.nextUrl.searchParams;
-  const flatType     = p.get("flatType")   ?? "4 ROOM";
-  const maxWalkMin   = Number(p.get("maxWalkMin")  ?? 10);
-  const minFloor     = Number(p.get("minFloor")    ?? 1);
-  const maxFloor     = Number(p.get("maxFloor")    ?? 999);
-  const months       = Number(p.get("months")      ?? 24);
+  const flatType      = p.get("flatType")      ?? "4 ROOM";
+  const maxWalkMin    = Number(p.get("maxWalkMin")   ?? 10);
+  const minFloor      = Number(p.get("minFloor")     ?? 1);
+  const maxFloor      = Number(p.get("maxFloor")     ?? 999);
+  const months        = Number(p.get("months")       ?? 24);
+  const minLeaseYears = Number(p.get("minLeaseYears") ?? 0);
 
   const cutoff = new Date();
   cutoff.setMonth(cutoff.getMonth() - months);
   const cutoffStr = `${cutoff.getFullYear()}-${String(cutoff.getMonth() + 1).padStart(2, "0")}`;
+  const currentYear = new Date().getFullYear();
+  const minLcd = minLeaseYears > 0 ? currentYear - 99 + minLeaseYears : null;
 
   try {
     const rows = await db
@@ -40,7 +43,10 @@ export async function GET(req: NextRequest) {
           gte(transactions.storeyMin, minFloor),
           lte(transactions.storeyMax, maxFloor),
           gte(transactions.month, cutoffStr),
-          isNotNull(transactions.stationCode)
+          isNotNull(transactions.stationCode),
+          minLcd != null
+            ? gte(transactions.leaseCommenceDate, minLcd)
+            : undefined
         )
       )
       .groupBy(transactions.stationCode)

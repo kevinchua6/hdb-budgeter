@@ -11,11 +11,13 @@ const DEFAULT_FILTERS: Filters = {
   minFloor: 1,
   maxFloor: 999,
   months: 24,
+  minLeaseYears: 0,
 };
 
 const FLAT_TYPES = ["3 ROOM", "4 ROOM", "5 ROOM", "EXECUTIVE", "2 ROOM", "1 ROOM"];
 const WALK_OPTIONS = [5, 10, 15, 20];
 const MONTH_OPTIONS = [6, 12, 24, 36, 60];
+const LEASE_OPTIONS = [0, 50, 60, 70, 80];
 
 type Phase = "landing" | "map";
 type Tab = "map" | "calc";
@@ -91,6 +93,7 @@ export default function Home() {
         minFloor: String(f.minFloor),
         maxFloor: String(f.maxFloor),
         months: String(f.months),
+        minLeaseYears: String(f.minLeaseYears),
       });
       const res = await fetch(`/api/prices?${params}`);
       if (res.ok) setPrices(await res.json());
@@ -202,6 +205,17 @@ export default function Home() {
                     {MONTH_OPTIONS.map((m) => (
                       <PillButton key={m} active={filters.months === m} onClick={() => setFilters(f => ({ ...f, months: m }))}>
                         {m < 12 ? `${m}mo` : `${m / 12}yr`}
+                      </PillButton>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2.5">
+                  <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Lease remaining</span>
+                  <div className="grid grid-cols-5 gap-2">
+                    {LEASE_OPTIONS.map((y) => (
+                      <PillButton key={y} active={filters.minLeaseYears === y} onClick={() => setFilters(f => ({ ...f, minLeaseYears: y }))}>
+                        {y === 0 ? "Any" : `≥${y}yr`}
                       </PillButton>
                     ))}
                   </div>
