@@ -111,12 +111,22 @@ export default function MrtMap({ prices, onStationClick }: Props) {
         const cx = x + anchor.offsetWidth / 2;
         const cy = y + anchor.offsetHeight / 2;
 
+        // Position below the name span if it extends below the circle
+        const nameEl = li.querySelector<HTMLElement>("span:not(.station-nr)");
+        let labelTop = cy + 13;
+        if (nameEl) {
+          const nameOff = offsetFrom(nameEl, mapEl);
+          const nameBottom = nameOff.y + nameEl.offsetHeight;
+          const circleBottom = y + anchor.offsetHeight;
+          labelTop = Math.max(circleBottom, nameBottom) + 4;
+        }
+
         const label = document.createElement("span");
         label.className = "price-label";
         label.dataset.stationCode = code;
         label.textContent = `$${Math.round(prices[code] / 1000)}k`;
         label.style.left = `${cx}px`;
-        label.style.top = `${cy + 13}px`;
+        label.style.top = `${labelTop}px`;
         overlay!.appendChild(label);
       });
   }, [prices, htmlLoaded]);
