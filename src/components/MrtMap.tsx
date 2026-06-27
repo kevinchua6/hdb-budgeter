@@ -1,6 +1,10 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { TransformWrapper, TransformComponent, useControls } from "react-zoom-pan-pinch";
+import {
+  TransformWrapper,
+  TransformComponent,
+  useControls,
+} from "react-zoom-pan-pinch";
 
 interface Props {
   prices: Record<string, number>;
@@ -15,7 +19,9 @@ function ZoomControls({ scale }: { scale: number }) {
         onClick={() => zoomIn(0.3, 200)}
         className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 text-white/70 hover:text-white text-base font-light transition-all active:scale-95"
         title="Zoom in"
-      >+</button>
+      >
+        +
+      </button>
       <span className="text-white/40 text-[10px] font-medium w-8 text-center select-none">
         {Math.round(scale * 100)}%
       </span>
@@ -23,12 +29,16 @@ function ZoomControls({ scale }: { scale: number }) {
         onClick={() => zoomOut(0.3, 200)}
         className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 text-white/70 hover:text-white text-base font-light transition-all active:scale-95"
         title="Zoom out"
-      >−</button>
+      >
+        −
+      </button>
       <button
         onClick={() => resetTransform()}
         className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 text-white/40 hover:text-white/70 text-xs transition-all active:scale-95 mt-1"
         title="Reset view"
-      >⊡</button>
+      >
+        ⊡
+      </button>
     </div>
   );
 }
@@ -65,7 +75,9 @@ export default function MrtMap({ prices, onStationClick }: Props) {
     }
 
     const offsetFrom = (el: HTMLElement, root: HTMLElement) => {
-      let x = 0, y = 0, cur: HTMLElement | null = el;
+      let x = 0,
+        y = 0,
+        cur: HTMLElement | null = el;
       while (cur && cur !== root) {
         x += cur.offsetLeft;
         y += cur.offsetTop;
@@ -75,29 +87,36 @@ export default function MrtMap({ prices, onStationClick }: Props) {
     };
 
     overlay.replaceChildren();
-    container.querySelectorAll<HTMLElement>("[data-station-code]").forEach((li) => {
-      const code = li.dataset.stationCode;
-      if (!code || prices[code] == null) return;
+    container
+      .querySelectorAll<HTMLElement>("[data-station-code]")
+      .forEach((li) => {
+        const code = li.dataset.stationCode;
+        if (!code || prices[code] == null) return;
 
-      const anchor = li.querySelector<HTMLElement>(".station-nr") ?? li;
-      const { x, y } = offsetFrom(anchor, mapEl);
-      const cx = x + anchor.offsetWidth / 2;
-      const cy = y + anchor.offsetHeight / 2;
+        const anchor = li.querySelector<HTMLElement>(".station-nr") ?? li;
+        const { x, y } = offsetFrom(anchor, mapEl);
+        const cx = x + anchor.offsetWidth / 2;
+        const cy = y + anchor.offsetHeight / 2;
 
-      const label = document.createElement("span");
-      label.className = "price-label";
-      label.dataset.stationCode = code;
-      label.textContent = `$${Math.round(prices[code] / 1000)}k`;
-      label.style.left = `${cx}px`;
-      label.style.top = `${cy + 13}px`;
-      overlay!.appendChild(label);
-    });
+        const label = document.createElement("span");
+        label.className = "price-label";
+        label.dataset.stationCode = code;
+        label.textContent = `$${Math.round(prices[code] / 1000)}k`;
+        label.style.left = `${cx}px`;
+        label.style.top = `${cy + 13}px`;
+        overlay!.appendChild(label);
+      });
   }, [prices, htmlLoaded]);
 
   const handleClick = (e: React.MouseEvent) => {
     if (didMove.current) return;
-    const actual = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
-    const el = (actual ?? (e.target as HTMLElement)).closest("[data-station-code]") as HTMLElement | null;
+    const actual = document.elementFromPoint(
+      e.clientX,
+      e.clientY
+    ) as HTMLElement | null;
+    const el = (actual ?? (e.target as HTMLElement)).closest(
+      "[data-station-code]"
+    ) as HTMLElement | null;
     if (el?.dataset.stationCode) {
       onStationClick?.(el.dataset.stationCode);
     }
@@ -111,16 +130,20 @@ export default function MrtMap({ prices, onStationClick }: Props) {
         </div>
       )}
       <TransformWrapper
-        minScale={0.3}
+        minScale={0.75}
         maxScale={2.5}
         limitToBounds={false}
         centerOnInit
         doubleClick={{ mode: "zoomIn", step: 0.5, animationTime: 200 }}
-        wheel={{ step: 0.08 }}
+        wheel={{ step: 0.003 }}
         panning={{ velocityDisabled: false }}
         onTransform={(_, state) => setScale(state.scale)}
-        onPanningStart={() => { didMove.current = false; }}
-        onPanning={() => { didMove.current = true; }}
+        onPanningStart={() => {
+          didMove.current = false;
+        }}
+        onPanning={() => {
+          didMove.current = true;
+        }}
       >
         <TransformComponent
           wrapperClass="h-full w-full cursor-grab active:cursor-grabbing"
