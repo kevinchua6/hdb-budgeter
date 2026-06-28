@@ -14,7 +14,14 @@ const DEFAULT_FILTERS: Filters = {
   minLeaseYears: 0,
 };
 
-const FLAT_TYPES = ["3 ROOM", "4 ROOM", "5 ROOM", "EXECUTIVE", "2 ROOM", "1 ROOM"];
+const FLAT_TYPES = [
+  "3 ROOM",
+  "4 ROOM",
+  "5 ROOM",
+  "EXECUTIVE",
+  "2 ROOM",
+  "1 ROOM",
+];
 const WALK_OPTIONS = [5, 10, 15, 20];
 const MONTH_OPTIONS = [6, 12, 24, 36, 60];
 const LEASE_OPTIONS = [0, 50, 60, 70, 80];
@@ -47,7 +54,16 @@ function PillButton({
 
 function MapIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
       <circle cx="12" cy="10" r="3" />
     </svg>
@@ -56,7 +72,16 @@ function MapIcon() {
 
 function CalcIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <rect x="4" y="2" width="16" height="20" rx="2" />
       <line x1="8" y1="6" x2="16" y2="6" />
       <line x1="8" y1="10" x2="10" y2="10" />
@@ -108,7 +133,9 @@ export default function Home() {
     setTimeout(() => {
       setPhase("map");
       setMapAnim("enter");
-      requestAnimationFrame(() => requestAnimationFrame(() => setMapAnim("in")));
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => setMapAnim("in")),
+      );
     }, 280);
   };
 
@@ -127,7 +154,6 @@ export default function Home() {
 
   return (
     <div className="app-bg flex h-[100dvh] overflow-hidden">
-
       {/* Desktop sidebar */}
       <nav className="hidden sm:flex flex-col items-center py-5 w-[60px] border-r border-white/[0.07] shrink-0">
         <span className="w-2 h-2 rounded-full bg-emerald-400 mb-6 shrink-0 shadow-[0_0_8px_3px_rgba(52,211,153,0.45)]" />
@@ -143,7 +169,9 @@ export default function Home() {
               }`}
             >
               <Icon />
-              <span className="text-[9px] font-medium leading-none">{label}</span>
+              <span className="text-[9px] font-medium leading-none">
+                {label}
+              </span>
             </button>
           ))}
         </div>
@@ -151,37 +179,46 @@ export default function Home() {
 
       {/* Content area */}
       <div className="flex-1 flex flex-col min-w-0 min-h-0 pb-14 sm:pb-0">
-
         {tab === "calc" ? (
           <Calculator />
         ) : phase === "landing" ? (
           <div
             className={`flex-1 flex flex-col justify-center py-10 px-4 overflow-x-hidden transition-all duration-[280ms] ease-in-out ${
-              landingAnim === "exit" ? "opacity-0 -translate-y-5" : "opacity-100 translate-y-0"
+              landingAnim === "exit"
+                ? "opacity-0 -translate-y-5"
+                : "opacity-100 translate-y-0"
             }`}
           >
             <div className="self-center w-[min(calc(100vw-2rem),24rem)]">
-
               {/* Brand */}
               <div className="text-center mb-8 px-1">
                 <div className="mx-auto mb-4 grid place-items-center w-12 h-12 rounded-2xl bg-gradient-to-b from-emerald-400/25 to-emerald-500/10 border border-emerald-400/30 shadow-[0_8px_24px_-8px_rgba(16,185,129,0.6)]">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_3px_rgba(52,211,153,0.55)]" />
                 </div>
-                <h1 className="text-gradient font-semibold text-2xl tracking-tight">HDB Budgeter</h1>
+                <h1 className="text-gradient font-semibold text-2xl tracking-tight">
+                  HDB Budgeter
+                </h1>
                 <p className="text-white/45 text-sm leading-snug mt-1.5">
-                  Singapore resale prices
+                  Singapore Resale Prices
                   <br className="sm:hidden" /> by MRT station
                 </p>
               </div>
 
               {/* Filter card */}
               <div className="glass rounded-2xl p-5 flex flex-col gap-5">
-
                 <div className="flex flex-col gap-2.5">
-                  <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Flat type</span>
+                  <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">
+                    Flat type
+                  </span>
                   <div className="grid grid-cols-3 gap-2">
                     {FLAT_TYPES.map((t) => (
-                      <PillButton key={t} active={filters.flatType === t} onClick={() => setFilters(f => ({ ...f, flatType: t }))}>
+                      <PillButton
+                        key={t}
+                        active={filters.flatType === t}
+                        onClick={() =>
+                          setFilters((f) => ({ ...f, flatType: t }))
+                        }
+                      >
                         {t}
                       </PillButton>
                     ))}
@@ -189,10 +226,18 @@ export default function Home() {
                 </div>
 
                 <div className="flex flex-col gap-2.5">
-                  <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Walk from MRT</span>
+                  <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">
+                    Walk from MRT
+                  </span>
                   <div className="grid grid-cols-4 gap-2">
                     {WALK_OPTIONS.map((m) => (
-                      <PillButton key={m} active={filters.maxWalkMin === m} onClick={() => setFilters(f => ({ ...f, maxWalkMin: m }))}>
+                      <PillButton
+                        key={m}
+                        active={filters.maxWalkMin === m}
+                        onClick={() =>
+                          setFilters((f) => ({ ...f, maxWalkMin: m }))
+                        }
+                      >
                         ≤{m}m
                       </PillButton>
                     ))}
@@ -200,10 +245,16 @@ export default function Home() {
                 </div>
 
                 <div className="flex flex-col gap-2.5">
-                  <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Data period</span>
+                  <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">
+                    Data period
+                  </span>
                   <div className="grid grid-cols-5 gap-2">
                     {MONTH_OPTIONS.map((m) => (
-                      <PillButton key={m} active={filters.months === m} onClick={() => setFilters(f => ({ ...f, months: m }))}>
+                      <PillButton
+                        key={m}
+                        active={filters.months === m}
+                        onClick={() => setFilters((f) => ({ ...f, months: m }))}
+                      >
                         {m < 12 ? `${m}mo` : `${m / 12}yr`}
                       </PillButton>
                     ))}
@@ -211,10 +262,18 @@ export default function Home() {
                 </div>
 
                 <div className="flex flex-col gap-2.5">
-                  <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Lease remaining</span>
+                  <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">
+                    Lease remaining
+                  </span>
                   <div className="grid grid-cols-5 gap-2">
                     {LEASE_OPTIONS.map((y) => (
-                      <PillButton key={y} active={filters.minLeaseYears === y} onClick={() => setFilters(f => ({ ...f, minLeaseYears: y }))}>
+                      <PillButton
+                        key={y}
+                        active={filters.minLeaseYears === y}
+                        onClick={() =>
+                          setFilters((f) => ({ ...f, minLeaseYears: y }))
+                        }
+                      >
                         {y === 0 ? "Any" : `≥${y}yr`}
                       </PillButton>
                     ))}
@@ -227,22 +286,27 @@ export default function Home() {
                 >
                   View prices on map →
                 </button>
-
               </div>
             </div>
           </div>
         ) : (
           <main
             className={`flex-1 flex flex-col min-h-0 transition-all duration-[280ms] ease-in-out ${
-              mapAnim === "in" ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
+              mapAnim === "in"
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-3"
             }`}
           >
             <header className="flex items-center gap-3 px-4 py-2.5 border-b border-white/10 shrink-0">
               <div className="flex items-center gap-2.5 min-w-0">
                 <span className="shrink-0 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.4)]" />
-                <h1 className="text-white font-semibold text-sm tracking-wide truncate">HDB Budgeter</h1>
+                <h1 className="text-white font-semibold text-sm tracking-wide truncate">
+                  HDB Budgeter
+                </h1>
                 <span className="text-white/20 hidden sm:inline">·</span>
-                <span className="text-white/35 text-xs hidden sm:inline truncate">Singapore resale prices</span>
+                <span className="text-white/35 text-xs hidden sm:inline truncate">
+                  Singapore resale prices
+                </span>
               </div>
               <div className="ml-auto flex items-center gap-3 shrink-0">
                 {loading && (
@@ -267,7 +331,6 @@ export default function Home() {
             </div>
           </main>
         )}
-
       </div>
 
       {/* Station modal */}
@@ -294,7 +357,6 @@ export default function Home() {
           </button>
         ))}
       </nav>
-
     </div>
   );
 }
