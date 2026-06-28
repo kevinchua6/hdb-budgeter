@@ -11,7 +11,7 @@ const DEFAULT_FILTERS: Filters = {
   minFloor: 1,
   maxFloor: 999,
   months: 24,
-  minLeaseYears: 0,
+  minLeaseYears: 80,
 };
 
 const FLAT_TYPES = [
