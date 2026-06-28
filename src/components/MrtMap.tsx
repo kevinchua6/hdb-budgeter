@@ -77,14 +77,17 @@ export default function MrtMap({ prices, onStationClick }: Props) {
   }, [commuteOrigin, commuteMaxStops]);
 
   useEffect(() => {
+    let cancelled = false;
     fetch("/mrt-map.html")
       .then((r) => r.text())
       .then((html) => {
-        if (mapRef.current) {
-          mapRef.current.innerHTML = html;
-          setHtmlLoaded(true);
-        }
+        if (cancelled || !mapRef.current) return;
+        mapRef.current.innerHTML = html;
+        setHtmlLoaded(true);
       });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
