@@ -248,7 +248,7 @@ export default function MrtMap({ prices, onStationClick }: Props) {
       <TransformWrapper
         minScale={0.75}
         maxScale={2.5}
-        limitToBounds={false}
+        limitToBounds={true}
         centerOnInit
         doubleClick={{ mode: "zoomIn", step: 0.5, animationTime: 200 }}
         wheel={{ step: 0.003 }}
