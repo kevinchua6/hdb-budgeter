@@ -149,7 +149,10 @@ export default function MrtMap({ prices, onStationClick }: Props) {
         const label = document.createElement("span");
         label.className = "price-label";
         label.dataset.stationCode = code;
-        label.textContent = `$${Math.round(prices[code] / 1000)}k`;
+        const p = prices[code];
+        label.textContent = p >= 1_000_000
+          ? `$${(p / 1_000_000).toFixed(1)}M`
+          : `$${Math.round(p / 1000)}k`;
         label.style.left = `${cx + dx}px`;
         label.style.top = `${labelTop + dy}px`;
         overlay!.appendChild(label);
