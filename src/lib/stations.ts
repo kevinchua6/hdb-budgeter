@@ -284,7 +284,7 @@ export const STATION_GROUPS: { name: string; codes: string[] }[] = (() => {
 })();
 
 export function nearestStation(lat: number, lng: number): { code: string; walkingMinutes: number } {
-  let best = STATIONS[0];
+  let best: (typeof STATIONS)[number] = STATIONS[0];
   let bestDist = Infinity;
   for (const s of STATIONS) {
     const d = haversineMeters(lat, lng, s.lat, s.lng);
