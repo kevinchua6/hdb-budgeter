@@ -910,11 +910,6 @@ ul.stations.left-spot.cc-names.ccs1-3 li:nth-child(2) {
 ul.stations.left-spot.cc-names.ccs1-3 li:nth-child(2):before {
   margin-left: 88px;
 }
-@-moz-document url-prefix() {
-  ul.stations.left-spot.cc-names.ccs1-3 li:nth-child(2) span:first-child {
-    top: 13px;
-  }
-}
 span.bras-basah {
   margin-left: -59px;
   width: 41px;
