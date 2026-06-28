@@ -5,7 +5,7 @@ import {
   TransformComponent,
   useControls,
 } from "react-zoom-pan-pinch";
-import { stopsFrom, STATION_GROUPS } from "@/lib/stations";
+import { stopsFrom, STATION_GROUPS, type StationCode } from "@/lib/stations";
 
 interface Props {
   prices: Record<string, number>;
@@ -45,9 +45,16 @@ function ZoomControls({ scale }: { scale: number }) {
 }
 
 // Per-station pixel nudges applied on top of auto-placement. Positive dy moves label down.
-const LABEL_OFFSETS: Record<string, { dx?: number; dy?: number }> = {
+const LABEL_OFFSETS: Partial<
+  Record<StationCode, { dx?: number; dy?: number }>
+> = {
   EW9: { dy: -5 },
   EW11: { dy: -6 }, // Bugis (EWL)
+  NE12: { dy: 17 }, // Serangoon (NEL)
+  CC13: { dy: 17 }, // Serangoon (CCL)
+  NE13: { dy: -5 }, // Kovan
+  NE14: { dy: -5 }, // Hougang
+  NE15: { dy: -5 }, // Buangkok
 };
 
 export default function MrtMap({ prices, onStationClick }: Props) {
@@ -138,7 +145,7 @@ export default function MrtMap({ prices, onStationClick }: Props) {
           labelTop = Math.max(circleBottom, nameBottom) + 4;
         }
 
-        const { dx = 0, dy = 0 } = LABEL_OFFSETS[code] ?? {};
+        const { dx = 0, dy = 0 } = LABEL_OFFSETS[code as StationCode] ?? {};
         const label = document.createElement("span");
         label.className = "price-label";
         label.dataset.stationCode = code;

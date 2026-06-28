@@ -5,7 +5,7 @@ export interface Station {
   lng: number;
 }
 
-export const STATIONS: Station[] = [
+export const STATIONS = [
   // East-West Line
   { code: "EW1",  name: "Pasir Ris",       lat: 1.3731, lng: 103.9494 },
   { code: "EW2",  name: "Tampines",         lat: 1.3536, lng: 103.9453 },
@@ -180,7 +180,9 @@ export const STATIONS: Station[] = [
   { code: "TE27", name: "Marine Terrace",        lat: 1.3040, lng: 103.9145 },
   { code: "TE28", name: "Siglap",                lat: 1.3094, lng: 103.9234 },
   { code: "TE29", name: "Bayshore",              lat: 1.3177, lng: 103.9298 },
-];
+] as const satisfies readonly Station[];
+
+export type StationCode = (typeof STATIONS)[number]["code"];
 
 function haversineMeters(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371000;
