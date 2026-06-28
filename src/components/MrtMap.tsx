@@ -44,6 +44,12 @@ function ZoomControls({ scale }: { scale: number }) {
   );
 }
 
+// Per-station pixel nudges applied on top of auto-placement. Positive dy moves label down.
+const LABEL_OFFSETS: Record<string, { dx?: number; dy?: number }> = {
+  EW9: { dy: -5 },
+  EW11: { dy: -6 }, // Bugis (EWL)
+};
+
 export default function MrtMap({ prices, onStationClick }: Props) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [htmlLoaded, setHtmlLoaded] = useState(false);
@@ -53,9 +59,17 @@ export default function MrtMap({ prices, onStationClick }: Props) {
   const [commuteMaxStops, setCommuteMaxStops] = useState(5);
 
   const { reachable, originCodesSet } = useMemo(() => {
-    if (!commuteOrigin) return { reachable: new Map<string, number>(), originCodesSet: new Set<string>() };
-    const group = STATION_GROUPS.find(g => g.name === commuteOrigin);
-    if (!group) return { reachable: new Map<string, number>(), originCodesSet: new Set<string>() };
+    if (!commuteOrigin)
+      return {
+        reachable: new Map<string, number>(),
+        originCodesSet: new Set<string>(),
+      };
+    const group = STATION_GROUPS.find((g) => g.name === commuteOrigin);
+    if (!group)
+      return {
+        reachable: new Map<string, number>(),
+        originCodesSet: new Set<string>(),
+      };
     return {
       reachable: stopsFrom(group.codes, commuteMaxStops),
       originCodesSet: new Set(group.codes),
@@ -121,12 +135,13 @@ export default function MrtMap({ prices, onStationClick }: Props) {
           labelTop = Math.max(circleBottom, nameBottom) + 4;
         }
 
+        const { dx = 0, dy = 0 } = LABEL_OFFSETS[code] ?? {};
         const label = document.createElement("span");
         label.className = "price-label";
         label.dataset.stationCode = code;
         label.textContent = `$${Math.round(prices[code] / 1000)}k`;
-        label.style.left = `${cx}px`;
-        label.style.top = `${labelTop}px`;
+        label.style.left = `${cx + dx}px`;
+        label.style.top = `${labelTop + dy}px`;
         overlay!.appendChild(label);
       });
   }, [prices, htmlLoaded]);
@@ -136,24 +151,26 @@ export default function MrtMap({ prices, onStationClick }: Props) {
     if (!htmlLoaded) return;
     const container = mapRef.current;
     if (!container) return;
-    container.querySelectorAll<HTMLElement>("[data-station-code]").forEach((el) => {
-      const code = el.dataset.stationCode!;
-      el.classList.remove("commute-dimmed", "commute-origin");
-      if (commuteOrigin) {
-        if (originCodesSet.has(code)) el.classList.add("commute-origin");
-        else if (!reachable.has(code)) el.classList.add("commute-dimmed");
-      }
-    });
+    container
+      .querySelectorAll<HTMLElement>("[data-station-code]")
+      .forEach((el) => {
+        const code = el.dataset.stationCode!;
+        el.classList.remove("commute-dimmed", "commute-origin");
+        if (commuteOrigin) {
+          if (originCodesSet.has(code)) el.classList.add("commute-origin");
+          else if (!reachable.has(code)) el.classList.add("commute-dimmed");
+        }
+      });
   }, [htmlLoaded, commuteOrigin, reachable, originCodesSet, prices]);
 
   const handleClick = (e: React.MouseEvent) => {
     if (didMove.current) return;
     const actual = document.elementFromPoint(
       e.clientX,
-      e.clientY
+      e.clientY,
     ) as HTMLElement | null;
     const el = (actual ?? (e.target as HTMLElement)).closest(
-      "[data-station-code]"
+      "[data-station-code]",
     ) as HTMLElement | null;
     if (el?.dataset.stationCode) {
       onStationClick?.(el.dataset.stationCode);
