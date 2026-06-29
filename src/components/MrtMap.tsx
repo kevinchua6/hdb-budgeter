@@ -15,7 +15,7 @@ interface Props {
 function ZoomControls({ scale }: { scale: number }) {
   const { zoomIn, zoomOut, resetTransform } = useControls();
   return (
-    <div className="absolute bottom-4 right-4 z-50 flex flex-col items-center gap-1">
+    <div className="hidden sm:flex absolute bottom-4 right-4 z-50 flex-col items-center gap-1">
       <button
         onClick={() => zoomIn(0.3, 200)}
         className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 text-white/70 hover:text-white text-base font-light transition-all active:scale-95"
@@ -200,7 +200,7 @@ export default function MrtMap({ prices, onStationClick }: Props) {
 
       {/* Commute distance panel */}
       <div
-        className="absolute top-4 left-4 z-50"
+        className="hidden sm:block absolute top-4 left-4 z-50"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="glass backdrop-blur-md rounded-xl p-3 flex flex-col gap-2 w-44">
