@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 
 export interface Filters {
   flatType: string;
@@ -23,121 +24,240 @@ function Divider() {
   return <div className="hidden sm:block h-7 w-px bg-white/10 shrink-0" />;
 }
 
+function Chip({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+        active
+          ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/35 shadow-sm"
+          : "text-white/45 border border-white/10 hover:border-white/20 hover:text-white/70 hover:bg-white/5"
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
+
+function MobileChip({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all active:scale-95 ${
+        active
+          ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/35"
+          : "text-white/50 border border-white/10 hover:border-white/20 hover:text-white/70"
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
+
 export default function FilterBar({ filters, onChange }: Props) {
+  const [open, setOpen] = useState(false);
   const set = <K extends keyof Filters>(k: K, v: Filters[K]) =>
     onChange({ ...filters, [k]: v });
 
+  const summary = [
+    filters.flatType,
+    `≤${filters.maxWalkMin}m`,
+    filters.months < 12 ? `${filters.months}mo` : `${filters.months / 12}yr`,
+    filters.minLeaseYears === 0 ? "any lease" : `≥${filters.minLeaseYears}yr`,
+  ].join(" · ");
+
   return (
-    <div className="flex flex-wrap items-center gap-x-5 gap-y-3 bg-white/[0.025] backdrop-blur-md border-b border-white/10 px-5 py-3 shrink-0">
+    <>
+      {/* Desktop: horizontal bar */}
+      <div className="hidden sm:flex flex-wrap items-center gap-x-5 gap-y-3 bg-white/[0.025] backdrop-blur-md border-b border-white/10 px-5 py-3 shrink-0">
+        <div className="flex flex-col gap-1.5">
+          <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Flat type</span>
+          <select
+            value={filters.flatType}
+            onChange={(e) => set("flatType", e.target.value)}
+            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40 transition-all cursor-pointer hover:bg-white/8 hover:border-white/20"
+          >
+            {FLAT_TYPES.map((t) => (
+              <option key={t} value={t} className="bg-[#1a1b2e]">{t}</option>
+            ))}
+          </select>
+        </div>
 
-      {/* Flat Type */}
-      <div className="flex flex-col gap-1.5">
-        <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Flat type</span>
-        <select
-          value={filters.flatType}
-          onChange={(e) => set("flatType", e.target.value)}
-          className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40 transition-all cursor-pointer hover:bg-white/8 hover:border-white/20"
+        <Divider />
+
+        <div className="flex flex-col gap-1.5">
+          <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Walk from MRT</span>
+          <div className="flex gap-1">
+            {WALK_OPTIONS.map((m) => (
+              <Chip key={m} label={`≤${m}m`} active={filters.maxWalkMin === m} onClick={() => set("maxWalkMin", m)} />
+            ))}
+          </div>
+        </div>
+
+        <Divider />
+
+        <div className="flex flex-col gap-1.5">
+          <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Floor</span>
+          <div className="flex items-center gap-2">
+            <input
+              type="number" min={1} max={filters.maxFloor} value={filters.minFloor}
+              onChange={(e) => set("minFloor", Math.max(1, parseInt(e.target.value) || 1))}
+              className="w-14 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs text-center focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40 transition-all hover:border-white/20"
+            />
+            <span className="text-white/25 text-xs select-none">—</span>
+            <input
+              type="number" min={filters.minFloor}
+              value={filters.maxFloor >= 999 ? "" : filters.maxFloor}
+              placeholder="any"
+              onChange={(e) => {
+                const v = parseInt(e.target.value);
+                set("maxFloor", isNaN(v) ? 999 : Math.max(filters.minFloor, v));
+              }}
+              className="w-14 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs text-center placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40 transition-all hover:border-white/20"
+            />
+          </div>
+        </div>
+
+        <Divider />
+
+        <div className="flex flex-col gap-1.5">
+          <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Period</span>
+          <div className="flex gap-1">
+            {MONTH_OPTIONS.map((m) => (
+              <Chip key={m} label={m < 12 ? `${m}mo` : `${m / 12}yr`} active={filters.months === m} onClick={() => set("months", m)} />
+            ))}
+          </div>
+        </div>
+
+        <Divider />
+
+        <div className="flex flex-col gap-1.5">
+          <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Lease left</span>
+          <div className="flex gap-1">
+            {LEASE_OPTIONS.map((y) => (
+              <Chip key={y} label={y === 0 ? "Any" : `≥${y}yr`} active={filters.minLeaseYears === y} onClick={() => set("minLeaseYears", y)} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile: compact toggle bar */}
+      <div className="sm:hidden bg-white/[0.025] border-b border-white/10 px-4 py-2.5 shrink-0">
+        <button
+          onClick={() => setOpen((o) => !o)}
+          className="w-full flex items-center justify-between gap-2"
         >
-          {FLAT_TYPES.map((t) => (
-            <option key={t} value={t} className="bg-[#1a1b2e]">{t}</option>
-          ))}
-        </select>
-      </div>
-
-      <Divider />
-
-      {/* Walk distance */}
-      <div className="flex flex-col gap-1.5">
-        <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Walk from MRT</span>
-        <div className="flex gap-1">
-          {WALK_OPTIONS.map((m) => (
-            <button
-              key={m}
-              onClick={() => set("maxWalkMin", m)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                filters.maxWalkMin === m
-                  ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/35 shadow-sm"
-                  : "text-white/45 border border-white/10 hover:border-white/20 hover:text-white/70 hover:bg-white/5"
-              }`}
+          <span className="text-white/55 text-xs truncate">{summary}</span>
+          <span className="text-white/40 text-xs shrink-0 font-medium flex items-center gap-1">
+            Filters
+            <svg
+              width="12" height="12" viewBox="0 0 12 12" fill="none"
+              className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
             >
-              ≤{m}m
-            </button>
-          ))}
-        </div>
+              <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
+        </button>
       </div>
 
-      <Divider />
-
-      {/* Floor range */}
-      <div className="flex flex-col gap-1.5">
-        <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Floor</span>
-        <div className="flex items-center gap-2">
-          <input
-            type="number"
-            min={1}
-            max={filters.maxFloor}
-            value={filters.minFloor}
-            onChange={(e) => set("minFloor", Math.max(1, parseInt(e.target.value) || 1))}
-            className="w-14 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs text-center focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40 transition-all hover:border-white/20"
+      {/* Mobile: bottom sheet */}
+      {open && (
+        <>
+          <div
+            className="sm:hidden fixed inset-0 z-[55] bg-black/40"
+            onClick={() => setOpen(false)}
           />
-          <span className="text-white/25 text-xs select-none">—</span>
-          <input
-            type="number"
-            min={filters.minFloor}
-            value={filters.maxFloor >= 999 ? "" : filters.maxFloor}
-            placeholder="any"
-            onChange={(e) => {
-              const v = parseInt(e.target.value);
-              set("maxFloor", isNaN(v) ? 999 : Math.max(filters.minFloor, v));
-            }}
-            className="w-14 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs text-center placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40 transition-all hover:border-white/20"
-          />
-        </div>
-      </div>
+          <div className="sm:hidden fixed inset-x-0 bottom-14 z-[60] bg-[#0f1020] border-t border-white/10 rounded-t-2xl px-4 pt-5 pb-6 flex flex-col gap-5 max-h-[72vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-white/70 text-sm font-semibold">Filters</span>
+              <button
+                onClick={() => setOpen(false)}
+                className="text-white/35 hover:text-white/65 text-xs px-2 py-1 rounded-lg hover:bg-white/5 transition-colors"
+              >
+                Done
+              </button>
+            </div>
 
-      <Divider />
+            <div className="flex flex-col gap-2">
+              <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Flat type</span>
+              <select
+                value={filters.flatType}
+                onChange={(e) => set("flatType", e.target.value)}
+                className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40"
+              >
+                {FLAT_TYPES.map((t) => (
+                  <option key={t} value={t} className="bg-[#1a1b2e]">{t}</option>
+                ))}
+              </select>
+            </div>
 
-      {/* Date range */}
-      <div className="flex flex-col gap-1.5">
-        <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Period</span>
-        <div className="flex gap-1">
-          {MONTH_OPTIONS.map((m) => (
-            <button
-              key={m}
-              onClick={() => set("months", m)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                filters.months === m
-                  ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/35 shadow-sm"
-                  : "text-white/45 border border-white/10 hover:border-white/20 hover:text-white/70 hover:bg-white/5"
-              }`}
-            >
-              {m < 12 ? `${m}mo` : `${m / 12}yr`}
-            </button>
-          ))}
-        </div>
-      </div>
+            <div className="flex flex-col gap-2">
+              <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Walk from MRT</span>
+              <div className="flex gap-2">
+                {WALK_OPTIONS.map((m) => (
+                  <MobileChip key={m} label={`≤${m}m`} active={filters.maxWalkMin === m} onClick={() => set("maxWalkMin", m)} />
+                ))}
+              </div>
+            </div>
 
-      <Divider />
+            <div className="flex flex-col gap-2">
+              <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Floor</span>
+              <div className="flex items-center gap-3">
+                <input
+                  type="number" min={1} max={filters.maxFloor} value={filters.minFloor}
+                  onChange={(e) => set("minFloor", Math.max(1, parseInt(e.target.value) || 1))}
+                  className="w-20 bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm text-center focus:outline-none focus:ring-1 focus:ring-emerald-500/40"
+                />
+                <span className="text-white/25 text-sm">—</span>
+                <input
+                  type="number" min={filters.minFloor}
+                  value={filters.maxFloor >= 999 ? "" : filters.maxFloor}
+                  placeholder="any"
+                  onChange={(e) => {
+                    const v = parseInt(e.target.value);
+                    set("maxFloor", isNaN(v) ? 999 : Math.max(filters.minFloor, v));
+                  }}
+                  className="w-20 bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm text-center placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-emerald-500/40"
+                />
+              </div>
+            </div>
 
-      {/* Lease remaining */}
-      <div className="flex flex-col gap-1.5">
-        <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Lease left</span>
-        <div className="flex gap-1">
-          {LEASE_OPTIONS.map((y) => (
-            <button
-              key={y}
-              onClick={() => set("minLeaseYears", y)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                filters.minLeaseYears === y
-                  ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/35 shadow-sm"
-                  : "text-white/45 border border-white/10 hover:border-white/20 hover:text-white/70 hover:bg-white/5"
-              }`}
-            >
-              {y === 0 ? "Any" : `≥${y}yr`}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
+            <div className="flex flex-col gap-2">
+              <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Period</span>
+              <div className="flex gap-2 flex-wrap">
+                {MONTH_OPTIONS.map((m) => (
+                  <MobileChip key={m} label={m < 12 ? `${m}mo` : `${m / 12}yr`} active={filters.months === m} onClick={() => set("months", m)} />
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Lease left</span>
+              <div className="flex gap-2 flex-wrap">
+                {LEASE_OPTIONS.map((y) => (
+                  <MobileChip key={y} label={y === 0 ? "Any" : `≥${y}yr`} active={filters.minLeaseYears === y} onClick={() => set("minLeaseYears", y)} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 }
