@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { transactions } from "@/lib/schema";
 import { and, eq, gte, lte, isNotNull, sql, isNull, or } from "drizzle-orm";
 import { STATIONS } from "@/lib/stations";
+import { SQM_TO_SQFT } from "@/lib/psf";
 
 // Map each station code → all codes at the same physical location
 const siblings = new Map<string, string[]>();
@@ -33,6 +34,7 @@ export async function GET(req: NextRequest) {
       .select({
         stationCode: transactions.stationCode,
         avgPrice: sql<number>`AVG(${transactions.resalePrice})`,
+        avgPsf: sql<number | null>`AVG(${transactions.resalePrice} / (${transactions.floorAreaSqm} * ${SQM_TO_SQFT}))`,
         count: sql<number>`COUNT(*)`,
       })
       .from(transactions)
@@ -52,13 +54,16 @@ export async function GET(req: NextRequest) {
       .groupBy(transactions.stationCode)
       .having(sql`COUNT(*) >= 3`);
 
-    const result: Record<string, number> = {};
+    const result: Record<string, { avgPrice: number; avgPsf: number | null }> = {};
     for (const r of rows) {
       if (!r.stationCode) continue;
-      const price = Math.round(r.avgPrice);
-      result[r.stationCode] = price;
+      const entry = {
+        avgPrice: Math.round(r.avgPrice),
+        avgPsf: r.avgPsf != null ? Math.round(r.avgPsf) : null,
+      };
+      result[r.stationCode] = entry;
       for (const sib of siblings.get(r.stationCode) ?? []) {
-        result[sib] = price;
+        result[sib] = entry;
       }
     }
 

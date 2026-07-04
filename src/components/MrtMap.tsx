@@ -8,7 +8,7 @@ import {
 import { stopsFrom, STATION_GROUPS, type StationCode } from "@/lib/stations";
 
 interface Props {
-  prices: Record<string, number>;
+  prices: Record<string, { avgPrice: number; avgPsf: number | null }>;
   onStationClick?: (code: string) => void;
 }
 
@@ -65,6 +65,7 @@ export default function MrtMap({ prices, onStationClick }: Props) {
   const [commuteOrigin, setCommuteOrigin] = useState<string | null>(null);
   const [commuteMaxStops, setCommuteMaxStops] = useState(5);
   const [mobileCommuteOpen, setMobileCommuteOpen] = useState(false);
+  const [priceMode, setPriceMode] = useState<"total" | "psf">("total");
 
   const { reachable, originCodesSet } = useMemo(() => {
     if (!commuteOrigin)
@@ -129,7 +130,11 @@ export default function MrtMap({ prices, onStationClick }: Props) {
       .querySelectorAll<HTMLElement>("[data-station-code]")
       .forEach((li) => {
         const code = li.dataset.stationCode;
-        if (!code || prices[code] == null) return;
+        if (!code) return;
+        const entry = prices[code];
+        if (!entry) return;
+        const value = priceMode === "psf" ? entry.avgPsf : entry.avgPrice;
+        if (value == null) return;
 
         const anchor = li.querySelector<HTMLElement>(".station-nr") ?? li;
         const { x, y } = offsetFrom(anchor, mapEl);
@@ -150,15 +155,16 @@ export default function MrtMap({ prices, onStationClick }: Props) {
         const label = document.createElement("span");
         label.className = "price-label";
         label.dataset.stationCode = code;
-        const p = prices[code];
-        label.textContent = p >= 1_000_000
-          ? `$${(p / 1_000_000).toFixed(1)}M`
-          : `$${Math.round(p / 1000)}k`;
+        label.textContent = priceMode === "psf"
+          ? `$${value.toLocaleString("en-SG")} psf`
+          : value >= 1_000_000
+            ? `$${(value / 1_000_000).toFixed(1)}M`
+            : `$${Math.round(value / 1000)}k`;
         label.style.left = `${cx + dx}px`;
         label.style.top = `${labelTop + dy}px`;
         overlay!.appendChild(label);
       });
-  }, [prices, htmlLoaded]);
+  }, [prices, htmlLoaded, priceMode]);
 
   // Runs after prices effect (defined after, prices in deps) so new price labels get classes too
   useEffect(() => {
@@ -198,6 +204,33 @@ export default function MrtMap({ prices, onStationClick }: Props) {
           Loading map…
         </div>
       )}
+
+      {/* Price mode toggle */}
+      <div
+        className="absolute top-4 right-4 z-50 glass backdrop-blur-md rounded-xl p-1 flex items-center gap-0.5"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={() => setPriceMode("total")}
+          className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            priceMode === "total"
+              ? "bg-emerald-500/20 text-emerald-300"
+              : "text-white/50 hover:text-white/80"
+          }`}
+        >
+          Total
+        </button>
+        <button
+          onClick={() => setPriceMode("psf")}
+          className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            priceMode === "psf"
+              ? "bg-emerald-500/20 text-emerald-300"
+              : "text-white/50 hover:text-white/80"
+          }`}
+        >
+          PSF
+        </button>
+      </div>
 
       {/* Commute distance panel */}
       <div

@@ -39,6 +39,7 @@ export async function GET(req: NextRequest) {
         storeyMin:      transactions.storeyMin,
         storeyMax:      transactions.storeyMax,
         resalePrice:    transactions.resalePrice,
+        floorAreaSqm:   transactions.floorAreaSqm,
         walkingMinutes: transactions.walkingMinutes,
         month:          transactions.month,
       })

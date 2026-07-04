@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import type { Filters } from "./FilterBar";
+import { toPsf } from "@/lib/psf";
 
 interface Listing {
   block: string;
@@ -8,6 +9,7 @@ interface Listing {
   storeyMin: number;
   storeyMax: number;
   resalePrice: number;
+  floorAreaSqm: number | null;
   walkingMinutes: number | null;
   month: string;
 }
@@ -42,6 +44,11 @@ function fmtPrice(n: number) {
 function fmtPriceCompact(n: number) {
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
   return `$${Math.round(n / 1000)}k`;
+}
+
+function fmtPsf(psf: number | null) {
+  if (psf == null) return null;
+  return `$${Math.round(psf).toLocaleString("en-SG")} psf`;
 }
 
 function fmtMonth(m: string) {
@@ -247,6 +254,11 @@ function ListingsView({
             </div>
             <div className="text-right shrink-0 pl-1">
               <div className="text-emerald-300 font-semibold text-sm tabular-nums">{fmtPriceCompact(l.resalePrice)}</div>
+              {fmtPsf(toPsf(l.resalePrice, l.floorAreaSqm)) && (
+                <div className="text-white/30 text-[10px] tabular-nums">
+                  {fmtPsf(toPsf(l.resalePrice, l.floorAreaSqm))}
+                </div>
+              )}
               <div className="text-white/20 text-[10px] mt-0.5 group-hover:text-white/40 transition-colors whitespace-nowrap">
                 View map →
               </div>
@@ -301,6 +313,10 @@ function DetailView({
       <div className="px-5 py-4 space-y-3 border-t border-white/[0.07]">
         <div className="grid grid-cols-2 gap-2">
           <Stat label="Price" value={fmtPrice(listing.resalePrice)} highlight />
+          <Stat
+            label="Price psf"
+            value={fmtPsf(toPsf(listing.resalePrice, listing.floorAreaSqm)) ?? "—"}
+          />
           <Stat label="Walk to MRT" value={fmtWalk(listing.walkingMinutes)} />
           <Stat label="Floor" value={`${listing.storeyMin}–${listing.storeyMax}`} />
           <Stat label="Sale month" value={fmtMonth(listing.month)} />

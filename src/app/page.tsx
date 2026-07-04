@@ -101,7 +101,9 @@ const NAV_ITEMS = [
 export default function Home() {
   const [tab, setTab] = useState<Tab>("map");
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
-  const [prices, setPrices] = useState<Record<string, number>>({});
+  const [prices, setPrices] = useState<
+    Record<string, { avgPrice: number; avgPsf: number | null }>
+  >({});
   const [loading, setLoading] = useState(false);
   const [phase, setPhase] = useState<Phase>("landing");
   const [selectedStation, setSelectedStation] = useState<string | null>(null);
