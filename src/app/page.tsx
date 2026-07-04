@@ -239,7 +239,7 @@ export default function Home() {
                           setFilters((f) => ({ ...f, maxWalkMin: m }))
                         }
                       >
-                        ≤{m}m
+                        ≤{m} min
                       </PillButton>
                     ))}
                   </div>

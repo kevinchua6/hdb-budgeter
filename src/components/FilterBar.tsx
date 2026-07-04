@@ -77,7 +77,7 @@ export default function FilterBar({ filters, onChange }: Props) {
 
   const summary = [
     filters.flatType,
-    `≤${filters.maxWalkMin}m`,
+    `≤${filters.maxWalkMin} min`,
     filters.months < 12 ? `${filters.months}mo` : `${filters.months / 12}yr`,
     filters.minLeaseYears === 0 ? "any lease" : `≥${filters.minLeaseYears}yr`,
   ].join(" · ");
@@ -105,7 +105,7 @@ export default function FilterBar({ filters, onChange }: Props) {
           <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Walk from MRT</span>
           <div className="flex gap-1">
             {WALK_OPTIONS.map((m) => (
-              <Chip key={m} label={`≤${m}m`} active={filters.maxWalkMin === m} onClick={() => set("maxWalkMin", m)} />
+              <Chip key={m} label={`≤${m} min`} active={filters.maxWalkMin === m} onClick={() => set("maxWalkMin", m)} />
             ))}
           </div>
         </div>
@@ -211,7 +211,7 @@ export default function FilterBar({ filters, onChange }: Props) {
               <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Walk from MRT</span>
               <div className="flex gap-2">
                 {WALK_OPTIONS.map((m) => (
-                  <MobileChip key={m} label={`≤${m}m`} active={filters.maxWalkMin === m} onClick={() => set("maxWalkMin", m)} />
+                  <MobileChip key={m} label={`≤${m} min`} active={filters.maxWalkMin === m} onClick={() => set("maxWalkMin", m)} />
                 ))}
               </div>
             </div>
