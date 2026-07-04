@@ -35,8 +35,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts",
-    "/home/kevin/.cache/hdb-budgeter-next/types/**/*.ts",
-    "/home/kevin/.cache/hdb-budgeter-next/dev/types/**/*.ts",
     ".next-wsl/types/**/*.ts",
     ".next-wsl/dev/types/**/*.ts"
   ],
