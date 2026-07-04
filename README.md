@@ -7,7 +7,7 @@ Find out which parts of Singapore you can actually afford a resale HDB flat in.
 Instead of manually checking every MRT station on PropertyGuru, this app shows average
 resale prices near each MRT station on a map, filterable by flat type, floor level,
 lease remaining, walking distance from the station, and how recent the transactions are.
-Click a station to see the actual matching transactions. There's also a calculator for
+Click a station to see the actual matching transactions. There's also a calculator (WIP) for
 the cash/CPF breakdown (BSD, downpayment, grants) once you've found a price point you like.
 
 ## Data sources
