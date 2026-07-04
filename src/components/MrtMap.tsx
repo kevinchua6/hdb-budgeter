@@ -64,6 +64,7 @@ export default function MrtMap({ prices, onStationClick }: Props) {
   const didMove = useRef(false);
   const [commuteOrigin, setCommuteOrigin] = useState<string | null>(null);
   const [commuteMaxStops, setCommuteMaxStops] = useState(5);
+  const [mobileCommuteOpen, setMobileCommuteOpen] = useState(false);
 
   const { reachable, originCodesSet } = useMemo(() => {
     if (!commuteOrigin)
@@ -243,6 +244,53 @@ export default function MrtMap({ prices, onStationClick }: Props) {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Mobile: commute FAB + panel */}
+      <div className="sm:hidden absolute bottom-4 right-4 z-50 flex flex-col items-end gap-2" onClick={(e) => e.stopPropagation()}>
+        {mobileCommuteOpen && (
+          <div className="glass backdrop-blur-md rounded-xl p-3 flex flex-col gap-2 w-48">
+            <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Commute from</span>
+            <select
+              value={commuteOrigin ?? ""}
+              onChange={(e) => setCommuteOrigin(e.target.value || null)}
+              className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40 cursor-pointer"
+            >
+              <option value="" className="bg-[#1a1b2e]">Any station</option>
+              {STATION_GROUPS.map((g) => (
+                <option key={g.name} value={g.name} className="bg-[#1a1b2e]">{g.name}</option>
+              ))}
+            </select>
+            {commuteOrigin && (
+              <div className="flex items-center gap-1">
+                <span className="text-white/40 text-[10px] shrink-0">Within</span>
+                <button
+                  onClick={() => setCommuteMaxStops((s) => Math.max(1, s - 1))}
+                  className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 border border-white/10 text-white/60 text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
+                >−</button>
+                <span className="text-white text-sm font-semibold w-6 text-center tabular-nums">{commuteMaxStops}</span>
+                <button
+                  onClick={() => setCommuteMaxStops((s) => Math.min(30, s + 1))}
+                  className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 border border-white/10 text-white/60 text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
+                >+</button>
+                <span className="text-white/40 text-[10px] shrink-0">stops</span>
+              </div>
+            )}
+          </div>
+        )}
+        <button
+          onClick={() => setMobileCommuteOpen((o) => !o)}
+          className={`h-10 px-3 rounded-xl border text-xs font-medium transition-all active:scale-95 flex items-center gap-1.5 ${
+            commuteOrigin
+              ? "bg-emerald-500/15 border-emerald-500/35 text-emerald-300"
+              : "bg-white/10 border-white/15 text-white/70"
+          }`}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+          </svg>
+          {commuteOrigin ? commuteOrigin : "Commute"}
+        </button>
       </div>
 
       <TransformWrapper

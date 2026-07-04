@@ -2,7 +2,6 @@
 import { useState, useCallback } from "react";
 import FilterBar, { type Filters } from "@/components/FilterBar";
 import MrtMap from "@/components/MrtMap";
-import Calculator from "@/components/Calculator";
 import StationModal from "@/components/StationModal";
 
 const DEFAULT_FILTERS: Filters = {
@@ -139,14 +138,6 @@ export default function Home() {
     }, 280);
   };
 
-  const goToLanding = () => {
-    setMapAnim("enter");
-    setTimeout(() => {
-      setPhase("landing");
-      setLandingAnim("in");
-    }, 200);
-  };
-
   const handleFiltersChange = (f: Filters) => {
     setFilters(f);
     if (phase === "map") fetchPrices(f);
@@ -180,7 +171,17 @@ export default function Home() {
       {/* Content area */}
       <div className="flex-1 flex flex-col min-w-0 min-h-0 pb-14 sm:pb-0">
         {tab === "calc" ? (
-          <Calculator />
+          <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center px-4">
+            <span className="text-white/25 text-[10px] font-semibold uppercase tracking-[0.2em] border border-white/15 rounded-full px-3 py-1">
+              Work in progress
+            </span>
+            <h2 className="text-white/60 text-lg font-semibold">
+              Calculator isn&apos;t ready yet
+            </h2>
+            <p className="text-white/35 text-sm max-w-xs">
+              We&apos;re still building this out. Check back soon.
+            </p>
+          </div>
         ) : phase === "landing" ? (
           <div
             className={`flex-1 flex flex-col justify-center py-10 px-4 overflow-x-hidden transition-all duration-[280ms] ease-in-out ${
@@ -308,20 +309,12 @@ export default function Home() {
                   Singapore resale prices
                 </span>
               </div>
-              <div className="ml-auto flex items-center gap-3 shrink-0">
-                {loading && (
-                  <div className="flex items-center gap-1.5 text-white/30 text-xs">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60 animate-pulse" />
-                    <span className="hidden sm:inline">Updating…</span>
-                  </div>
-                )}
-                <button
-                  onClick={goToLanding}
-                  className="text-white/35 hover:text-white/65 text-xs transition-colors py-1 px-2 -mr-1 rounded-lg hover:bg-white/5"
-                >
-                  ← Edit
-                </button>
-              </div>
+              {loading && (
+                <div className="ml-auto flex items-center gap-1.5 text-white/30 text-xs shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60 animate-pulse" />
+                  <span className="hidden sm:inline">Updating…</span>
+                </div>
+              )}
             </header>
 
             <FilterBar filters={filters} onChange={handleFiltersChange} />
