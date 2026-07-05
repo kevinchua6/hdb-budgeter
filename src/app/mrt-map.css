@@ -1952,7 +1952,15 @@ ul.stations.left-spot.ew-names.ews21-15 li:nth-child(5):before {
   margin-left: 167px;
 }
 ul.stations.left-spot.ew-names.ews21-15 span.tiong-bahru {
-  margin-left: -114px;
+  /* A large negative margin on an inline element can make the anchor's
+   * content box collapse to zero width in Safari, which then fails to
+   * paint the text at all. Take it out of flow instead so it always
+   * renders regardless of the anchor's computed width. */
+  position: absolute;
+  left: -114px;
+  top: 0;
+  margin-left: 0;
+  white-space: nowrap;
 }
 ul.stations.left-spot.ew-names.ews21-15 li:nth-child(6) {
   margin-left: 215px;
