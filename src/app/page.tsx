@@ -2,6 +2,7 @@
 import { useState, useCallback } from "react";
 import FilterBar, { type Filters } from "@/components/FilterBar";
 import MrtMap from "@/components/MrtMap";
+import LineView from "@/components/LineView";
 import StationModal from "@/components/StationModal";
 
 const DEFAULT_FILTERS: Filters = {
@@ -26,7 +27,7 @@ const MONTH_OPTIONS = [6, 12, 24, 36, 60];
 const LEASE_OPTIONS = [0, 50, 60, 70, 80];
 
 type Phase = "landing" | "map";
-type Tab = "map" | "calc";
+type Tab = "map" | "lines" | "calc";
 
 function PillButton({
   active,
@@ -69,6 +70,26 @@ function MapIcon() {
   );
 }
 
+function LinesIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <circle cx="6" cy="12" r="2" />
+      <circle cx="12" cy="12" r="2" />
+      <circle cx="18" cy="12" r="2" />
+    </svg>
+  );
+}
+
 function CalcIcon() {
   return (
     <svg
@@ -95,6 +116,7 @@ function CalcIcon() {
 
 const NAV_ITEMS = [
   { id: "map" as Tab, label: "Map", fullLabel: "MRT Prices", Icon: MapIcon },
+  { id: "lines" as Tab, label: "Lines", fullLabel: "By Line", Icon: LinesIcon },
   { id: "calc" as Tab, label: "Calc", fullLabel: "Calculator", Icon: CalcIcon },
 ];
 
@@ -142,7 +164,16 @@ export default function Home() {
 
   const handleFiltersChange = (f: Filters) => {
     setFilters(f);
-    if (phase === "map") fetchPrices(f);
+    if (phase === "map" || tab === "lines") fetchPrices(f);
+  };
+
+  // The Lines view needs prices too; fetch them on first visit (the map's
+  // landing flow may not have run yet).
+  const handleTabChange = (id: Tab) => {
+    setTab(id);
+    if (id === "lines" && Object.keys(prices).length === 0 && !loading) {
+      fetchPrices(filters);
+    }
   };
 
   return (
@@ -154,7 +185,7 @@ export default function Home() {
           {NAV_ITEMS.map(({ id, label, Icon }) => (
             <button
               key={id}
-              onClick={() => setTab(id)}
+              onClick={() => handleTabChange(id)}
               className={`flex flex-col items-center gap-1.5 py-3 rounded-xl w-full transition-all ${
                 tab === id
                   ? "bg-emerald-500/15 text-emerald-300"
@@ -172,7 +203,34 @@ export default function Home() {
 
       {/* Content area */}
       <div className="flex-1 flex flex-col min-w-0 min-h-0 pb-14 sm:pb-0">
-        {tab === "calc" ? (
+        {tab === "lines" ? (
+          <main className="flex-1 flex flex-col min-h-0">
+            <header className="flex items-center gap-3 px-4 py-2.5 border-b border-white/10 shrink-0">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="shrink-0 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.4)]" />
+                <h1 className="text-white font-semibold text-sm tracking-wide truncate">
+                  Prices by line
+                </h1>
+                <span className="text-white/20 hidden sm:inline">·</span>
+                <span className="text-white/35 text-xs hidden sm:inline truncate">
+                  {filters.flatType} · ≤{filters.maxWalkMin} min walk
+                </span>
+              </div>
+              {loading && (
+                <div className="ml-auto flex items-center gap-1.5 text-white/30 text-xs shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60 animate-pulse" />
+                  <span className="hidden sm:inline">Updating…</span>
+                </div>
+              )}
+            </header>
+
+            <FilterBar filters={filters} onChange={handleFiltersChange} />
+
+            <div className="flex-1 min-h-0">
+              <LineView prices={prices} onStationClick={setSelectedStation} />
+            </div>
+          </main>
+        ) : tab === "calc" ? (
           <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center px-4">
             <span className="text-white/25 text-[10px] font-semibold uppercase tracking-[0.2em] border border-white/15 rounded-full px-3 py-1">
               Work in progress
@@ -342,7 +400,7 @@ export default function Home() {
         {NAV_ITEMS.map(({ id, fullLabel, Icon }) => (
           <button
             key={id}
-            onClick={() => setTab(id)}
+            onClick={() => handleTabChange(id)}
             className={`flex-1 flex flex-col items-center justify-center gap-1 transition-all ${
               tab === id ? "text-emerald-300" : "text-white/30"
             }`}

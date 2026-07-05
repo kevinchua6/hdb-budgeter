@@ -49,6 +49,15 @@ body {
     0 18px 40px -22px rgba(0, 0, 0, 0.7);
 }
 
+/* Hide scrollbar while keeping scroll (used by the horizontal line selector) */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Slightly lighter inset surface for nested rows/fields */
 .glass-inset {
   background: rgba(255, 255, 255, 0.035);

@@ -184,6 +184,37 @@ export const STATIONS = [
 
 export type StationCode = (typeof STATIONS)[number]["code"];
 
+export const STATION_NAME: Record<string, string> = Object.fromEntries(
+  STATIONS.map((s) => [s.code, s.name]),
+);
+
+// --- MRT lines (ordered), with display metadata ---
+
+export interface MrtLine {
+  id: string;
+  name: string;
+  shortName: string;
+  color: string;
+  codes: readonly string[];
+}
+
+export const LINES: readonly MrtLine[] = [
+  { id: "EW", name: "East-West Line", shortName: "EW", color: "#009645",
+    codes: ["EW1","EW2","EW3","EW4","EW5","EW6","EW7","EW8","EW9","EW10","EW11","EW12","EW13","EW14","EW15","EW16","EW17","EW18","EW19","EW20","EW21","EW22","EW23","EW24","EW25","EW26","EW27","EW28","EW29","EW30","EW31","EW32","EW33"] },
+  { id: "CG", name: "Changi Airport Branch", shortName: "CG", color: "#009645",
+    codes: ["EW4","CG1","CG2"] },
+  { id: "NS", name: "North-South Line", shortName: "NS", color: "#d42e12",
+    codes: ["NS1","NS2","NS3","NS4","NS5","NS7","NS8","NS9","NS10","NS11","NS12","NS13","NS14","NS15","NS16","NS17","NS18","NS19","NS20","NS21","NS22","NS23","NS24","NS25","NS26","NS27","NS28"] },
+  { id: "NE", name: "North-East Line", shortName: "NE", color: "#9900aa",
+    codes: ["NE1","NE3","NE4","NE5","NE6","NE7","NE8","NE9","NE10","NE11","NE12","NE13","NE14","NE15","NE16","NE17"] },
+  { id: "CC", name: "Circle Line", shortName: "CC", color: "#FA9E0D",
+    codes: ["CC1","CC2","CC3","CC4","CC5","CC6","CC7","CC8","CC9","CC10","CC11","CC12","CC13","CC14","CC15","CC16","CC17","CC19","CC20","CC21","CC22","CC23","CC24","CC25","CC26","CC27","CC28","CC29"] },
+  { id: "DT", name: "Downtown Line", shortName: "DT", color: "#005ec4",
+    codes: ["DT1","DT2","DT3","DT5","DT6","DT7","DT8","DT9","DT10","DT11","DT12","DT13","DT14","DT15","DT16","DT17","DT18","DT19","DT20","DT21","DT22","DT23","DT24","DT25","DT26","DT27","DT28","DT29","DT30","DT31","DT32","DT33","DT34","DT35"] },
+  { id: "TE", name: "Thomson-East Coast Line", shortName: "TE", color: "#9D5B25",
+    codes: ["TE1","TE2","TE3","TE4","TE5","TE6","TE7","TE8","TE9","TE11","TE12","TE13","TE14","TE15","TE16","TE17","TE18","TE19","TE20","TE22","TE23","TE24","TE25","TE26","TE27","TE28","TE29"] },
+];
+
 function haversineMeters(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371000;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -198,17 +229,9 @@ function haversineMeters(lat1: number, lng1: number, lat2: number, lng2: number)
 
 // --- Commute graph ---
 
-const MRT_LINES: readonly string[][] = [
-  ["EW1","EW2","EW3","EW4","EW5","EW6","EW7","EW8","EW9","EW10","EW11","EW12","EW13","EW14","EW15","EW16","EW17","EW18","EW19","EW20","EW21","EW22","EW23","EW24","EW25","EW26","EW27","EW28","EW29","EW30","EW31","EW32","EW33"],
-  ["EW4","CG1","CG2"],
-  ["NS1","NS2","NS3","NS4","NS5","NS7","NS8","NS9","NS10","NS11","NS12","NS13","NS14","NS15","NS16","NS17","NS18","NS19","NS20","NS21","NS22","NS23","NS24","NS25","NS26","NS27","NS28"],
-  ["NE1","NE3","NE4","NE5","NE6","NE7","NE8","NE9","NE10","NE11","NE12","NE13","NE14","NE15","NE16","NE17"],
-  ["CC1","CC2","CC3","CC4","CC5","CC6","CC7","CC8","CC9","CC10","CC11","CC12","CC13","CC14","CC15","CC16","CC17","CC19","CC20","CC21","CC22","CC23","CC24","CC25","CC26","CC27","CC28","CC29"],
-  ["DT1","DT2","DT3","DT5","DT6","DT7","DT8","DT9","DT10","DT11","DT12","DT13","DT14","DT15","DT16","DT17","DT18","DT19","DT20","DT21","DT22","DT23","DT24","DT25","DT26","DT27","DT28","DT29","DT30","DT31","DT32","DT33","DT34","DT35"],
-  ["TE1","TE2","TE3","TE4","TE5","TE6","TE7","TE8","TE9","TE11","TE12","TE13","TE14","TE15","TE16","TE17","TE18","TE19","TE20","TE22","TE23","TE24","TE25","TE26","TE27","TE28","TE29"],
-];
+const MRT_LINES: readonly (readonly string[])[] = LINES.map((l) => l.codes);
 
-const CC_LINE_IDX = 4; // Circle Line wraps around
+const CC_LINE_IDX = LINES.findIndex((l) => l.id === "CC"); // Circle Line wraps around
 
 type GraphEdge = { neighbor: string; weight: 0 | 1 };
 let _graph: Map<string, GraphEdge[]> | null = null;
