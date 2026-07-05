@@ -1,21 +1,52 @@
 "use client";
 import { useRef, useState } from "react";
-import { LINES, STATION_NAME } from "@/lib/stations";
+import { LINES, STATION_NAME, STATION_GROUPS } from "@/lib/stations";
 
 interface Props {
   prices: Record<string, { avgPrice: number; avgPsf: number | null }>;
   onStationClick?: (code: string) => void;
 }
 
-const COL_W = 116; // px width per station column
-const CIRCLE = 44; // px circle diameter
-const STACK_PAD = 76; // px height of name area above / price area below the circle
-const LINE_TOP = STACK_PAD + CIRCLE / 2; // vertical center of the circles
+// Station codes that serve more than one line (shared name) are interchanges.
+const INTERCHANGE_CODES = new Set<string>(
+  STATION_GROUPS.filter((g) => g.codes.length > 1).flatMap((g) => g.codes),
+);
+
+const COL_W = 96; // px width per station column
+const BADGE_H = 34; // px height of the code badge
+const NAME_ZONE = 120; // px zone above the line that holds the angled station name
+const NAME_LIFT = 6; // px the name's bottom-left pivot sits above the badge — small, so
+// the label looks rooted at the station and rises up-and-away from it
+const PRICE_ZONE = 32; // px zone below the line that holds the price
+const LINE_TOP = NAME_ZONE + BADGE_H / 2; // vertical center of badges
+const NAME_ROT = -35; // degrees — names ascend to the right, like the official map
 
 function fmtValue(value: number, mode: "total" | "psf") {
-  if (mode === "psf") return `$${Math.round(value).toLocaleString("en-SG")} psf`;
+  if (mode === "psf")
+    return `$${Math.round(value).toLocaleString("en-SG")} psf`;
   if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
   return `$${Math.round(value / 1000)}k`;
+}
+
+function TrainIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="4" y="3" width="16" height="14" rx="3" />
+      <path d="M4 11h16" />
+      <path d="M8 17l-2 4M16 17l2 4" />
+      <circle cx="8.5" cy="14" r="0.5" fill="currentColor" />
+      <circle cx="15.5" cy="14" r="0.5" fill="currentColor" />
+    </svg>
+  );
 }
 
 export default function LineView({ prices, onStationClick }: Props) {
@@ -45,7 +76,14 @@ export default function LineView({ prices, onStationClick }: Props) {
                     ? "text-white border-white/20"
                     : "text-white/45 border-white/[0.08] hover:text-white/75 hover:border-white/15"
                 }`}
-                style={active ? { background: `${l.color}26`, borderColor: `${l.color}80` } : undefined}
+                style={
+                  active
+                    ? {
+                        background: `${l.color}26`,
+                        borderColor: `${l.color}80`,
+                      }
+                    : undefined
+                }
               >
                 <span
                   className="w-2 h-2 rounded-full shrink-0"
@@ -82,15 +120,27 @@ export default function LineView({ prices, onStationClick }: Props) {
         </div>
       </div>
 
-      {/* Line title */}
-      <div className="flex items-center gap-2 px-4 py-2 shrink-0">
+      {/* Line title — official-style pill + code box */}
+      <div className="flex items-center gap-2.5 px-4 py-3 shrink-0">
+        <div
+          className="flex items-center gap-2 rounded-full pl-3 pr-4 py-1.5 shadow-sm"
+          style={{ background: line.color }}
+        >
+          <span className="text-white/95">
+            <TrainIcon />
+          </span>
+          <span className="text-white text-base font-semibold tracking-wide">
+            {line.name}
+          </span>
+        </div>
         <span
-          className="w-2.5 h-2.5 rounded-full shrink-0"
-          style={{ background: line.color, boxShadow: `0 0 8px 2px ${line.color}66` }}
-        />
-        <h2 className="text-white/80 text-sm font-semibold truncate">{line.name}</h2>
-        <span className="text-white/25 text-xs shrink-0 hidden sm:inline">
-          · {line.codes.length} stations · scroll →
+          className="rounded-md px-2.5 py-1.5 text-base font-bold text-white leading-none"
+          style={{ background: line.color }}
+        >
+          {line.shortName}
+        </span>
+        <span className="text-white/25 text-xs shrink-0 hidden sm:inline ml-auto">
+          {line.codes.length} stations · scroll →
         </span>
       </div>
 
@@ -99,15 +149,15 @@ export default function LineView({ prices, onStationClick }: Props) {
         ref={scrollRef}
         className="flex-1 overflow-x-auto overflow-y-hidden flex items-center"
       >
-        <div className="relative flex items-stretch min-w-max px-14">
+        <div className="relative flex items-stretch min-w-max px-16">
           {/* Connecting line */}
           <div
             className="absolute rounded-full"
             style={{
               top: LINE_TOP,
-              left: COL_W / 2 + 56,
-              right: COL_W / 2 + 56,
-              height: 5,
+              left: COL_W / 2 + 64,
+              right: COL_W / 2 + 64,
+              height: 8,
               transform: "translateY(-50%)",
               background: line.color,
             }}
@@ -117,6 +167,36 @@ export default function LineView({ prices, onStationClick }: Props) {
             const entry = prices[code];
             const value = priceMode === "psf" ? entry?.avgPsf : entry?.avgPrice;
             const hasValue = value != null;
+            const isInterchange = INTERCHANGE_CODES.has(code);
+
+            const nameEl = (
+              <span
+                // Rooted at its bottom-left corner (transformOrigin below), just above
+                // the badge, so the label looks planted at the station and rises up and
+                // to the right — like the official map — instead of hanging down from a
+                // pivot at its top.
+                className={`absolute left-[2px] whitespace-nowrap text-sm font-medium leading-none transition-colors ${
+                  hasValue
+                    ? "text-white/75 group-hover:text-white"
+                    : "text-white/30 group-hover:text-white/50"
+                }`}
+                style={{
+                  bottom: NAME_LIFT,
+                  transform: `rotate(${NAME_ROT}deg)`,
+                  transformOrigin: "0% 100%",
+                }}
+              >
+                {STATION_NAME[code] ?? code}
+              </span>
+            );
+
+            const priceEl = hasValue ? (
+              <span className="text-sm font-semibold tabular-nums text-emerald-300">
+                {fmtValue(value, priceMode)}
+              </span>
+            ) : (
+              <span className="text-white/20 text-sm">—</span>
+            );
 
             return (
               <button
@@ -125,50 +205,39 @@ export default function LineView({ prices, onStationClick }: Props) {
                 style={{ width: COL_W }}
                 className="relative shrink-0 flex flex-col items-center group focus:outline-none"
               >
-                {/* Name */}
+                {/* Name, always above the line — the wrapper is a zero-width
+                    anchor centered on the column, so the name's pivot point
+                    (bottom-right corner) sits directly above the badge. */}
                 <div
-                  className="flex items-end justify-center px-1 pb-3"
-                  style={{ height: STACK_PAD }}
+                  className="flex justify-center w-full"
+                  style={{ height: NAME_ZONE }}
                 >
-                  <span
-                    className={`text-[11px] font-medium leading-tight text-center transition-colors ${
-                      hasValue
-                        ? "text-white/70 group-hover:text-white"
-                        : "text-white/30 group-hover:text-white/50"
-                    }`}
-                  >
-                    {STATION_NAME[code] ?? code}
-                  </span>
+                  <div className="relative h-full w-0">{nameEl}</div>
                 </div>
 
-                {/* Circle */}
+                {/* Code badge on the line */}
                 <span
-                  className={`relative z-10 grid place-items-center rounded-full text-[10px] font-semibold transition-transform group-hover:scale-110 group-active:scale-95 ${
-                    hasValue ? "text-white" : "text-white/40"
+                  className={`relative z-10 grid place-items-center rounded-[6px] px-2 font-bold text-sm leading-none transition-transform group-hover:scale-110 group-active:scale-95 ${
+                    hasValue ? "text-white" : "text-white/50"
                   }`}
                   style={{
-                    width: CIRCLE,
-                    height: CIRCLE,
-                    background: "#171827",
-                    border: `3px solid ${hasValue ? line.color : "#4b5563"}`,
-                    boxShadow: `0 0 0 3px #171827`,
+                    height: BADGE_H,
+                    minWidth: 46,
+                    background: hasValue ? line.color : "#4b5563",
+                    boxShadow: isInterchange
+                      ? "0 0 0 3px #171827, 0 0 0 6px rgba(255,255,255,0.92)"
+                      : "0 0 0 4px #171827",
                   }}
                 >
                   {code}
                 </span>
 
-                {/* Price */}
+                {/* Price, always below the line */}
                 <div
-                  className="flex flex-col items-center gap-0.5 pt-3"
-                  style={{ height: STACK_PAD }}
+                  className="flex items-start justify-center w-full pt-1"
+                  style={{ height: PRICE_ZONE }}
                 >
-                  {hasValue ? (
-                    <span className="text-xs font-semibold tabular-nums text-white/85">
-                      {fmtValue(value, priceMode)}
-                    </span>
-                  ) : (
-                    <span className="text-white/20 text-xs">—</span>
-                  )}
+                  {priceEl}
                 </div>
               </button>
             );
