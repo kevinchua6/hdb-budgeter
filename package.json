@@ -17,6 +17,7 @@
     "setup": "npm run setup:map && npm run setup:download && npm run setup:seed"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "better-sqlite3": "^12.11.1",
     "drizzle-orm": "^0.45.2",
     "next": "16.2.9",
