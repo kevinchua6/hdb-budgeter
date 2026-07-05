@@ -63,6 +63,11 @@ body {
   width: 100%;
   transform: scale(1);
   transform-origin: left;
+  /* Safari mobile auto-inflates text size in wide/zoomable containers, which
+   * breaks the pixel-tuned negative-margin layout below and makes station
+   * names overflow behind neighboring elements. Pin it to the declared size. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 .small {
   font-size: 80%;
