@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { LINES, STATION_NAME } from "@/lib/stations";
 
 interface Props {
@@ -24,23 +24,6 @@ export default function LineView({ prices, onStationClick }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const line = LINES.find((l) => l.id === lineId) ?? LINES[0];
-
-  // Cheapest/priciest station on the line (for the current price mode), so we
-  // can subtly flag them. Skips stations with no data.
-  const { minCode, maxCode } = useMemo(() => {
-    let minCode: string | null = null;
-    let maxCode: string | null = null;
-    let minVal = Infinity;
-    let maxVal = -Infinity;
-    for (const code of line.codes) {
-      const entry = prices[code];
-      const v = priceMode === "psf" ? entry?.avgPsf : entry?.avgPrice;
-      if (v == null) continue;
-      if (v < minVal) { minVal = v; minCode = code; }
-      if (v > maxVal) { maxVal = v; maxCode = code; }
-    }
-    return { minCode, maxCode };
-  }, [line, prices, priceMode]);
 
   return (
     <div className="relative h-full w-full flex flex-col select-none">
@@ -134,8 +117,6 @@ export default function LineView({ prices, onStationClick }: Props) {
             const entry = prices[code];
             const value = priceMode === "psf" ? entry?.avgPsf : entry?.avgPrice;
             const hasValue = value != null;
-            const isMin = code === minCode;
-            const isMax = code === maxCode;
 
             return (
               <button
@@ -149,19 +130,27 @@ export default function LineView({ prices, onStationClick }: Props) {
                   className="flex items-end justify-center px-1 pb-3"
                   style={{ height: STACK_PAD }}
                 >
-                  <span className="text-white/70 text-[11px] font-medium leading-tight text-center group-hover:text-white transition-colors">
+                  <span
+                    className={`text-[11px] font-medium leading-tight text-center transition-colors ${
+                      hasValue
+                        ? "text-white/70 group-hover:text-white"
+                        : "text-white/30 group-hover:text-white/50"
+                    }`}
+                  >
                     {STATION_NAME[code] ?? code}
                   </span>
                 </div>
 
                 {/* Circle */}
                 <span
-                  className="relative z-10 grid place-items-center rounded-full text-[10px] font-semibold text-white transition-transform group-hover:scale-110 group-active:scale-95"
+                  className={`relative z-10 grid place-items-center rounded-full text-[10px] font-semibold transition-transform group-hover:scale-110 group-active:scale-95 ${
+                    hasValue ? "text-white" : "text-white/40"
+                  }`}
                   style={{
                     width: CIRCLE,
                     height: CIRCLE,
                     background: "#171827",
-                    border: `3px solid ${line.color}`,
+                    border: `3px solid ${hasValue ? line.color : "#4b5563"}`,
                     boxShadow: `0 0 0 3px #171827`,
                   }}
                 >
@@ -174,24 +163,9 @@ export default function LineView({ prices, onStationClick }: Props) {
                   style={{ height: STACK_PAD }}
                 >
                   {hasValue ? (
-                    <>
-                      <span
-                        className={`text-xs font-semibold tabular-nums ${
-                          isMin ? "text-emerald-300" : isMax ? "text-rose-300" : "text-white/85"
-                        }`}
-                      >
-                        {fmtValue(value, priceMode)}
-                      </span>
-                      {(isMin || isMax) && (
-                        <span
-                          className={`text-[9px] font-medium uppercase tracking-wider ${
-                            isMin ? "text-emerald-400/70" : "text-rose-400/70"
-                          }`}
-                        >
-                          {isMin ? "Lowest" : "Highest"}
-                        </span>
-                      )}
-                    </>
+                    <span className="text-xs font-semibold tabular-nums text-white/85">
+                      {fmtValue(value, priceMode)}
+                    </span>
                   ) : (
                     <span className="text-white/20 text-xs">—</span>
                   )}
