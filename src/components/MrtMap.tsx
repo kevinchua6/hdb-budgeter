@@ -139,17 +139,19 @@ export default function MrtMap({ prices, onStationClick }: Props) {
         const anchor = li.querySelector<HTMLElement>(".station-nr") ?? li;
         const { x, y } = offsetFrom(anchor, mapEl);
         const cx = x + anchor.offsetWidth / 2;
-        const cy = y + anchor.offsetHeight / 2;
 
-        // Position below the name span if it extends below the circle
-        const nameEl = li.querySelector<HTMLElement>("span:not(.station-nr)");
-        let labelTop = cy + 13;
-        if (nameEl) {
-          const nameOff = offsetFrom(nameEl, mapEl);
-          const nameBottom = nameOff.y + nameEl.offsetHeight;
-          const circleBottom = y + anchor.offsetHeight;
-          labelTop = Math.max(circleBottom, nameBottom) + 4;
-        }
+        // Clear the whole station label (number + name) before placing the
+        // price bubble below it. Many station names are plain text trailing
+        // the number span rather than their own element, so measure the
+        // enclosing <a> (or li) instead of hunting for a name span — and add
+        // a generous buffer since exact text metrics shift slightly across
+        // browsers/fonts, and we'd rather the bubble sit a bit low than land
+        // on top of and hide the name.
+        const textEl = li.querySelector<HTMLElement>("a") ?? li;
+        const textOff = offsetFrom(textEl, mapEl);
+        const textBottom = textOff.y + textEl.offsetHeight;
+        const circleBottom = y + anchor.offsetHeight;
+        const labelTop = Math.max(circleBottom, textBottom) + 8;
 
         const { dx = 0, dy = 0 } = LABEL_OFFSETS[code as StationCode] ?? {};
         const label = document.createElement("span");
