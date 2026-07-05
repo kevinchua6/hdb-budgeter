@@ -149,7 +149,18 @@ export default function MrtMap({ prices, onStationClick }: Props) {
         // on top of and hide the name.
         const textEl = li.querySelector<HTMLElement>("a") ?? li;
         const textOff = offsetFrom(textEl, mapEl);
-        const textBottom = textOff.y + textEl.offsetHeight;
+        let textBottom = textOff.y + textEl.offsetHeight;
+
+        // Some names (e.g. the EWL west branch and NSL top) sit below the
+        // circle as an absolutely-positioned ".get-down" span, so they don't
+        // count toward the anchor's offsetHeight above. Measure such a name
+        // directly so the price bubble clears it instead of landing on top.
+        const nameEl = li.querySelector<HTMLElement>(".get-down");
+        if (nameEl) {
+          const nameOff = offsetFrom(nameEl, mapEl);
+          textBottom = Math.max(textBottom, nameOff.y + nameEl.offsetHeight);
+        }
+
         const circleBottom = y + anchor.offsetHeight;
         const labelTop = Math.max(circleBottom, textBottom) + 8;
 
