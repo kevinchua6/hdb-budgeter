@@ -32,6 +32,9 @@ bun.lockb
 .DS_Store
 *.pem
 
+# raw data archives (extracted CSVs are committed)
+data/**/*.zip
+
 # debug
 npm-debug.log*
 yarn-debug.log*

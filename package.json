@@ -11,6 +11,7 @@
     "start": "node node_modules/next/dist/bin/next start",
     "lint": "eslint",
     "setup:map": "tsx scripts/process-map-html.ts",
+    "setup:volume": "tsx scripts/03-train-volume.ts",
     "setup:download": "tsx scripts/01-download.ts",
     "setup:seed": "tsx scripts/02-geocode-seed.ts",
     "setup:seed-only": "tsx scripts/02-geocode-seed.ts --seed-only",

@@ -32,3 +32,55 @@ body {
 #map-container {
   min-height: 100%;
 }
+
+/* Crowd heatmap dots injected by MrtMap component */
+.heat-anchor {
+  position: relative;
+}
+
+.heat-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+  pointer-events: none;
+  opacity: 0.85;
+  z-index: 5;
+  transition:
+    width 0.4s ease,
+    height 0.4s ease,
+    background-color 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+li[data-station-code]:hover .heat-dot {
+  opacity: 1;
+  outline: 2px solid rgba(255, 255, 255, 0.85);
+  outline-offset: 1px;
+}
+
+.heat-tooltip {
+  position: fixed;
+  z-index: 50;
+  pointer-events: none;
+  background: rgba(13, 13, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 6px 10px;
+  max-width: 220px;
+  font-size: 11px;
+  color: #c3c2b7;
+}
+
+.heat-tooltip .tt-vals {
+  color: #fff;
+  font-weight: 600;
+  font-size: 12px;
+  margin-top: 1px;
+}
+
+.heat-tooltip .tt-net {
+  color: #86b6ef;
+  margin-top: 1px;
+}
