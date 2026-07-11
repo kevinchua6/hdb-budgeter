@@ -270,7 +270,7 @@ export default function MrtMap({ prices, onStationClick }: Props) {
       label.style.left = `${cx + dx}px`;
       label.style.top = `${cy + dy}px`;
       label.style.background = value == null ? "#f5f0e6" : "#ffffff";
-      label.style.color = value == null ? "#d6cbb0" : "#0a0a0a";
+      label.style.color = value == null ? "#bfae8c" : "#0a0a0a";
       label.style.boxShadow = `${ringShadow}, 0 2px 8px -2px rgba(0, 0, 0, 0.7)`;
       overlay!.appendChild(label);
 

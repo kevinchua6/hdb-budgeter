@@ -230,7 +230,7 @@ export default function LineView({ prices, onStationClick }: Props) {
                 {/* Price badge on the line — replaces the station number entirely */}
                 <span
                   className={`relative z-10 grid place-items-center rounded-xl px-3 font-bold text-sm leading-none transition-transform group-hover:scale-110 group-active:scale-95 ${
-                    hasValue ? "text-black" : "text-[#d6cbb0]"
+                    hasValue ? "text-black" : "text-[#bfae8c]"
                   }`}
                   style={{
                     height: BADGE_H,
