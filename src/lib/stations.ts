@@ -267,6 +267,10 @@ function buildGraph(): Map<string, GraphEdge[]> {
   return graph;
 }
 
+export function lineColorForCode(code: string): string | undefined {
+  return LINES.find((l) => l.codes.includes(code))?.color;
+}
+
 export function stopsFrom(originCodes: string[], maxStops: number): Map<string, number> {
   const graph = buildGraph();
   const dist = new Map<string, number>();

@@ -1,6 +1,11 @@
 "use client";
 import { useRef, useState } from "react";
-import { LINES, STATION_NAME, STATION_GROUPS } from "@/lib/stations";
+import {
+  LINES,
+  STATION_NAME,
+  STATION_GROUPS,
+  lineColorForCode,
+} from "@/lib/stations";
 
 interface Props {
   prices: Record<string, { avgPrice: number; avgPsf: number | null }>;
@@ -13,11 +18,10 @@ const INTERCHANGE_CODES = new Set<string>(
 );
 
 const COL_W = 96; // px width per station column
-const BADGE_H = 34; // px height of the code badge
+const BADGE_H = 40; // px height of the price badge
 const NAME_ZONE = 120; // px zone above the line that holds the angled station name
 const NAME_LIFT = 6; // px the name's bottom-left pivot sits above the badge — small, so
 // the label looks rooted at the station and rises up-and-away from it
-const PRICE_ZONE = 32; // px zone below the line that holds the price
 const LINE_TOP = NAME_ZONE + BADGE_H / 2; // vertical center of badges
 const NAME_ROT = -35; // degrees — names ascend to the right, like the official map
 
@@ -169,6 +173,22 @@ export default function LineView({ prices, onStationClick }: Props) {
             const hasValue = value != null;
             const isInterchange = INTERCHANGE_CODES.has(code);
 
+            // Outline the badge with the color of every line that passes
+            // through this station — its own line first, then any others
+            // it interchanges with, each as a wider ring further out.
+            let ringColors = [line.color];
+            if (isInterchange) {
+              const group = STATION_GROUPS.find((g) => g.codes.includes(code));
+              const otherColors = (group?.codes ?? [])
+                .filter((c) => c !== code)
+                .map(lineColorForCode)
+                .filter((c): c is string => !!c && c !== line.color);
+              ringColors = [line.color, ...Array.from(new Set(otherColors))];
+            }
+            const ringShadow = ringColors
+              .map((c, i) => `0 0 0 ${3 + i * 3}px ${c}`)
+              .join(", ");
+
             const nameEl = (
               <span
                 // Rooted at its bottom-left corner (transformOrigin below), just above
@@ -190,14 +210,6 @@ export default function LineView({ prices, onStationClick }: Props) {
               </span>
             );
 
-            const priceEl = hasValue ? (
-              <span className="text-sm font-semibold tabular-nums text-emerald-300">
-                {fmtValue(value, priceMode)}
-              </span>
-            ) : (
-              <span className="text-white/20 text-sm">—</span>
-            );
-
             return (
               <button
                 key={code}
@@ -215,30 +227,20 @@ export default function LineView({ prices, onStationClick }: Props) {
                   <div className="relative h-full w-0">{nameEl}</div>
                 </div>
 
-                {/* Code badge on the line */}
+                {/* Price badge on the line — replaces the station number entirely */}
                 <span
-                  className={`relative z-10 grid place-items-center rounded-[6px] px-2 font-bold text-sm leading-none transition-transform group-hover:scale-110 group-active:scale-95 ${
-                    hasValue ? "text-white" : "text-white/50"
+                  className={`relative z-10 grid place-items-center rounded-xl px-3 font-bold text-sm leading-none transition-transform group-hover:scale-110 group-active:scale-95 ${
+                    hasValue ? "text-black" : "text-white"
                   }`}
                   style={{
                     height: BADGE_H,
-                    minWidth: 46,
-                    background: hasValue ? line.color : "#4b5563",
-                    boxShadow: isInterchange
-                      ? "0 0 0 3px #171827, 0 0 0 6px rgba(255,255,255,0.92)"
-                      : "0 0 0 4px #171827",
+                    minWidth: 56,
+                    background: hasValue ? "#ffffff" : "#3f3f46",
+                    boxShadow: ringShadow,
                   }}
                 >
-                  {code}
+                  {hasValue ? fmtValue(value, priceMode) : "NA"}
                 </span>
-
-                {/* Price, always below the line */}
-                <div
-                  className="flex items-start justify-center w-full pt-1"
-                  style={{ height: PRICE_ZONE }}
-                >
-                  {priceEl}
-                </div>
               </button>
             );
           })}

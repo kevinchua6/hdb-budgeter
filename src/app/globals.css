@@ -113,6 +113,12 @@ body {
   background-clip: content-box;
 }
 
+/* Station name text (wrapped by MrtMap so it can be nudged clear of the
+   price bubble); inline-block so `transform` reliably applies. */
+.mrt-station-name {
+  display: inline-block;
+}
+
 /* Overlay layer that holds all price labels above the map artwork */
 .price-overlay {
   position: absolute;
@@ -121,27 +127,19 @@ body {
   z-index: 200;
 }
 
-/* Price labels injected by MrtMap component (absolutely placed under each dot) */
+/* Price labels injected by MrtMap component (absolutely placed on each dot).
+   Background/text color and box-shadow (line-color ring) are set inline per
+   label in MrtMap.tsx, since they vary by station and price availability. */
 .price-label {
   position: absolute;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   display: inline-block;
   font-size: 10px;
-  font-weight: 600;
-  color: #6ee7b7;
-  background-color: #0c1620;
-  background-image: linear-gradient(
-    180deg,
-    rgba(16, 185, 129, 0.28),
-    rgba(16, 185, 129, 0.16)
-  );
-  border: 1px solid rgba(16, 185, 129, 0.45);
+  font-weight: 700;
   border-radius: 5px;
-  padding: 1px 5px;
+  padding: 2px 6px;
   white-space: nowrap;
   letter-spacing: 0.02em;
-  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.7);
-  opacity: 0.9;
   /* Override the overlay's pointer-events:none so label clicks reach handleClick */
   pointer-events: auto;
   cursor: pointer;
@@ -161,6 +159,20 @@ body {
 }
 #mrt-map-singapore {
   width: 1895px;
+}
+
+/* Hide the map's built-in colored station dots (drawn via li:before across
+   ~138 per-station rules in mrt-map.css) — the price-label overlay already
+   marks each station's spot, so the dot underneath is redundant. !important
+   is needed since many of those rules are far more specific than this one. */
+#mrt-map-singapore li:before {
+  display: none !important;
+}
+
+/* Interchange stations draw an additional yellow ring via this standalone
+   decorative div (not a pseudo-element, so the rule above doesn't reach it). */
+#mrt-map-singapore .interchange-station-container {
+  display: none !important;
 }
 
 /* Single touch/drag scroll container for the MRT map */

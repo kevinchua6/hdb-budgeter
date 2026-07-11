@@ -5,7 +5,12 @@ import {
   TransformComponent,
   useControls,
 } from "react-zoom-pan-pinch";
-import { stopsFrom, STATION_GROUPS, type StationCode } from "@/lib/stations";
+import {
+  stopsFrom,
+  STATION_GROUPS,
+  lineColorForCode,
+  type StationCode,
+} from "@/lib/stations";
 
 interface Props {
   prices: Record<string, { avgPrice: number; avgPsf: number | null }>;
@@ -99,6 +104,29 @@ export default function MrtMap({ prices, onStationClick }: Props) {
     };
   }, []);
 
+  // One-time: the station name is a bare trailing text node inside each
+  // <a> (e.g. "<span class='station-nr'>18</span> braddell"), so it can't be
+  // repositioned on its own. Wrap it in a span once so the price-label
+  // effect below can nudge it clear of the (now wider) price bubble.
+  useEffect(() => {
+    if (!htmlLoaded) return;
+    const container = mapRef.current;
+    if (!container) return;
+    container
+      .querySelectorAll<HTMLElement>("[data-station-code] a")
+      .forEach((a) => {
+        if (a.querySelector(".mrt-station-name")) return;
+        const textNode = Array.from(a.childNodes).find(
+          (n) => n.nodeType === Node.TEXT_NODE && !!n.textContent?.trim(),
+        );
+        if (!textNode) return;
+        const span = document.createElement("span");
+        span.className = "mrt-station-name";
+        span.textContent = textNode.textContent;
+        textNode.replaceWith(span);
+      });
+  }, [htmlLoaded]);
+
   useEffect(() => {
     if (!htmlLoaded) return;
     const container = mapRef.current;
@@ -126,57 +154,165 @@ export default function MrtMap({ prices, onStationClick }: Props) {
     };
 
     overlay.replaceChildren();
-    container
-      .querySelectorAll<HTMLElement>("[data-station-code]")
-      .forEach((li) => {
-        const code = li.dataset.stationCode;
-        if (!code) return;
-        const entry = prices[code];
-        if (!entry) return;
-        const value = priceMode === "psf" ? entry.avgPsf : entry.avgPrice;
-        if (value == null) return;
 
-        const anchor = li.querySelector<HTMLElement>(".station-nr") ?? li;
-        const { x, y } = offsetFrom(anchor, mapEl);
-        const cx = x + anchor.offsetWidth / 2;
+    // Interchanges render a second, non-interactive ".station-nr" for their
+    // other line (no [data-station-code] ancestor, no click/tooltip, just a
+    // duplicate number drawn ~22px from the real dot for visual completeness).
+    // Collect every number span, then cluster by proximity so each physical
+    // station — however many line dots it has — gets exactly one price tag,
+    // centered across its members, instead of one tag per dot.
+    const anchors = Array.from(
+      container.querySelectorAll<HTMLElement>(".station-nr"),
+    ).filter((el) => el.textContent?.trim() !== "00"); // "00" = hidden placeholder slots
 
-        // Clear the whole station label (number + name) before placing the
-        // price bubble below it. Many station names are plain text trailing
-        // the number span rather than their own element, so measure the
-        // enclosing <a> (or li) instead of hunting for a name span — and add
-        // a generous buffer since exact text metrics shift slightly across
-        // browsers/fonts, and we'd rather the bubble sit a bit low than land
-        // on top of and hide the name.
-        const textEl = li.querySelector<HTMLElement>("a") ?? li;
-        const textOff = offsetFrom(textEl, mapEl);
-        let textBottom = textOff.y + textEl.offsetHeight;
+    const items = anchors.map((anchor) => {
+      const codeHost = anchor.closest<HTMLElement>("[data-station-code]");
+      const { x, y } = offsetFrom(anchor, mapEl);
+      return {
+        anchor,
+        codeHost,
+        code: codeHost?.dataset.stationCode,
+        cx: x + anchor.offsetWidth / 2,
+        cy: y + anchor.offsetHeight / 2,
+      };
+    });
 
-        // Some names (e.g. the EWL west branch and NSL top) sit below the
-        // circle as an absolutely-positioned ".get-down" span, so they don't
-        // count toward the anchor's offsetHeight above. Measure such a name
-        // directly so the price bubble clears it instead of landing on top.
-        const nameEl = li.querySelector<HTMLElement>(".get-down");
-        if (nameEl) {
-          const nameOff = offsetFrom(nameEl, mapEl);
-          textBottom = Math.max(textBottom, nameOff.y + nameEl.offsetHeight);
+    // Union-find: a station's decorative twin sits ~22px from its real dot,
+    // while the next distinct station along a line is 44px+ away.
+    const CLUSTER_DIST = 40;
+    const parent = items.map((_, i) => i);
+    const find = (i: number): number => {
+      while (parent[i] !== i) {
+        parent[i] = parent[parent[i]];
+        i = parent[i];
+      }
+      return i;
+    };
+    const union = (a: number, b: number) => {
+      const ra = find(a),
+        rb = find(b);
+      if (ra !== rb) parent[ra] = rb;
+    };
+    for (let i = 0; i < items.length; i++) {
+      for (let j = i + 1; j < items.length; j++) {
+        if (Math.hypot(items[i].cx - items[j].cx, items[i].cy - items[j].cy) < CLUSTER_DIST) {
+          union(i, j);
         }
+      }
+    }
+    const clusters = new Map<number, typeof items>();
+    items.forEach((item, idx) => {
+      const root = find(idx);
+      if (!clusters.has(root)) clusters.set(root, []);
+      clusters.get(root)!.push(item);
+    });
 
-        const circleBottom = y + anchor.offsetHeight;
-        const labelTop = Math.max(circleBottom, textBottom) + 8;
-
-        const { dx = 0, dy = 0 } = LABEL_OFFSETS[code as StationCode] ?? {};
-        const label = document.createElement("span");
-        label.className = "price-label";
-        label.dataset.stationCode = code;
-        label.textContent = priceMode === "psf"
-          ? `$${value.toLocaleString("en-SG")} psf`
-          : value >= 1_000_000
-            ? `$${(value / 1_000_000).toFixed(1)}M`
-            : `$${Math.round(value / 1000)}k`;
-        label.style.left = `${cx + dx}px`;
-        label.style.top = `${labelTop + dy}px`;
-        overlay!.appendChild(label);
+    clusters.forEach((members) => {
+      members.forEach((m) => {
+        m.anchor.style.visibility = "hidden";
       });
+
+      const cx = members.reduce((s, m) => s + m.cx, 0) / members.length;
+      const cy = members.reduce((s, m) => s + m.cy, 0) / members.length;
+
+      // All member codes are the same physical station, so any non-null
+      // price among them applies to the whole cluster.
+      let value: number | null = null;
+      let primaryCode: string | undefined;
+      for (const m of members) {
+        if (!m.code) continue;
+        if (!primaryCode) primaryCode = m.code;
+        const entry = prices[m.code];
+        const v = entry
+          ? priceMode === "psf"
+            ? entry.avgPsf
+            : entry.avgPrice
+          : null;
+        if (v != null) {
+          value = v;
+          break;
+        }
+      }
+
+      const { dx = 0, dy = 0 } =
+        (primaryCode ? LABEL_OFFSETS[primaryCode as StationCode] : undefined) ??
+        {};
+
+      // Outline the tag with the color of every line serving this station —
+      // its own line first, then any others it interchanges with, each as a
+      // wider ring further out (mirrors LineView's badge outlines).
+      const group = primaryCode
+        ? STATION_GROUPS.find((g) => g.codes.includes(primaryCode))
+        : undefined;
+      const primaryColor = primaryCode ? lineColorForCode(primaryCode) : undefined;
+      const otherColors = (group?.codes ?? [])
+        .filter((c) => c !== primaryCode)
+        .map(lineColorForCode)
+        .filter((c): c is string => !!c && c !== primaryColor);
+      const ringColors = primaryColor
+        ? [primaryColor, ...Array.from(new Set(otherColors))]
+        : ["#4b5563"];
+      const ringShadow = ringColors
+        .map((c, i) => `0 0 0 ${3 + i * 3}px ${c}`)
+        .join(", ");
+
+      const label = document.createElement("span");
+      label.className = "price-label";
+      if (primaryCode) label.dataset.stationCode = primaryCode;
+      label.textContent =
+        value == null
+          ? "NA"
+          : priceMode === "psf"
+            ? `$${value.toLocaleString("en-SG")} psf`
+            : value >= 1_000_000
+              ? `$${(value / 1_000_000).toFixed(1)}M`
+              : `$${Math.round(value / 1000)}k`;
+      label.style.left = `${cx + dx}px`;
+      label.style.top = `${cy + dy}px`;
+      label.style.background = value == null ? "#3f3f46" : "#ffffff";
+      label.style.color = value == null ? "#ffffff" : "#0a0a0a";
+      label.style.boxShadow = `${ringShadow}, 0 2px 8px -2px rgba(0, 0, 0, 0.7)`;
+      overlay!.appendChild(label);
+
+      // Nudge the station name clear of the bubble if they now overlap —
+      // the bubble is wider than the number it replaced, so names that
+      // used to sit safely beside/below the number may now be covered.
+      const codeHost = members.find((m) => m.codeHost)?.codeHost;
+      const nameEl =
+        codeHost?.querySelector<HTMLElement>(".get-down") ??
+        codeHost?.querySelector<HTMLElement>(".mrt-station-name");
+      if (nameEl) {
+        nameEl.style.transform = "";
+        const nameOff = offsetFrom(nameEl, mapEl);
+        const nameRect = {
+          left: nameOff.x,
+          right: nameOff.x + nameEl.offsetWidth,
+          top: nameOff.y,
+          bottom: nameOff.y + nameEl.offsetHeight,
+        };
+        const labelRect = {
+          left: cx + dx - label.offsetWidth / 2,
+          right: cx + dx + label.offsetWidth / 2,
+          top: cy + dy - label.offsetHeight / 2,
+          bottom: cy + dy + label.offsetHeight / 2,
+        };
+        const overlapX =
+          Math.min(nameRect.right, labelRect.right) -
+          Math.max(nameRect.left, labelRect.left);
+        const overlapY =
+          Math.min(nameRect.bottom, labelRect.bottom) -
+          Math.max(nameRect.top, labelRect.top);
+        // Names sit beside the tag on the same row in this map's layout,
+        // so always resolve the overlap horizontally — a vertical nudge
+        // just shoves the name into the row above/below instead.
+        if (overlapX > 0 && overlapY > 0) {
+          const nameCx = (nameRect.left + nameRect.right) / 2;
+          const GAP = 4;
+          const dir = nameCx >= cx + dx ? 1 : -1;
+          nameEl.style.transform = `translateX(${dir * (overlapX + GAP)}px)`;
+        }
+      }
+    });
   }, [prices, htmlLoaded, priceMode]);
 
   // Runs after prices effect (defined after, prices in deps) so new price labels get classes too
