@@ -23,6 +23,8 @@ interface Row {
   streetName: string;
   storeyRange: string;
   resalePrice: number;
+  floorAreaSqm: number | null;
+  leaseCommenceDate: number | null;
 }
 
 function parseCSV(path: string): Row[] {
@@ -36,6 +38,10 @@ function parseCSV(path: string): Row[] {
     if (parts.length < 9) continue;
     const price = parseInt(parts[col("resale_price")], 10);
     if (isNaN(price)) continue;
+    const lcdIdx = col("lease_commence_date");
+    const lcdRaw = lcdIdx >= 0 ? parseInt(parts[lcdIdx], 10) : NaN;
+    const areaIdx = col("floor_area_sqm");
+    const areaRaw = areaIdx >= 0 ? parseFloat(parts[areaIdx]) : NaN;
     rows.push({
       month: parts[col("month")].trim(),
       flatType: parts[col("flat_type")].trim(),
@@ -43,6 +49,8 @@ function parseCSV(path: string): Row[] {
       streetName: parts[col("street_name")].trim(),
       storeyRange: parts[col("storey_range")].trim(),
       resalePrice: price,
+      floorAreaSqm: isNaN(areaRaw) ? null : areaRaw,
+      leaseCommenceDate: isNaN(lcdRaw) ? null : lcdRaw,
     });
   }
   return rows;
@@ -166,7 +174,8 @@ if (!seedOnly) {
 // ── Seed database ─────────────────────────────────────────────────────────────
 
 const sqlite = new Database("hdb.db");
-sqlite.exec(`CREATE TABLE IF NOT EXISTS transactions (
+sqlite.exec("DROP TABLE IF EXISTS transactions");
+sqlite.exec(`CREATE TABLE transactions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   month TEXT NOT NULL,
   flat_type TEXT NOT NULL,
@@ -175,11 +184,12 @@ sqlite.exec(`CREATE TABLE IF NOT EXISTS transactions (
   storey_min INTEGER NOT NULL,
   storey_max INTEGER NOT NULL,
   resale_price INTEGER NOT NULL,
+  floor_area_sqm REAL,
+  lease_commence_date INTEGER,
   station_code TEXT,
   walking_minutes REAL
 )`);
-sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_filter ON transactions (station_code, flat_type, storey_min, month)`);
-sqlite.exec("DELETE FROM transactions");
+sqlite.exec(`CREATE INDEX idx_filter ON transactions (station_code, flat_type, storey_min, month)`);
 console.log("\nSeeding database...");
 
 function parseStorey(range: string): [number, number] {
@@ -189,8 +199,8 @@ function parseStorey(range: string): [number, number] {
 }
 
 const stmt = sqlite.prepare(
-  `INSERT INTO transactions (month, flat_type, block, street_name, storey_min, storey_max, resale_price, station_code, walking_minutes)
-   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  `INSERT INTO transactions (month, flat_type, block, street_name, storey_min, storey_max, resale_price, floor_area_sqm, lease_commence_date, station_code, walking_minutes)
+   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 );
 
 const insertChunk = sqlite.transaction((chunk: typeof allRows) => {
@@ -198,8 +208,8 @@ const insertChunk = sqlite.transaction((chunk: typeof allRows) => {
     const geo = cache[`${r.block}||${r.streetName}`];
     const geoResult = (typeof geo === "object" && geo !== null) ? geo as GeoResult : null;
     const [sMin, sMax] = parseStorey(r.storeyRange);
-    stmt.run(r.month, r.flatType, r.block, r.streetName, sMin, sMax, r.resalePrice,
-      geoResult?.stationCode ?? null, geoResult?.walkingMinutes ?? null);
+    stmt.run(r.month, r.flatType, r.block, r.streetName, sMin, sMax, r.resalePrice, r.floorAreaSqm ?? null,
+      r.leaseCommenceDate ?? null, geoResult?.stationCode ?? null, geoResult?.walkingMinutes ?? null);
   }
 });
 

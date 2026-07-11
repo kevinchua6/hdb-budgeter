@@ -37,9 +37,10 @@ export function hourLabel(hour: number): string {
   return `${String(hour).padStart(2, "0")}:00`;
 }
 
-// Sequential blue ramp (dark-surface steps 700→100): near-zero recedes into
-// the dark map, peak load reads bright.
-const HEAT_RAMP = ["#0d366b", "#1c5cab", "#3987e5", "#86b6ef", "#cde2fb"];
+// Thermal (magma-style) ramp: monotone lightness so magnitude stays readable,
+// but with the classic heatmap purple→red→orange→yellow feel. Near-zero
+// recedes into the dark map, peak load glows white-hot.
+const HEAT_RAMP = ["#3b0f70", "#8c2981", "#de4968", "#fe9f6d", "#fcfdbf"];
 
 const RAMP_RGB = HEAT_RAMP.map((hex) => [
   parseInt(hex.slice(1, 3), 16),

@@ -11,6 +11,8 @@ export const transactions = sqliteTable(
     storeyMin: integer("storey_min").notNull(),
     storeyMax: integer("storey_max").notNull(),
     resalePrice: integer("resale_price").notNull(),
+    floorAreaSqm: real("floor_area_sqm"),
+    leaseCommenceDate: integer("lease_commence_date"),
     stationCode: text("station_code"),
     walkingMinutes: real("walking_minutes"),
   },

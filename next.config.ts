@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
   },
   // Turbopack mkdir fails on NTFS via WSL DrvFs; use a different dir name to avoid the issue
   ...(process.platform === "linux" && { distDir: ".next-wsl" }),
+  outputFileTracingIncludes: {
+    "/api/prices": ["./hdb.db"],
+  },
 };
 
 export default nextConfig;

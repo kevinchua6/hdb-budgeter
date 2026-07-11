@@ -41,7 +41,7 @@ export default function CrowdControls({
   const hour = SERVICE_HOURS[hourIdx];
 
   return (
-    <div className="border-t border-white/10 bg-[#12131f] px-4 py-3 flex flex-col gap-2">
+    <div className="border-t border-white/[0.07] bg-[#0f1020]/95 backdrop-blur-sm px-4 py-3 flex flex-col gap-2 shrink-0">
       <div className="flex items-center gap-4">
         <button
           onClick={() => onPlayingChange(!playing)}
@@ -67,7 +67,7 @@ export default function CrowdControls({
               onPlayingChange(false);
               onHourIdxChange(Number(e.target.value));
             }}
-            className="w-full accent-[#3987e5] cursor-pointer disabled:opacity-40"
+            className="w-full accent-[#de4968] cursor-pointer disabled:opacity-40"
             aria-label="Hour of day"
           />
           {TICK_HOURS.map((h) => (
@@ -107,7 +107,7 @@ export default function CrowdControls({
         </div>
       </div>
 
-      <div className="flex items-center gap-2 text-[11px] text-white/50 min-h-[16px]">
+      <div className="flex items-center gap-2 text-[11px] text-white/50 min-h-4">
         {loading ? (
           <span className="animate-pulse">Loading ridership data…</span>
         ) : (
@@ -118,7 +118,7 @@ export default function CrowdControls({
             {top.map((s, i) => (
               <span key={s.code} className="whitespace-nowrap">
                 {i + 1}. <span className="text-white/80">{s.name}</span>{" "}
-                <span className="text-[#86b6ef] font-semibold">
+                <span className="text-[#fe9f6d] font-semibold">
                   {formatCount(s.total)}
                 </span>
                 {i < top.length - 1 && <span className="text-white/20 ml-2">·</span>}

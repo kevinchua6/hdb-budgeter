@@ -2,35 +2,196 @@
 @import "./mrt-map.css";
 
 :root {
-  --background: #171827;
+  --background: #101020;
   --foreground: #ededed;
+  --accent: #10b981;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* Price labels injected by MrtMap component */
+/* ---- Ambient app background: layered radial glows over deep base ---- */
+.app-bg {
+  background-color: #101020;
+  background-image:
+    radial-gradient(
+      1100px 640px at 6% -10%,
+      rgba(16, 185, 129, 0.13),
+      transparent 58%
+    ),
+    radial-gradient(
+      900px 720px at 110% -4%,
+      rgba(56, 135, 255, 0.1),
+      transparent 56%
+    ),
+    radial-gradient(
+      820px 640px at 52% 118%,
+      rgba(147, 97, 255, 0.09),
+      transparent 60%
+    );
+}
+
+/* ---- Reusable glass surface ---- */
+.glass {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.022)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.05) inset,
+    0 18px 40px -22px rgba(0, 0, 0, 0.7);
+}
+
+/* Hide scrollbar while keeping scroll (used by the horizontal line selector) */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Slightly lighter inset surface for nested rows/fields */
+.glass-inset {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* ---- Gradient brand text ---- */
+.text-gradient {
+  background: linear-gradient(120deg, #ffffff 0%, #d1fae5 45%, #6ee7b7 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ---- Primary action button ---- */
+.btn-primary {
+  background: linear-gradient(180deg, #34d399, #10b981);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.25) inset,
+    0 10px 24px -8px rgba(16, 185, 129, 0.55);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+.btn-primary:hover {
+  filter: brightness(1.06);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.3) inset,
+    0 14px 30px -8px rgba(16, 185, 129, 0.65);
+}
+.btn-primary:active {
+  transform: scale(0.975);
+}
+
+/* ---- Custom scrollbars (dark theme) ---- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+*::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.13);
+  border-radius: 99px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.24);
+  background-clip: content-box;
+}
+
+/* Overlay layer that holds all price labels above the map artwork */
+.price-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 200;
+}
+
+/* Price labels injected by MrtMap component (absolutely placed under each dot) */
 .price-label {
+  position: absolute;
+  transform: translateX(-50%);
   display: inline-block;
-  font-size: 9px;
-  font-weight: 700;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
-  padding: 0 3px;
-  margin-left: 2px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #6ee7b7;
+  background-color: #0c1620;
+  background-image: linear-gradient(
+    180deg,
+    rgba(16, 185, 129, 0.28),
+    rgba(16, 185, 129, 0.16)
+  );
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  border-radius: 5px;
+  padding: 1px 5px;
   white-space: nowrap;
-  vertical-align: middle;
   letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.7);
+  opacity: 0.9;
+  /* Override the overlay's pointer-events:none so label clicks reach handleClick */
+  pointer-events: auto;
+  cursor: pointer;
 }
 
-/* Override map container for full-page layout */
+/*
+ * The MrtMap component owns scrolling/panning. #map-container is now just a
+ * fixed-size block holding the absolutely-positioned map, so the surrounding
+ * .mrt-scroll container can scroll/pan in both axes. Override the legacy rules
+ * that turned it into its own (conflicting) horizontal scroller.
+ */
 #map-container {
-  min-height: 100%;
+  width: 1895px;
+  height: 1240px;
+  max-width: none;
+  overflow: visible;
+}
+#mrt-map-singapore {
+  width: 1895px;
+}
+
+/* Single touch/drag scroll container for the MRT map */
+.mrt-scroll {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+}
+
+/* Make react-zoom-pan-pinch wrapper fill its container */
+.react-transform-wrapper {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Clickable station elements */
+[data-station-code] {
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+/* Commute distance highlighting */
+[data-station-code].commute-dimmed {
+  opacity: 0.1;
+}
+[data-station-code].commute-origin {
+  opacity: 1;
+}
+
+/* Hide bus interchange icons (Material Icons font not loaded) */
+.bus {
+  display: none !important;
 }
 
 /* Crowd heatmap dots injected by MrtMap component */
@@ -45,13 +206,16 @@ body {
   transform: translate(-50%, -50%);
   border-radius: 9999px;
   pointer-events: none;
-  opacity: 0.85;
+  opacity: 0.95;
   z-index: 5;
+  /* screen-blend so overlapping glows add up like heat */
+  mix-blend-mode: screen;
+  /* just under the 800ms playback step, so hours morph continuously */
   transition:
-    width 0.4s ease,
-    height 0.4s ease,
-    background-color 0.4s ease,
-    box-shadow 0.4s ease;
+    width 0.75s ease-in-out,
+    height 0.75s ease-in-out,
+    background-color 0.75s ease-in-out,
+    box-shadow 0.75s ease-in-out;
 }
 
 li[data-station-code]:hover .heat-dot {
@@ -62,7 +226,7 @@ li[data-station-code]:hover .heat-dot {
 
 .heat-tooltip {
   position: fixed;
-  z-index: 50;
+  z-index: 300;
   pointer-events: none;
   background: rgba(13, 13, 20, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -81,6 +245,6 @@ li[data-station-code]:hover .heat-dot {
 }
 
 .heat-tooltip .tt-net {
-  color: #86b6ef;
+  color: #fe9f6d;
   margin-top: 1px;
 }
