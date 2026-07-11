@@ -43,8 +43,8 @@ function PillButton({
       onClick={onClick}
       className={`py-3 px-1 rounded-xl text-xs font-medium transition-all active:scale-95 truncate ${
         active
-          ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm"
-          : "text-white/50 border border-white/10 hover:border-white/25 hover:text-white/75 hover:bg-white/5 active:bg-white/10"
+          ? "bg-emerald-500/20 text-emerald-700 border border-emerald-500/40 shadow-sm"
+          : "text-black/50 border border-black/10 hover:border-black/25 hover:text-black/75 hover:bg-black/5 active:bg-black/10"
       }`}
     >
       {children}
@@ -179,7 +179,7 @@ export default function Home() {
   return (
     <div className="app-bg flex h-[100dvh] overflow-hidden">
       {/* Desktop sidebar */}
-      <nav className="hidden sm:flex flex-col items-center py-5 w-[60px] border-r border-white/[0.07] shrink-0">
+      <nav className="hidden sm:flex flex-col items-center py-5 w-[60px] border-r border-black/[0.07] shrink-0">
         <span className="w-2 h-2 rounded-full bg-emerald-400 mb-6 shrink-0 shadow-[0_0_8px_3px_rgba(52,211,153,0.45)]" />
         <div className="flex flex-col gap-1 w-full px-2">
           {NAV_ITEMS.map(({ id, label, Icon }) => (
@@ -188,8 +188,8 @@ export default function Home() {
               onClick={() => handleTabChange(id)}
               className={`flex flex-col items-center gap-1.5 py-3 rounded-xl w-full transition-all ${
                 tab === id
-                  ? "bg-emerald-500/15 text-emerald-300"
-                  : "text-white/30 hover:text-white/60 hover:bg-white/5"
+                  ? "bg-emerald-500/15 text-emerald-700"
+                  : "text-black/30 hover:text-black/60 hover:bg-black/5"
               }`}
             >
               <Icon />
@@ -205,19 +205,19 @@ export default function Home() {
       <div className="flex-1 flex flex-col min-w-0 min-h-0 pb-14 sm:pb-0">
         {tab === "lines" ? (
           <main className="flex-1 flex flex-col min-h-0">
-            <header className="flex items-center gap-3 px-4 py-2.5 border-b border-white/10 shrink-0">
+            <header className="flex items-center gap-3 px-4 py-2.5 border-b border-black/10 shrink-0">
               <div className="flex items-center gap-2.5 min-w-0">
                 <span className="shrink-0 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.4)]" />
-                <h1 className="text-white font-semibold text-sm tracking-wide truncate">
+                <h1 className="text-black font-semibold text-sm tracking-wide truncate">
                   Prices by line
                 </h1>
-                <span className="text-white/20 hidden sm:inline">·</span>
-                <span className="text-white/35 text-xs hidden sm:inline truncate">
+                <span className="text-black/20 hidden sm:inline">·</span>
+                <span className="text-black/35 text-xs hidden sm:inline truncate">
                   {filters.flatType} · ≤{filters.maxWalkMin} min walk
                 </span>
               </div>
               {loading && (
-                <div className="ml-auto flex items-center gap-1.5 text-white/30 text-xs shrink-0">
+                <div className="ml-auto flex items-center gap-1.5 text-black/30 text-xs shrink-0">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60 animate-pulse" />
                   <span className="hidden sm:inline">Updating…</span>
                 </div>
@@ -232,13 +232,13 @@ export default function Home() {
           </main>
         ) : tab === "calc" ? (
           <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center px-4">
-            <span className="text-white/25 text-[10px] font-semibold uppercase tracking-[0.2em] border border-white/15 rounded-full px-3 py-1">
+            <span className="text-black/25 text-[10px] font-semibold uppercase tracking-[0.2em] border border-black/15 rounded-full px-3 py-1">
               Work in progress
             </span>
-            <h2 className="text-white/60 text-lg font-semibold">
+            <h2 className="text-black/60 text-lg font-semibold">
               Calculator isn&apos;t ready yet
             </h2>
-            <p className="text-white/35 text-sm max-w-xs">
+            <p className="text-black/35 text-sm max-w-xs">
               We&apos;re still building this out. Check back soon.
             </p>
           </div>
@@ -259,7 +259,7 @@ export default function Home() {
                 <h1 className="text-gradient font-semibold text-2xl tracking-tight">
                   HDB Budgeter
                 </h1>
-                <p className="text-white/45 text-sm leading-snug mt-1.5">
+                <p className="text-black/45 text-sm leading-snug mt-1.5">
                   Singapore Resale Prices
                   <br className="sm:hidden" /> by MRT station
                 </p>
@@ -268,7 +268,7 @@ export default function Home() {
               {/* Filter card */}
               <div className="glass rounded-2xl p-5 flex flex-col gap-5">
                 <div className="flex flex-col gap-2.5">
-                  <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">
+                  <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">
                     Flat type
                   </span>
                   <div className="grid grid-cols-3 gap-2">
@@ -287,7 +287,7 @@ export default function Home() {
                 </div>
 
                 <div className="flex flex-col gap-2.5">
-                  <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">
+                  <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">
                     Walk from MRT
                   </span>
                   <div className="grid grid-cols-4 gap-2">
@@ -306,7 +306,7 @@ export default function Home() {
                 </div>
 
                 <div className="flex flex-col gap-2.5">
-                  <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">
+                  <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">
                     Data period
                   </span>
                   <div className="grid grid-cols-5 gap-2">
@@ -323,7 +323,7 @@ export default function Home() {
                 </div>
 
                 <div className="flex flex-col gap-2.5">
-                  <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">
+                  <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">
                     Lease remaining
                   </span>
                   <div className="grid grid-cols-5 gap-2">
@@ -358,19 +358,19 @@ export default function Home() {
                 : "opacity-0 translate-y-3"
             }`}
           >
-            <header className="flex items-center gap-3 px-4 py-2.5 border-b border-white/10 shrink-0">
+            <header className="flex items-center gap-3 px-4 py-2.5 border-b border-black/10 shrink-0">
               <div className="flex items-center gap-2.5 min-w-0">
                 <span className="shrink-0 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.4)]" />
-                <h1 className="text-white font-semibold text-sm tracking-wide truncate">
+                <h1 className="text-black font-semibold text-sm tracking-wide truncate">
                   HDB Budgeter
                 </h1>
-                <span className="text-white/20 hidden sm:inline">·</span>
-                <span className="text-white/35 text-xs hidden sm:inline truncate">
+                <span className="text-black/20 hidden sm:inline">·</span>
+                <span className="text-black/35 text-xs hidden sm:inline truncate">
                   Singapore resale prices
                 </span>
               </div>
               {loading && (
-                <div className="ml-auto flex items-center gap-1.5 text-white/30 text-xs shrink-0">
+                <div className="ml-auto flex items-center gap-1.5 text-black/30 text-xs shrink-0">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60 animate-pulse" />
                   <span className="hidden sm:inline">Updating…</span>
                 </div>
@@ -396,13 +396,13 @@ export default function Home() {
       )}
 
       {/* Mobile bottom nav */}
-      <nav className="sm:hidden fixed bottom-0 inset-x-0 flex h-14 bg-[#0f1020]/95 backdrop-blur-sm border-t border-white/[0.07] z-50">
+      <nav className="sm:hidden fixed bottom-0 inset-x-0 flex h-14 bg-white/95 backdrop-blur-sm border-t border-black/[0.07] z-50">
         {NAV_ITEMS.map(({ id, fullLabel, Icon }) => (
           <button
             key={id}
             onClick={() => handleTabChange(id)}
             className={`flex-1 flex flex-col items-center justify-center gap-1 transition-all ${
-              tab === id ? "text-emerald-300" : "text-white/30"
+              tab === id ? "text-emerald-700" : "text-black/30"
             }`}
           >
             <Icon />

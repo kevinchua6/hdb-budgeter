@@ -63,7 +63,7 @@ export default function LineView({ prices, onStationClick }: Props) {
   return (
     <div className="relative h-full w-full flex flex-col select-none">
       {/* Controls */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.07] shrink-0">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-black/[0.07] shrink-0">
         {/* Line selector */}
         <div className="flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
           {LINES.map((l) => {
@@ -77,8 +77,8 @@ export default function LineView({ prices, onStationClick }: Props) {
                 }}
                 className={`shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-95 border ${
                   active
-                    ? "text-white border-white/20"
-                    : "text-white/45 border-white/[0.08] hover:text-white/75 hover:border-white/15"
+                    ? "text-black border-black/20"
+                    : "text-black/45 border-black/[0.08] hover:text-black/75 hover:border-black/15"
                 }`}
                 style={
                   active
@@ -105,8 +105,8 @@ export default function LineView({ prices, onStationClick }: Props) {
             onClick={() => setPriceMode("total")}
             className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
               priceMode === "total"
-                ? "bg-emerald-500/20 text-emerald-300"
-                : "text-white/50 hover:text-white/80"
+                ? "bg-emerald-500/20 text-emerald-700"
+                : "text-black/50 hover:text-black/80"
             }`}
           >
             Total
@@ -115,8 +115,8 @@ export default function LineView({ prices, onStationClick }: Props) {
             onClick={() => setPriceMode("psf")}
             className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
               priceMode === "psf"
-                ? "bg-emerald-500/20 text-emerald-300"
-                : "text-white/50 hover:text-white/80"
+                ? "bg-emerald-500/20 text-emerald-700"
+                : "text-black/50 hover:text-black/80"
             }`}
           >
             PSF
@@ -143,7 +143,7 @@ export default function LineView({ prices, onStationClick }: Props) {
         >
           {line.shortName}
         </span>
-        <span className="text-white/25 text-xs shrink-0 hidden sm:inline ml-auto">
+        <span className="text-black/25 text-xs shrink-0 hidden sm:inline ml-auto">
           {line.codes.length} stations · scroll →
         </span>
       </div>
@@ -197,8 +197,8 @@ export default function LineView({ prices, onStationClick }: Props) {
                 // pivot at its top.
                 className={`absolute left-[2px] whitespace-nowrap text-sm font-medium leading-none transition-colors ${
                   hasValue
-                    ? "text-white/75 group-hover:text-white"
-                    : "text-white/30 group-hover:text-white/50"
+                    ? "text-black/75 group-hover:text-black"
+                    : "text-black/30 group-hover:text-black/50"
                 }`}
                 style={{
                   bottom: NAME_LIFT,

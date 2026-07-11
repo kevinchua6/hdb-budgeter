@@ -31,10 +31,10 @@ function Row({ label, value, sub }: { label: string; value: number; sub?: string
   return (
     <div className="flex items-start justify-between gap-3">
       <div className="min-w-0">
-        <div className="text-white/60 text-sm">{label}</div>
-        {sub && <div className="text-white/25 text-xs mt-0.5">{sub}</div>}
+        <div className="text-black/60 text-sm">{label}</div>
+        {sub && <div className="text-black/25 text-xs mt-0.5">{sub}</div>}
       </div>
-      <span className="text-white/85 text-sm font-medium tabular-nums shrink-0">{fmt(value)}</span>
+      <span className="text-black/85 text-sm font-medium tabular-nums shrink-0">{fmt(value)}</span>
     </div>
   );
 }
@@ -52,16 +52,16 @@ function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="text-white/35 text-[10px] font-medium uppercase tracking-widest">{label}</label>
-      <div className="flex items-center gap-1.5 bg-white/[0.05] border border-white/[0.08] rounded-xl px-3.5 py-3 focus-within:ring-1 focus-within:ring-emerald-500/40 focus-within:border-emerald-500/40 transition-all">
-        <span className="text-white/30 text-sm font-medium shrink-0 select-none">$</span>
+      <label className="text-black/35 text-[10px] font-medium uppercase tracking-widest">{label}</label>
+      <div className="flex items-center gap-1.5 bg-black/[0.05] border border-black/[0.08] rounded-xl px-3.5 py-3 focus-within:ring-1 focus-within:ring-emerald-500/40 focus-within:border-emerald-500/40 transition-all">
+        <span className="text-black/30 text-sm font-medium shrink-0 select-none">$</span>
         <input
           type="number"
           inputMode="numeric"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="flex-1 bg-transparent text-white text-sm font-medium focus:outline-none placeholder:text-white/15 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none min-w-0"
+          className="flex-1 bg-transparent text-black text-sm font-medium focus:outline-none placeholder:text-black/15 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none min-w-0"
         />
       </div>
     </div>
@@ -88,7 +88,7 @@ export default function Calculator() {
 
         <div>
           <h2 className="text-gradient font-semibold text-xl tracking-tight">HDB Savings Calculator</h2>
-          <p className="text-white/40 text-sm mt-1">Estimate how much cash you need to buy a resale flat</p>
+          <p className="text-black/40 text-sm mt-1">Estimate how much cash you need to buy a resale flat</p>
         </div>
 
         <div className="glass rounded-2xl p-4 space-y-4">
@@ -98,7 +98,7 @@ export default function Calculator() {
 
         {hasInput && (
           <div className="glass rounded-2xl p-4 space-y-3">
-            <span className="text-white/35 text-[10px] font-medium uppercase tracking-widest">Breakdown</span>
+            <span className="text-black/35 text-[10px] font-medium uppercase tracking-widest">Breakdown</span>
             <div className="space-y-3 pt-1">
               {price > 0 && (
                 <>
@@ -110,18 +110,18 @@ export default function Calculator() {
               )}
               {reno > 0 && <Row label="Renovation" value={reno} />}
             </div>
-            <div className="border-t border-white/[0.08] pt-3 space-y-1.5">
+            <div className="border-t border-black/[0.08] pt-3 space-y-1.5">
               <div className="flex items-baseline justify-between rounded-xl bg-gradient-to-r from-emerald-500/15 to-emerald-500/[0.04] border border-emerald-500/20 px-3.5 py-3">
-                <span className="text-emerald-100/70 text-sm">Minimum cash savings</span>
+                <span className="text-emerald-800/70 text-sm">Minimum cash savings</span>
                 <span className="text-gradient font-bold text-2xl tabular-nums">{fmt(cashNeeded)}</span>
               </div>
               {price > 0 && (
                 <div className="flex items-baseline justify-between">
-                  <span className="text-white/25 text-xs">CPF OA needed (separately)</span>
-                  <span className="text-white/45 text-sm tabular-nums">{fmt(cpfDown)}</span>
+                  <span className="text-black/25 text-xs">CPF OA needed (separately)</span>
+                  <span className="text-black/45 text-sm tabular-nums">{fmt(cpfDown)}</span>
                 </div>
               )}
-              <p className="text-white/20 text-xs pt-0.5">
+              <p className="text-black/20 text-xs pt-0.5">
                 Bank loan assumed: 25% downpayment, min 5% cash + 20% CPF.
               </p>
             </div>
@@ -129,7 +129,7 @@ export default function Calculator() {
         )}
 
         <div className="glass rounded-2xl p-4 space-y-3">
-          <span className="text-white/35 text-[10px] font-medium uppercase tracking-widest">
+          <span className="text-black/35 text-[10px] font-medium uppercase tracking-widest">
             Additional Considerations
           </span>
           <div className="space-y-3 pt-1">
@@ -137,8 +137,8 @@ export default function Calculator() {
               <div key={c.title} className="flex gap-2.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/50 mt-1.5 shrink-0" />
                 <p className="text-sm leading-snug">
-                  <span className="text-white/65 font-medium">{c.title}: </span>
-                  <span className="text-white/35">{c.desc}</span>
+                  <span className="text-black/65 font-medium">{c.title}: </span>
+                  <span className="text-black/35">{c.desc}</span>
                 </p>
               </div>
             ))}

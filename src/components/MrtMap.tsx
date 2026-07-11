@@ -23,24 +23,24 @@ function ZoomControls({ scale }: { scale: number }) {
     <div className="hidden sm:flex absolute bottom-4 right-4 z-50 flex-col items-center gap-1">
       <button
         onClick={() => zoomIn(0.3, 200)}
-        className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 text-white/70 hover:text-white text-base font-light transition-all active:scale-95"
+        className="w-8 h-8 flex items-center justify-center rounded-lg bg-black/10 hover:bg-black/20 border border-black/15 text-black/70 hover:text-black text-base font-light transition-all active:scale-95"
         title="Zoom in"
       >
         +
       </button>
-      <span className="text-white/40 text-[10px] font-medium w-8 text-center select-none">
+      <span className="text-black/40 text-[10px] font-medium w-8 text-center select-none">
         {Math.round(scale * 100)}%
       </span>
       <button
         onClick={() => zoomOut(0.3, 200)}
-        className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 text-white/70 hover:text-white text-base font-light transition-all active:scale-95"
+        className="w-8 h-8 flex items-center justify-center rounded-lg bg-black/10 hover:bg-black/20 border border-black/15 text-black/70 hover:text-black text-base font-light transition-all active:scale-95"
         title="Zoom out"
       >
         −
       </button>
       <button
         onClick={() => resetTransform()}
-        className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 text-white/40 hover:text-white/70 text-xs transition-all active:scale-95 mt-1"
+        className="w-8 h-8 flex items-center justify-center rounded-lg bg-black/10 hover:bg-black/20 border border-black/15 text-black/40 hover:text-black/70 text-xs transition-all active:scale-95 mt-1"
         title="Reset view"
       >
         ⊡
@@ -349,7 +349,7 @@ export default function MrtMap({ prices, onStationClick }: Props) {
   return (
     <div className="relative h-full w-full select-none" onClick={handleClick}>
       {!htmlLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center text-white/40 text-sm pointer-events-none">
+        <div className="absolute inset-0 flex items-center justify-center text-black/40 text-sm pointer-events-none">
           Loading map…
         </div>
       )}
@@ -363,8 +363,8 @@ export default function MrtMap({ prices, onStationClick }: Props) {
           onClick={() => setPriceMode("total")}
           className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
             priceMode === "total"
-              ? "bg-emerald-500/20 text-emerald-300"
-              : "text-white/50 hover:text-white/80"
+              ? "bg-emerald-500/20 text-emerald-700"
+              : "text-black/50 hover:text-black/80"
           }`}
         >
           Total
@@ -373,8 +373,8 @@ export default function MrtMap({ prices, onStationClick }: Props) {
           onClick={() => setPriceMode("psf")}
           className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
             priceMode === "psf"
-              ? "bg-emerald-500/20 text-emerald-300"
-              : "text-white/50 hover:text-white/80"
+              ? "bg-emerald-500/20 text-emerald-700"
+              : "text-black/50 hover:text-black/80"
           }`}
         >
           PSF
@@ -387,42 +387,42 @@ export default function MrtMap({ prices, onStationClick }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="glass backdrop-blur-md rounded-xl p-3 flex flex-col gap-2 w-44">
-          <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">
+          <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">
             Commute from
           </span>
           <select
             value={commuteOrigin ?? ""}
             onChange={(e) => setCommuteOrigin(e.target.value || null)}
-            className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40 cursor-pointer hover:border-white/20 transition-colors"
+            className="bg-black/5 border border-black/10 rounded-lg px-2 py-1.5 text-black text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40 cursor-pointer hover:border-black/20 transition-colors"
           >
-            <option value="" className="bg-[#1a1b2e]">
+            <option value="" className="bg-white">
               Any station
             </option>
             {STATION_GROUPS.map((g) => (
-              <option key={g.name} value={g.name} className="bg-[#1a1b2e]">
+              <option key={g.name} value={g.name} className="bg-white">
                 {g.name}
               </option>
             ))}
           </select>
           {commuteOrigin && (
             <div className="flex items-center gap-1">
-              <span className="text-white/40 text-[10px] shrink-0">Within</span>
+              <span className="text-black/40 text-[10px] shrink-0">Within</span>
               <button
                 onClick={() => setCommuteMaxStops((s) => Math.max(1, s - 1))}
-                className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 border border-white/10 text-white/60 hover:text-white text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
+                className="w-6 h-6 rounded bg-black/10 hover:bg-black/20 border border-black/10 text-black/60 hover:text-black text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
               >
                 −
               </button>
-              <span className="text-white text-sm font-semibold w-6 text-center tabular-nums">
+              <span className="text-black text-sm font-semibold w-6 text-center tabular-nums">
                 {commuteMaxStops}
               </span>
               <button
                 onClick={() => setCommuteMaxStops((s) => Math.min(30, s + 1))}
-                className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 border border-white/10 text-white/60 hover:text-white text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
+                className="w-6 h-6 rounded bg-black/10 hover:bg-black/20 border border-black/10 text-black/60 hover:text-black text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
               >
                 +
               </button>
-              <span className="text-white/40 text-[10px] shrink-0">stops</span>
+              <span className="text-black/40 text-[10px] shrink-0">stops</span>
             </div>
           )}
         </div>
@@ -432,30 +432,30 @@ export default function MrtMap({ prices, onStationClick }: Props) {
       <div className="sm:hidden absolute bottom-4 right-4 z-50 flex flex-col items-end gap-2" onClick={(e) => e.stopPropagation()}>
         {mobileCommuteOpen && (
           <div className="glass backdrop-blur-md rounded-xl p-3 flex flex-col gap-2 w-48">
-            <span className="text-white/40 text-[10px] font-medium uppercase tracking-widest">Commute from</span>
+            <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">Commute from</span>
             <select
               value={commuteOrigin ?? ""}
               onChange={(e) => setCommuteOrigin(e.target.value || null)}
-              className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40 cursor-pointer"
+              className="bg-black/5 border border-black/10 rounded-lg px-2 py-1.5 text-black text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40 cursor-pointer"
             >
-              <option value="" className="bg-[#1a1b2e]">Any station</option>
+              <option value="" className="bg-white">Any station</option>
               {STATION_GROUPS.map((g) => (
-                <option key={g.name} value={g.name} className="bg-[#1a1b2e]">{g.name}</option>
+                <option key={g.name} value={g.name} className="bg-white">{g.name}</option>
               ))}
             </select>
             {commuteOrigin && (
               <div className="flex items-center gap-1">
-                <span className="text-white/40 text-[10px] shrink-0">Within</span>
+                <span className="text-black/40 text-[10px] shrink-0">Within</span>
                 <button
                   onClick={() => setCommuteMaxStops((s) => Math.max(1, s - 1))}
-                  className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 border border-white/10 text-white/60 text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
+                  className="w-6 h-6 rounded bg-black/10 hover:bg-black/20 border border-black/10 text-black/60 text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
                 >−</button>
-                <span className="text-white text-sm font-semibold w-6 text-center tabular-nums">{commuteMaxStops}</span>
+                <span className="text-black text-sm font-semibold w-6 text-center tabular-nums">{commuteMaxStops}</span>
                 <button
                   onClick={() => setCommuteMaxStops((s) => Math.min(30, s + 1))}
-                  className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 border border-white/10 text-white/60 text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
+                  className="w-6 h-6 rounded bg-black/10 hover:bg-black/20 border border-black/10 text-black/60 text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
                 >+</button>
-                <span className="text-white/40 text-[10px] shrink-0">stops</span>
+                <span className="text-black/40 text-[10px] shrink-0">stops</span>
               </div>
             )}
           </div>
@@ -464,8 +464,8 @@ export default function MrtMap({ prices, onStationClick }: Props) {
           onClick={() => setMobileCommuteOpen((o) => !o)}
           className={`h-10 px-3 rounded-xl border text-xs font-medium transition-all active:scale-95 flex items-center gap-1.5 ${
             commuteOrigin
-              ? "bg-emerald-500/15 border-emerald-500/35 text-emerald-300"
-              : "bg-white/10 border-white/15 text-white/70"
+              ? "bg-emerald-500/15 border-emerald-500/35 text-emerald-700"
+              : "bg-black/10 border-black/15 text-black/70"
           }`}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

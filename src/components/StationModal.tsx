@@ -130,15 +130,15 @@ export default function StationModal({
       onClick={onClose}
     >
       <div
-        className="w-full sm:max-w-lg bg-[#1a1b2e] border border-white/[0.09] rounded-t-2xl sm:rounded-2xl flex flex-col max-h-[88dvh] sm:max-h-[82dvh] overflow-hidden shadow-2xl"
+        className="w-full sm:max-w-lg bg-white border border-black/[0.09] rounded-t-2xl sm:rounded-2xl flex flex-col max-h-[88dvh] sm:max-h-[82dvh] overflow-hidden shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center gap-3 px-5 pt-5 pb-4 border-b border-white/[0.07] shrink-0">
+        <div className="flex items-center gap-3 px-5 pt-5 pb-4 border-b border-black/[0.07] shrink-0">
           {selected ? (
             <button
               onClick={() => { setSelected(null); setMapSrc(null); }}
-              className="text-white/40 hover:text-white/70 transition-colors mr-1"
+              className="text-black/40 hover:text-black/70 transition-colors mr-1"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M19 12H5M12 5l-7 7 7 7"/>
@@ -150,22 +150,22 @@ export default function StationModal({
             style={{ background: color, boxShadow: `0 0 8px 2px ${color}66` }}
           />
           <div className="flex-1 min-w-0">
-            <h2 className="text-white font-semibold text-sm truncate">
+            <h2 className="text-black font-semibold text-sm truncate">
               {station?.name ?? stationCode} MRT
             </h2>
             {selected ? (
-              <p className="text-white/35 text-xs mt-0.5 truncate">
+              <p className="text-black/35 text-xs mt-0.5 truncate">
                 Blk {selected.block} {selected.streetName}
               </p>
             ) : (
-              <p className="text-white/35 text-xs mt-0.5">
+              <p className="text-black/35 text-xs mt-0.5">
                 {filters.flatType} · ≤{filters.maxWalkMin} min walk
               </p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="text-white/30 hover:text-white/65 transition-colors p-1 -mr-1 rounded-lg hover:bg-white/5"
+            className="text-black/30 hover:text-black/65 transition-colors p-1 -mr-1 rounded-lg hover:bg-black/5"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 6 6 18M6 6l12 12"/>
@@ -212,7 +212,7 @@ function ListingsView({
 }) {
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-40 text-white/30 text-sm gap-2">
+      <div className="flex items-center justify-center h-40 text-black/30 text-sm gap-2">
         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60 animate-pulse" />
         Loading listings…
       </div>
@@ -221,45 +221,45 @@ function ListingsView({
 
   if (listings.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-40 text-white/30 text-sm gap-2 px-6 text-center">
+      <div className="flex flex-col items-center justify-center h-40 text-black/30 text-sm gap-2 px-6 text-center">
         <span>No transactions found near {stationName} matching your filters.</span>
-        <span className="text-xs text-white/20">Try relaxing the walk distance or time period.</span>
+        <span className="text-xs text-black/20">Try relaxing the walk distance or time period.</span>
       </div>
     );
   }
 
   return (
     <div className="px-5 py-4 space-y-2">
-      <p className="text-white/30 text-xs mb-3">
+      <p className="text-black/30 text-xs mb-3">
         {listings.length} recent {filters.flatType} transaction{listings.length !== 1 ? "s" : ""} — tap to see on map
       </p>
       {listings.map((l, i) => (
         <button
           key={i}
           onClick={() => onSelect(l)}
-          className="w-full text-left bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-white/[0.13] rounded-xl px-4 py-3.5 transition-all group"
+          className="w-full text-left bg-black/[0.03] hover:bg-black/[0.07] border border-black/[0.07] hover:border-black/[0.13] rounded-xl px-4 py-3.5 transition-all group"
         >
           <div className="flex items-start justify-between gap-2 min-w-0">
             <div className="min-w-0 flex-1">
-              <div className="text-white/85 text-sm font-medium truncate">
+              <div className="text-black/85 text-sm font-medium truncate">
                 Blk {l.block} {l.streetName}
               </div>
-              <div className="text-white/35 text-xs mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+              <div className="text-black/35 text-xs mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
                 <span>Floor {l.storeyMin}–{l.storeyMax}</span>
-                <span className="text-white/15">·</span>
+                <span className="text-black/15">·</span>
                 <span>{fmtWalk(l.walkingMinutes)} walk</span>
-                <span className="text-white/15">·</span>
+                <span className="text-black/15">·</span>
                 <span>{fmtMonth(l.month)}</span>
               </div>
             </div>
             <div className="text-right shrink-0 pl-1">
-              <div className="text-emerald-300 font-semibold text-sm tabular-nums">{fmtPriceCompact(l.resalePrice)}</div>
+              <div className="text-emerald-700 font-semibold text-sm tabular-nums">{fmtPriceCompact(l.resalePrice)}</div>
               {fmtPsf(toPsf(l.resalePrice, l.floorAreaSqm)) && (
-                <div className="text-white/30 text-[10px] tabular-nums">
+                <div className="text-black/30 text-[10px] tabular-nums">
                   {fmtPsf(toPsf(l.resalePrice, l.floorAreaSqm))}
                 </div>
               )}
-              <div className="text-white/20 text-[10px] mt-0.5 group-hover:text-white/40 transition-colors whitespace-nowrap">
+              <div className="text-black/20 text-[10px] mt-0.5 group-hover:text-black/40 transition-colors whitespace-nowrap">
                 View map →
               </div>
             </div>
@@ -284,15 +284,15 @@ function DetailView({
   return (
     <div className="flex flex-col h-full">
       {/* Map area */}
-      <div className="relative bg-[#171827]" style={{ height: 280 }}>
+      <div className="relative bg-gray-100" style={{ height: 280 }}>
         {geocoding && (
-          <div className="absolute inset-0 flex items-center justify-center text-white/30 text-sm gap-2">
+          <div className="absolute inset-0 flex items-center justify-center text-black/30 text-sm gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60 animate-pulse" />
             Locating on map…
           </div>
         )}
         {geocodeErr && !geocoding && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-white/25 text-sm gap-1">
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-black/25 text-sm gap-1">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mb-1 opacity-50">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
             </svg>
@@ -310,7 +310,7 @@ function DetailView({
       </div>
 
       {/* Stats */}
-      <div className="px-5 py-4 space-y-3 border-t border-white/[0.07]">
+      <div className="px-5 py-4 space-y-3 border-t border-black/[0.07]">
         <div className="grid grid-cols-2 gap-2">
           <Stat label="Price" value={fmtPrice(listing.resalePrice)} highlight />
           <Stat
@@ -321,9 +321,9 @@ function DetailView({
           <Stat label="Floor" value={`${listing.storeyMin}–${listing.storeyMax}`} />
           <Stat label="Sale month" value={fmtMonth(listing.month)} />
         </div>
-        <div className="bg-white/[0.03] border border-white/[0.07] rounded-xl px-3.5 py-2.5">
-          <p className="text-white/30 text-[10px] uppercase tracking-widest mb-0.5">Address</p>
-          <p className="text-white/70 text-sm">
+        <div className="bg-black/[0.03] border border-black/[0.07] rounded-xl px-3.5 py-2.5">
+          <p className="text-black/30 text-[10px] uppercase tracking-widest mb-0.5">Address</p>
+          <p className="text-black/70 text-sm">
             Blk {listing.block} {listing.streetName}
           </p>
         </div>
@@ -334,9 +334,9 @@ function DetailView({
 
 function Stat({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
-    <div className="bg-white/[0.03] border border-white/[0.07] rounded-xl px-3.5 py-2.5">
-      <p className="text-white/30 text-[10px] uppercase tracking-widest mb-0.5">{label}</p>
-      <p className={`text-sm font-semibold ${highlight ? "text-emerald-300" : "text-white/75"}`}>{value}</p>
+    <div className="bg-black/[0.03] border border-black/[0.07] rounded-xl px-3.5 py-2.5">
+      <p className="text-black/30 text-[10px] uppercase tracking-widest mb-0.5">{label}</p>
+      <p className={`text-sm font-semibold ${highlight ? "text-emerald-700" : "text-black/75"}`}>{value}</p>
     </div>
   );
 }

@@ -5,7 +5,7 @@
   bottom: 3px;
 }
 .color-bus {
-  color: #c5ffa7 !important;
+  color: #2f7d3d !important;
 }
 #map-container {
   user-select: none;
@@ -41,7 +41,7 @@ div#mrt-map-singapore li:before {
   box-sizing: unset;
 }
 body {
-  background: #171827;
+  background: #ffffff;
 }
 @media (max-width: 770px) {
   #map-container {
@@ -56,7 +56,7 @@ body {
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  background-color: #171827;
+  background-color: #ffffff;
   position: relative;
   margin: 0 auto;
   line-height: 15px;
@@ -353,7 +353,7 @@ ul.stations {
   list-style-type: none;
   letter-spacing: 0.3px;
   z-index: 99;
-  color: #fff;
+  color: #1a1d29;
   height: 10px;
 }
 .freestanding-station a,
@@ -361,7 +361,7 @@ ul.stations li a {
   cursor: default;
   border-bottom: none;
   text-decoration: none;
-  color: #fff;
+  color: #1a1d29;
   z-index: 100;
   position: relative;
 }
@@ -381,32 +381,32 @@ ul.stations li a.no-underline:hover {
 a.no-underline,
 #mrt-map-singapore p a {
   border-bottom: none !important;
-  color: #fff !important;
+  color: #1a1d29 !important;
 }
 ul.stations.left-spot li a span:first-child,
 ul.stations.right-spot li a span:last-child {
-  color: #fff;
+  color: #1a1d29;
 }
 #east-west-line ul.stations li a {
-  color: #92d6be;
+  color: #009645;
 }
 #circle-line ul.stations li a {
-  color: #ffce57;
+  color: #a15c00;
 }
 #downtown-line ul.stations li a {
-  color: #bae1f9;
+  color: #005ec4;
 }
 #north-south-line ul.stations li a {
-  color: #ff95c2;
+  color: #d42e12;
 }
 #north-east-line ul.stations li a {
-  color: #eec2f7;
+  color: #9900aa;
 }
 #thomson-east-coast-line ul.stations li a {
-  color: #e0c2a2;
+  color: #7a4419;
 }
 ul.stations li a.connecting-link {
-  color: #fff !important;
+  color: #1a1d29 !important;
 }
 ul.stations.left-spot li {
   padding-left: 30px;
@@ -422,7 +422,7 @@ ul.stations.left-spot li:before {
   content: "";
   left: 5px;
   margin: -5px 0 0 -3px;
-  border: 2px solid #171827;
+  border: 2px solid #ffffff;
 }
 ul.stations.left-spot span.station-nr.small {
   position: absolute;
@@ -450,7 +450,7 @@ ul.stations.right-spot li:after {
   content: "";
   left: 5px;
   margin: -3px 0 0 5px;
-  border: 2px solid #171827;
+  border: 2px solid #ffffff;
 }
 .right-spot span.station-nr.small {
   position: absolute;
@@ -1185,7 +1185,7 @@ ul.stations.right-spot.cc-names li:after {
   z-index: 99;
 }
 .bus i {
-  color: #c5ffa7 !important;
+  color: #2f7d3d !important;
   font-size: 19px;
   margin: -3px;
 }
@@ -1297,8 +1297,8 @@ a.line-number:hover {
   height: 160px;
   border-top-right-radius: 5px;
   border-bottom-left-radius: 5px;
-  border-left: 2px solid #171827;
-  border-right: 2px solid #171827;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #ffffff;
 }
 .stretch.corner.ns22 {
   top: 633px;
@@ -1316,8 +1316,8 @@ a.line-number:hover {
   left: 893px;
   height: 322px;
   border-radius: 2px 0 0 0;
-  border-left: 2px solid #171827;
-  border-right: 2px solid #171827;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #ffffff;
   z-index: 6;
 }
 .stretch.ns25-27 {
@@ -1325,8 +1325,8 @@ a.line-number:hover {
   left: 1008px;
   height: 218px;
   border-radius: 0 6px 0 0;
-  border-left: 2px solid #171827;
-  border-right: 2px solid #171827;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #ffffff;
   z-index: 5;
 }
 .stretch.ns27-28 {
@@ -1569,7 +1569,7 @@ ul.stations.left-spot.ne-names.nes17-7 li:nth-child(16):before {
 .cc-cut-circle {
   width: 260px;
   height: 90px;
-  background: #171827;
+  background: #ffffff;
   top: 1085px;
   left: 754px;
   position: absolute;
@@ -1607,8 +1607,8 @@ ul.stations.right-spot.te-names li:after {
   left: 859px;
   height: 271px;
   border-radius: 3px 0 0 5px;
-  border-left: 2px solid #171827;
-  border-right: 2px solid #171827;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #ffffff;
   z-index: 80;
 }
 .stretch.te20-21 {
@@ -1820,8 +1820,8 @@ ul.stations.left-spot.te-names.tes17-20 li:nth-child(4):before {
   top: 1038px;
   left: 869px;
   width: 125px;
-  border-top: 2px solid #171827;
-  border-bottom: 2px solid #171827;
+  border-top: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
   border-radius: 1px 2px 2px 0;
   z-index: 7;
 }
@@ -1846,7 +1846,7 @@ ul.stations.left-spot.te-names.tes17-20 li:nth-child(4):before {
   left: 1241px;
   height: 610px;
   border-radius: 5px 5px 0 5px;
-  border: 2px solid #171827;
+  border: 2px solid #ffffff;
   z-index: 10;
 }
 .stretch.corner.ew4-3 {
@@ -1871,7 +1871,7 @@ ul.stations.left-spot.te-names.tes17-20 li:nth-child(4):before {
   left: 1623px;
   height: 108px;
   z-index: 10;
-  border: 2px solid #171827;
+  border: 2px solid #ffffff;
 }
 .stretch.corner.cg-1 {
   top: 460px;
@@ -2187,16 +2187,16 @@ ul.stations.left-spot.ew-names.ews1-14 li:nth-child(14):before {
   border-radius: 1px;
   transform: rotate(49deg);
   z-index: 6;
-  border-left: 2px solid #171827;
-  border-right: 2px solid #171827;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #ffffff;
 }
 .stretch.dt17 {
   top: 1057px;
   left: 993px;
   width: 124px;
   border-radius: 8px 2px 14px 13px;
-  border-top: 2px solid #171827;
-  border-bottom: 2px solid #171827;
+  border-top: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
   z-index: 3;
 }
 .stretch.dt18-19 {
@@ -2221,16 +2221,16 @@ ul.stations.left-spot.ew-names.ews1-14 li:nth-child(14):before {
   width: 180px;
   border-radius: 1px;
   z-index: 5;
-  border-top: 2px solid #171827;
-  border-bottom: 2px solid #171827;
+  border-top: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
 }
 .stretch.dt21-29 {
   top: 349px;
   left: 1194px;
   height: 575px;
   border-radius: 5px;
-  border-left: 2px solid #171827;
-  border-right: 2px solid #171827;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #ffffff;
 }
 .stretch.dt30-32 {
   top: 432px;
@@ -2285,12 +2285,12 @@ span.tampines-west {
   width: 110px;
 }
 .harbourfront-icons span.bus.cc29 {
-  color: #c5ffa7;
+  color: #2f7d3d;
   padding: 2px;
   position: relative !important;
 }
 .harbourfront-icons a.bus.cc29 i {
-  color: #c5ffa7;
+  color: #2f7d3d;
 }
 span.sentosa-cable-car-1 i,
 span.sentosa-cable-car-2 i {
@@ -2299,7 +2299,7 @@ span.sentosa-cable-car-2 i {
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
-  background-image: linear-gradient(0deg, #171827 17%, #e2e2e2 17%);
+  background-image: linear-gradient(0deg, #ffffff 17%, #e2e2e2 17%);
 }
 span.harbourfront-ferry i {
   font-size: 17px;
@@ -2752,7 +2752,7 @@ ul.empty-spot {
 .empty-spot li {
   width: 20px;
   height: 20px;
-  border: 2px solid #171827;
+  border: 2px solid #ffffff;
   list-style-type: none;
   border-radius: 20px;
   background: #6c6c6c;
@@ -2761,7 +2761,7 @@ ul.empty-spot {
   line-height: 21px;
 }
 .empty-spot li a {
-  color: #fff;
+  color: #1a1d29;
   text-decoration: none;
 }
 .stc.empty-spot {
@@ -2933,7 +2933,7 @@ span.to-the-left {
   width: 55px;
   height: 55px;
   font-size: 14px;
-  color: #171827;
+  color: #1a1d29;
   font-style: italic;
   position: absolute;
   top: 965px;
@@ -3000,19 +3000,19 @@ span.to-the-left {
 }
 .map-descriptions .first-3-lines h3.h6:nth-child(1) a {
   border-color: #35a881;
-  color: #92d6be;
+  color: #009645;
 }
 .map-descriptions .first-3-lines h3.h6:nth-child(3) a {
   border-color: #e90061;
-  color: #ff95c2;
+  color: #d42e12;
 }
 .map-descriptions .first-3-lines h3.h6:nth-child(5) a {
   border-color: #a41bc0;
-  color: #eec2f7;
+  color: #9900aa;
 }
 .map-descriptions .second-3-lines h3.h6:nth-child(1) a {
   border-color: #f80;
-  color: #ffce57;
+  color: #a15c00;
 }
 .map-descriptions .second-3-lines.gray-lines h3.h6:nth-child(1) a {
   border-color: gray;
@@ -3022,11 +3022,11 @@ span.to-the-left {
 }
 .map-descriptions .second-3-lines h3.h6:nth-child(3) a {
   border-color: #0279c7;
-  color: #bae1f9;
+  color: #005ec4;
 }
 .map-descriptions .second-3-lines h3.h6:nth-child(5) a {
   border-color: #9c5c1d;
-  color: #e0c2a2;
+  color: #7a4419;
 }
 .map-descriptions ul li span {
   position: relative !important;
@@ -3061,22 +3061,22 @@ span.to-the-left {
   color: #e2e2e2;
 }
 .map-descriptions .first-3-lines ul:nth-child(2) strong {
-  color: #92d6be;
+  color: #009645;
 }
 .map-descriptions .first-3-lines ul:nth-child(4) strong {
-  color: #ff95c2;
+  color: #d42e12;
 }
 .map-descriptions .first-3-lines ul:nth-child(6) strong {
-  color: #eec2f7;
+  color: #9900aa;
 }
 .map-descriptions .second-3-lines ul:nth-child(2) strong {
-  color: #ffce57;
+  color: #a15c00;
 }
 .map-descriptions .second-3-lines ul:nth-child(4) strong {
-  color: #bae1f9;
+  color: #005ec4;
 }
 .map-descriptions .second-3-lines ul:nth-child(6) strong {
-  color: #e0c2a2;
+  color: #7a4419;
 }
 .map-descriptions strong {
   font-weight: 100;
@@ -3109,7 +3109,7 @@ span.standard-transfer-x em {
   padding: 5px 0;
   display: inline-block;
   text-align: center;
-  border: 2px solid #171827;
+  border: 2px solid #ffffff;
   line-height: 16px;
   margin: 2px -2px;
 }
@@ -3180,7 +3180,7 @@ h3.h4.exp-svg.marina-bay-river:before {
   line-height: 26px;
   color: #787d85;
   background-color: #fcfcfc;
-  border: 1px solid #ffdc52 !important;
+  border: 1px solid #8a6d00 !important;
   padding: 5px 15px !important;
   height: 50px !important;
   margin: 0 auto;
@@ -3195,7 +3195,7 @@ h3.h4.exp-svg.marina-bay-river:before {
 }
 .results,
 ul.stations li a.connecting-link.results {
-  background: #ffdc50;
+  background: #8a6d00;
   color: #000 !important;
   border-radius: 3px;
   padding: 2px 0;
@@ -3213,18 +3213,18 @@ span.under-construction {
   border-bottom: 6px dotted #6ab8eb;
 }
 .popover-body {
-  background: #171827;
+  background: #ffffff;
   box-shadow: 3px 3px 3px #000;
-  border: 1px solid #ffdc50;
+  border: 1px solid #8a6d00;
   border-radius: 5px;
   width: 200px;
   cursor: default;
   padding: 0;
   overflow: hidden;
-  color: #fff;
+  color: #1a1d29;
 }
 .popover-body a {
-  color: #ffdc50;
+  color: #8a6d00;
   line-height: 20px;
   display: block;
   margin-top: 6px;
@@ -3233,7 +3233,7 @@ span.under-construction {
   font-family: "Material Icons";
   content: "east";
   display: inline-block;
-  color: #ffdc50;
+  color: #8a6d00;
   font-size: 18px;
   line-height: 1;
   text-transform: none;
@@ -3263,8 +3263,8 @@ span.under-construction {
   letter-spacing: 0.5px;
 }
 .arrow::after {
-  border-top-color: #ffdc50 !important;
-  border-bottom-color: #ffdc50 !important;
+  border-top-color: #8a6d00 !important;
+  border-bottom-color: #8a6d00 !important;
 }
 .popcontent span.stn-nr.stn-nr-2,
 .popcontent span.stn-nr {
@@ -3281,11 +3281,11 @@ span.marina-bay-name {
   position: absolute;
   right: 6px;
   top: 6px;
-  background: #171827;
+  background: #ffffff;
   cursor: pointer;
 }
 .close-popover i.material-icons {
-  color: #ffdc52;
+  color: #8a6d00;
   font-size: 16px;
 }
 .mrt-maps a:hover figure {
