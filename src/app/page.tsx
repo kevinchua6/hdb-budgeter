@@ -15,16 +15,31 @@ const DEFAULT_FILTERS: Filters = {
 };
 
 const FLAT_TYPES = [
+  "1 ROOM",
+  "2 ROOM",
   "3 ROOM",
   "4 ROOM",
   "5 ROOM",
   "EXECUTIVE",
-  "2 ROOM",
-  "1 ROOM",
 ];
 const WALK_OPTIONS = [5, 10, 15, 20];
 const MONTH_OPTIONS = [6, 12, 24, 36, 60];
 const LEASE_OPTIONS = [0, 50, 60, 70, 80];
+
+function flatTypeLabel(t: string) {
+  return t.charAt(0) + t.slice(1).toLowerCase();
+}
+function walkLabel(m: number) {
+  return `${m} mins`;
+}
+function leaseLabel(y: number) {
+  return y === 0 ? "Any" : `${y} years`;
+}
+function monthsLabel(m: number) {
+  if (m < 12) return `${m} months`;
+  const y = m / 12;
+  return `${y} year${y > 1 ? "s" : ""}`;
+}
 
 type Phase = "landing" | "map";
 type Tab = "map" | "lines" | "calc";
@@ -41,10 +56,10 @@ function PillButton({
   return (
     <button
       onClick={onClick}
-      className={`py-3 px-1 rounded-xl text-xs font-medium transition-all active:scale-95 truncate ${
+      className={`px-5 py-3 rounded-full text-sm font-medium transition-all active:scale-95 border-2 whitespace-nowrap ${
         active
-          ? "bg-emerald-500/20 text-emerald-700 border border-emerald-500/40 shadow-sm"
-          : "text-black/50 border border-black/10 hover:border-black/25 hover:text-black/75 hover:bg-black/5 active:bg-black/10"
+          ? "bg-white text-black border-black"
+          : "bg-white text-black/60 border-black/15 hover:border-black/30 hover:text-black/80"
       }`}
     >
       {children}
@@ -180,7 +195,7 @@ export default function Home() {
     <div className="app-bg flex h-[100dvh] overflow-hidden">
       {/* Desktop sidebar */}
       <nav className="hidden sm:flex flex-col items-center py-5 w-[60px] border-r border-black/[0.07] shrink-0">
-        <span className="w-2 h-2 rounded-full bg-emerald-400 mb-6 shrink-0 shadow-[0_0_8px_3px_rgba(52,211,153,0.45)]" />
+        <span className="w-2 h-2 rounded-full bg-red-400 mb-6 shrink-0 shadow-[0_0_8px_3px_rgba(192,69,58,0.45)]" />
         <div className="flex flex-col gap-1 w-full px-2">
           {NAV_ITEMS.map(({ id, label, Icon }) => (
             <button
@@ -188,7 +203,7 @@ export default function Home() {
               onClick={() => handleTabChange(id)}
               className={`flex flex-col items-center gap-1.5 py-3 rounded-xl w-full transition-all ${
                 tab === id
-                  ? "bg-emerald-500/15 text-emerald-700"
+                  ? "bg-red-500/15 text-red-700"
                   : "text-black/30 hover:text-black/60 hover:bg-black/5"
               }`}
             >
@@ -207,7 +222,7 @@ export default function Home() {
           <main className="flex-1 flex flex-col min-h-0">
             <header className="flex items-center gap-3 px-4 py-2.5 border-b border-black/10 shrink-0">
               <div className="flex items-center gap-2.5 min-w-0">
-                <span className="shrink-0 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.4)]" />
+                <span className="shrink-0 w-2 h-2 rounded-full bg-red-400 shadow-[0_0_6px_2px_rgba(192,69,58,0.4)]" />
                 <h1 className="text-black font-semibold text-sm tracking-wide truncate">
                   Prices by line
                 </h1>
@@ -218,7 +233,7 @@ export default function Home() {
               </div>
               {loading && (
                 <div className="ml-auto flex items-center gap-1.5 text-black/30 text-xs shrink-0">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60 animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-400/60 animate-pulse" />
                   <span className="hidden sm:inline">Updating…</span>
                 </div>
               )}
@@ -244,110 +259,89 @@ export default function Home() {
           </div>
         ) : phase === "landing" ? (
           <div
-            className={`flex-1 flex flex-col justify-center py-10 px-4 overflow-x-hidden transition-all duration-[280ms] ease-in-out ${
+            className={`flex-1 flex flex-col justify-start overflow-y-auto overflow-x-hidden pt-12 pb-10 px-5 transition-all duration-[280ms] ease-in-out ${
               landingAnim === "exit"
                 ? "opacity-0 -translate-y-5"
                 : "opacity-100 translate-y-0"
             }`}
           >
-            <div className="self-center w-[min(calc(100vw-2rem),24rem)]">
-              {/* Brand */}
-              <div className="text-center mb-8 px-1">
-                <div className="mx-auto mb-4 grid place-items-center w-12 h-12 rounded-2xl bg-gradient-to-b from-emerald-400/25 to-emerald-500/10 border border-emerald-400/30 shadow-[0_8px_24px_-8px_rgba(16,185,129,0.6)]">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_3px_rgba(52,211,153,0.55)]" />
+            <div className="self-center w-[min(calc(100vw-2rem),26rem)] flex flex-col gap-7">
+              <h1 className="text-black font-bold text-3xl leading-tight tracking-tight">
+                Find HDB resale prices near any MRT
+              </h1>
+
+              <div className="flex flex-col gap-3">
+                <span className="text-black font-bold text-base">Flat type</span>
+                <div className="flex flex-wrap gap-2">
+                  {FLAT_TYPES.map((t) => (
+                    <PillButton
+                      key={t}
+                      active={filters.flatType === t}
+                      onClick={() =>
+                        setFilters((f) => ({ ...f, flatType: t }))
+                      }
+                    >
+                      {flatTypeLabel(t)}
+                    </PillButton>
+                  ))}
                 </div>
-                <h1 className="text-gradient font-semibold text-2xl tracking-tight">
-                  HDB Budgeter
-                </h1>
-                <p className="text-black/45 text-sm leading-snug mt-1.5">
-                  Singapore Resale Prices
-                  <br className="sm:hidden" /> by MRT station
-                </p>
               </div>
 
-              {/* Filter card */}
-              <div className="glass rounded-2xl p-5 flex flex-col gap-5">
-                <div className="flex flex-col gap-2.5">
-                  <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">
-                    Flat type
-                  </span>
-                  <div className="grid grid-cols-3 gap-2">
-                    {FLAT_TYPES.map((t) => (
-                      <PillButton
-                        key={t}
-                        active={filters.flatType === t}
-                        onClick={() =>
-                          setFilters((f) => ({ ...f, flatType: t }))
-                        }
-                      >
-                        {t}
-                      </PillButton>
-                    ))}
-                  </div>
+              <div className="flex flex-col gap-3">
+                <span className="text-black font-bold text-base">Walk from MRT</span>
+                <div className="flex flex-wrap gap-2">
+                  {WALK_OPTIONS.map((m) => (
+                    <PillButton
+                      key={m}
+                      active={filters.maxWalkMin === m}
+                      onClick={() =>
+                        setFilters((f) => ({ ...f, maxWalkMin: m }))
+                      }
+                    >
+                      {walkLabel(m)}
+                    </PillButton>
+                  ))}
                 </div>
-
-                <div className="flex flex-col gap-2.5">
-                  <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">
-                    Walk from MRT
-                  </span>
-                  <div className="grid grid-cols-4 gap-2">
-                    {WALK_OPTIONS.map((m) => (
-                      <PillButton
-                        key={m}
-                        active={filters.maxWalkMin === m}
-                        onClick={() =>
-                          setFilters((f) => ({ ...f, maxWalkMin: m }))
-                        }
-                      >
-                        ≤{m} min
-                      </PillButton>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-2.5">
-                  <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">
-                    Data period
-                  </span>
-                  <div className="grid grid-cols-5 gap-2">
-                    {MONTH_OPTIONS.map((m) => (
-                      <PillButton
-                        key={m}
-                        active={filters.months === m}
-                        onClick={() => setFilters((f) => ({ ...f, months: m }))}
-                      >
-                        {m < 12 ? `${m}mo` : `${m / 12}yr`}
-                      </PillButton>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-2.5">
-                  <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">
-                    Lease remaining
-                  </span>
-                  <div className="grid grid-cols-5 gap-2">
-                    {LEASE_OPTIONS.map((y) => (
-                      <PillButton
-                        key={y}
-                        active={filters.minLeaseYears === y}
-                        onClick={() =>
-                          setFilters((f) => ({ ...f, minLeaseYears: y }))
-                        }
-                      >
-                        {y === 0 ? "Any" : `≥${y}yr`}
-                      </PillButton>
-                    ))}
-                  </div>
-                </div>
-
-                <button
-                  onClick={goToMap}
-                  className="btn-primary w-full py-3.5 rounded-xl text-white font-semibold text-sm mt-1"
-                >
-                  View prices on map →
-                </button>
               </div>
+
+              <div className="flex flex-col gap-3">
+                <span className="text-black font-bold text-base">Lease left</span>
+                <div className="flex flex-wrap gap-2">
+                  {LEASE_OPTIONS.map((y) => (
+                    <PillButton
+                      key={y}
+                      active={filters.minLeaseYears === y}
+                      onClick={() =>
+                        setFilters((f) => ({ ...f, minLeaseYears: y }))
+                      }
+                    >
+                      {leaseLabel(y)}
+                    </PillButton>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <span className="text-black font-bold text-base">Based on sales from</span>
+                <div className="flex flex-wrap gap-2">
+                  {MONTH_OPTIONS.map((m) => (
+                    <PillButton
+                      key={m}
+                      active={filters.months === m}
+                      onClick={() => setFilters((f) => ({ ...f, months: m }))}
+                    >
+                      {monthsLabel(m)}
+                    </PillButton>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                onClick={goToMap}
+                className="btn-primary w-full py-4 rounded-full text-white font-semibold text-sm mt-1"
+              >
+                See prices on map
+              </button>
             </div>
           </div>
         ) : (
@@ -360,7 +354,7 @@ export default function Home() {
           >
             <header className="flex items-center gap-3 px-4 py-2.5 border-b border-black/10 shrink-0">
               <div className="flex items-center gap-2.5 min-w-0">
-                <span className="shrink-0 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.4)]" />
+                <span className="shrink-0 w-2 h-2 rounded-full bg-red-400 shadow-[0_0_6px_2px_rgba(192,69,58,0.4)]" />
                 <h1 className="text-black font-semibold text-sm tracking-wide truncate">
                   HDB Budgeter
                 </h1>
@@ -371,7 +365,7 @@ export default function Home() {
               </div>
               {loading && (
                 <div className="ml-auto flex items-center gap-1.5 text-black/30 text-xs shrink-0">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60 animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-400/60 animate-pulse" />
                   <span className="hidden sm:inline">Updating…</span>
                 </div>
               )}
@@ -402,7 +396,7 @@ export default function Home() {
             key={id}
             onClick={() => handleTabChange(id)}
             className={`flex-1 flex flex-col items-center justify-center gap-1 transition-all ${
-              tab === id ? "text-emerald-700" : "text-black/30"
+              tab === id ? "text-red-700" : "text-black/30"
             }`}
           >
             <Icon />

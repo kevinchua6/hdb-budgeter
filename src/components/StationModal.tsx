@@ -213,7 +213,7 @@ function ListingsView({
   if (loading) {
     return (
       <div className="flex items-center justify-center h-40 text-black/30 text-sm gap-2">
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60 animate-pulse" />
+        <span className="w-1.5 h-1.5 rounded-full bg-red-400/60 animate-pulse" />
         Loading listings…
       </div>
     );
@@ -253,7 +253,7 @@ function ListingsView({
               </div>
             </div>
             <div className="text-right shrink-0 pl-1">
-              <div className="text-emerald-700 font-semibold text-sm tabular-nums">{fmtPriceCompact(l.resalePrice)}</div>
+              <div className="text-red-700 font-semibold text-sm tabular-nums">{fmtPriceCompact(l.resalePrice)}</div>
               {fmtPsf(toPsf(l.resalePrice, l.floorAreaSqm)) && (
                 <div className="text-black/30 text-[10px] tabular-nums">
                   {fmtPsf(toPsf(l.resalePrice, l.floorAreaSqm))}
@@ -287,7 +287,7 @@ function DetailView({
       <div className="relative bg-gray-100" style={{ height: 280 }}>
         {geocoding && (
           <div className="absolute inset-0 flex items-center justify-center text-black/30 text-sm gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-red-400/60 animate-pulse" />
             Locating on map…
           </div>
         )}
@@ -336,7 +336,7 @@ function Stat({ label, value, highlight }: { label: string; value: string; highl
   return (
     <div className="bg-black/[0.03] border border-black/[0.07] rounded-xl px-3.5 py-2.5">
       <p className="text-black/30 text-[10px] uppercase tracking-widest mb-0.5">{label}</p>
-      <p className={`text-sm font-semibold ${highlight ? "text-emerald-700" : "text-black/75"}`}>{value}</p>
+      <p className={`text-sm font-semibold ${highlight ? "text-red-700" : "text-black/75"}`}>{value}</p>
     </div>
   );
 }

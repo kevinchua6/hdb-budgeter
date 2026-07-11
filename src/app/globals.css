@@ -2,9 +2,9 @@
 @import "./mrt-map.css";
 
 :root {
-  --background: #f3f4f8;
-  --foreground: #15161f;
-  --accent: #10b981;
+  --background: #f5f0e6;
+  --foreground: #1a1a1a;
+  --accent: #c0453a;
 }
 
 body {
@@ -15,25 +15,9 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* ---- Ambient app background: layered radial glows over a light base ---- */
+/* ---- Flat beige app background ---- */
 .app-bg {
-  background-color: #f3f4f8;
-  background-image:
-    radial-gradient(
-      1100px 640px at 6% -10%,
-      rgba(16, 185, 129, 0.14),
-      transparent 58%
-    ),
-    radial-gradient(
-      900px 720px at 110% -4%,
-      rgba(56, 135, 255, 0.1),
-      transparent 56%
-    ),
-    radial-gradient(
-      820px 640px at 52% 118%,
-      rgba(147, 97, 255, 0.09),
-      transparent 60%
-    );
+  background-color: #f5f0e6;
 }
 
 /* ---- Reusable glass surface ---- */
@@ -66,7 +50,7 @@ body {
 
 /* ---- Gradient brand text ---- */
 .text-gradient {
-  background: linear-gradient(120deg, #0f172a 0%, #065f46 45%, #059669 100%);
+  background: linear-gradient(120deg, #1a1a1a 0%, #7a2a20 45%, #c0453a 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -74,10 +58,10 @@ body {
 
 /* ---- Primary action button ---- */
 .btn-primary {
-  background: linear-gradient(180deg, #34d399, #10b981);
+  background: linear-gradient(180deg, #d1584a, #c0453a);
   box-shadow:
     0 1px 0 0 rgba(255, 255, 255, 0.25) inset,
-    0 10px 24px -8px rgba(16, 185, 129, 0.55);
+    0 10px 24px -8px rgba(192, 69, 58, 0.55);
   transition:
     transform 0.15s ease,
     box-shadow 0.2s ease,
@@ -87,7 +71,7 @@ body {
   filter: brightness(1.06);
   box-shadow:
     0 1px 0 0 rgba(255, 255, 255, 0.3) inset,
-    0 14px 30px -8px rgba(16, 185, 129, 0.65);
+    0 14px 30px -8px rgba(192, 69, 58, 0.65);
 }
 .btn-primary:active {
   transform: scale(0.975);

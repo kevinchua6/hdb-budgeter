@@ -36,10 +36,10 @@ function Chip({
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border-2 ${
         active
-          ? "bg-emerald-500/15 text-emerald-700 border border-emerald-500/35 shadow-sm"
-          : "text-black/45 border border-black/10 hover:border-black/20 hover:text-black/70 hover:bg-black/5"
+          ? "bg-white text-black border-black"
+          : "bg-white text-black/50 border-black/12 hover:border-black/25 hover:text-black/75"
       }`}
     >
       {label}
@@ -59,10 +59,10 @@ function MobileChip({
   return (
     <button
       onClick={onClick}
-      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all active:scale-95 ${
+      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all active:scale-95 border-2 ${
         active
-          ? "bg-emerald-500/15 text-emerald-700 border border-emerald-500/35"
-          : "text-black/50 border border-black/10 hover:border-black/20 hover:text-black/70"
+          ? "bg-white text-black border-black"
+          : "bg-white text-black/50 border-black/12 hover:border-black/25 hover:text-black/75"
       }`}
     >
       {label}
@@ -70,17 +70,20 @@ function MobileChip({
   );
 }
 
+function flatTypeSummary(t: string) {
+  return t === "EXECUTIVE" ? "Executive flat" : `${t.charAt(0)}-room flat`;
+}
+function walkSummary(m: number) {
+  return `${m} min from MRT`;
+}
+function leaseSummary(y: number) {
+  return y === 0 ? "Any lease" : `${y} years left`;
+}
+
 export default function FilterBar({ filters, onChange }: Props) {
   const [open, setOpen] = useState(false);
   const set = <K extends keyof Filters>(k: K, v: Filters[K]) =>
     onChange({ ...filters, [k]: v });
-
-  const summary = [
-    filters.flatType,
-    `≤${filters.maxWalkMin} min`,
-    filters.months < 12 ? `${filters.months}mo` : `${filters.months / 12}yr`,
-    filters.minLeaseYears === 0 ? "any lease" : `≥${filters.minLeaseYears}yr`,
-  ].join(" · ");
 
   return (
     <>
@@ -91,7 +94,7 @@ export default function FilterBar({ filters, onChange }: Props) {
           <select
             value={filters.flatType}
             onChange={(e) => set("flatType", e.target.value)}
-            className="bg-black/5 border border-black/10 rounded-lg px-3 py-1.5 text-black text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40 transition-all cursor-pointer hover:bg-black/8 hover:border-black/20"
+            className="bg-black/5 border border-black/10 rounded-lg px-3 py-1.5 text-black text-xs font-medium focus:outline-none focus:ring-1 focus:ring-red-500/40 focus:border-red-500/40 transition-all cursor-pointer hover:bg-black/8 hover:border-black/20"
           >
             {FLAT_TYPES.map((t) => (
               <option key={t} value={t} className="bg-white">{t}</option>
@@ -118,7 +121,7 @@ export default function FilterBar({ filters, onChange }: Props) {
             <input
               type="number" min={1} max={filters.maxFloor} value={filters.minFloor}
               onChange={(e) => set("minFloor", Math.max(1, parseInt(e.target.value) || 1))}
-              className="w-14 bg-black/5 border border-black/10 rounded-lg px-2 py-1.5 text-black text-xs text-center focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40 transition-all hover:border-black/20"
+              className="w-14 bg-black/5 border border-black/10 rounded-lg px-2 py-1.5 text-black text-xs text-center focus:outline-none focus:ring-1 focus:ring-red-500/40 focus:border-red-500/40 transition-all hover:border-black/20"
             />
             <span className="text-black/25 text-xs select-none">—</span>
             <input
@@ -129,7 +132,7 @@ export default function FilterBar({ filters, onChange }: Props) {
                 const v = parseInt(e.target.value);
                 set("maxFloor", isNaN(v) ? 999 : Math.max(filters.minFloor, v));
               }}
-              className="w-14 bg-black/5 border border-black/10 rounded-lg px-2 py-1.5 text-black text-xs text-center placeholder:text-black/20 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40 transition-all hover:border-black/20"
+              className="w-14 bg-black/5 border border-black/10 rounded-lg px-2 py-1.5 text-black text-xs text-center placeholder:text-black/20 focus:outline-none focus:ring-1 focus:ring-red-500/40 focus:border-red-500/40 transition-all hover:border-black/20"
             />
           </div>
         </div>
@@ -157,21 +160,17 @@ export default function FilterBar({ filters, onChange }: Props) {
         </div>
       </div>
 
-      {/* Mobile: compact toggle bar */}
-      <div className="sm:hidden bg-black/[0.025] border-b border-black/10 px-4 py-2.5 shrink-0">
+      {/* Mobile: floating summary bubble, overlaying the content below it */}
+      <div className="sm:hidden fixed left-1/2 -translate-x-1/2 top-16 z-40">
         <button
           onClick={() => setOpen((o) => !o)}
-          className="w-full flex items-center justify-between gap-2"
+          className="bg-white rounded-full shadow-lg border border-black/[0.06] px-6 py-2.5 flex flex-col items-center active:scale-95 transition-transform"
         >
-          <span className="text-black/55 text-xs truncate">{summary}</span>
-          <span className="text-black/40 text-xs shrink-0 font-medium flex items-center gap-1">
-            Filters
-            <svg
-              width="12" height="12" viewBox="0 0 12 12" fill="none"
-              className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
-            >
-              <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+          <span className="text-black font-bold text-sm whitespace-nowrap">
+            {flatTypeSummary(filters.flatType)}
+          </span>
+          <span className="text-black/55 text-xs whitespace-nowrap">
+            {walkSummary(filters.maxWalkMin)} | {leaseSummary(filters.minLeaseYears)}
           </span>
         </button>
       </div>
@@ -199,7 +198,7 @@ export default function FilterBar({ filters, onChange }: Props) {
               <select
                 value={filters.flatType}
                 onChange={(e) => set("flatType", e.target.value)}
-                className="bg-black/5 border border-black/10 rounded-xl px-4 py-3 text-black text-sm font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40"
+                className="bg-black/5 border border-black/10 rounded-xl px-4 py-3 text-black text-sm font-medium focus:outline-none focus:ring-1 focus:ring-red-500/40 focus:border-red-500/40"
               >
                 {FLAT_TYPES.map((t) => (
                   <option key={t} value={t} className="bg-white">{t}</option>
@@ -222,7 +221,7 @@ export default function FilterBar({ filters, onChange }: Props) {
                 <input
                   type="number" min={1} max={filters.maxFloor} value={filters.minFloor}
                   onChange={(e) => set("minFloor", Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-20 bg-black/5 border border-black/10 rounded-xl px-3 py-2.5 text-black text-sm text-center focus:outline-none focus:ring-1 focus:ring-emerald-500/40"
+                  className="w-20 bg-black/5 border border-black/10 rounded-xl px-3 py-2.5 text-black text-sm text-center focus:outline-none focus:ring-1 focus:ring-red-500/40"
                 />
                 <span className="text-black/25 text-sm">—</span>
                 <input
@@ -233,7 +232,7 @@ export default function FilterBar({ filters, onChange }: Props) {
                     const v = parseInt(e.target.value);
                     set("maxFloor", isNaN(v) ? 999 : Math.max(filters.minFloor, v));
                   }}
-                  className="w-20 bg-black/5 border border-black/10 rounded-xl px-3 py-2.5 text-black text-sm text-center placeholder:text-black/20 focus:outline-none focus:ring-1 focus:ring-emerald-500/40"
+                  className="w-20 bg-black/5 border border-black/10 rounded-xl px-3 py-2.5 text-black text-sm text-center placeholder:text-black/20 focus:outline-none focus:ring-1 focus:ring-red-500/40"
                 />
               </div>
             </div>

@@ -53,7 +53,7 @@ function Field({
   return (
     <div className="space-y-1.5">
       <label className="text-black/35 text-[10px] font-medium uppercase tracking-widest">{label}</label>
-      <div className="flex items-center gap-1.5 bg-black/[0.05] border border-black/[0.08] rounded-xl px-3.5 py-3 focus-within:ring-1 focus-within:ring-emerald-500/40 focus-within:border-emerald-500/40 transition-all">
+      <div className="flex items-center gap-1.5 bg-black/[0.05] border border-black/[0.08] rounded-xl px-3.5 py-3 focus-within:ring-1 focus-within:ring-red-500/40 focus-within:border-red-500/40 transition-all">
         <span className="text-black/30 text-sm font-medium shrink-0 select-none">$</span>
         <input
           type="number"
@@ -111,8 +111,8 @@ export default function Calculator() {
               {reno > 0 && <Row label="Renovation" value={reno} />}
             </div>
             <div className="border-t border-black/[0.08] pt-3 space-y-1.5">
-              <div className="flex items-baseline justify-between rounded-xl bg-gradient-to-r from-emerald-500/15 to-emerald-500/[0.04] border border-emerald-500/20 px-3.5 py-3">
-                <span className="text-emerald-800/70 text-sm">Minimum cash savings</span>
+              <div className="flex items-baseline justify-between rounded-xl bg-gradient-to-r from-red-500/15 to-red-500/[0.04] border border-red-500/20 px-3.5 py-3">
+                <span className="text-red-800/70 text-sm">Minimum cash savings</span>
                 <span className="text-gradient font-bold text-2xl tabular-nums">{fmt(cashNeeded)}</span>
               </div>
               {price > 0 && (
@@ -135,7 +135,7 @@ export default function Calculator() {
           <div className="space-y-3 pt-1">
             {CONSIDERATIONS.map((c) => (
               <div key={c.title} className="flex gap-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/50 mt-1.5 shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-red-400/50 mt-1.5 shrink-0" />
                 <p className="text-sm leading-snug">
                   <span className="text-black/65 font-medium">{c.title}: </span>
                   <span className="text-black/35">{c.desc}</span>

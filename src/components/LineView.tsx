@@ -105,7 +105,7 @@ export default function LineView({ prices, onStationClick }: Props) {
             onClick={() => setPriceMode("total")}
             className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
               priceMode === "total"
-                ? "bg-emerald-500/20 text-emerald-700"
+                ? "bg-red-500/20 text-red-700"
                 : "text-black/50 hover:text-black/80"
             }`}
           >
@@ -115,7 +115,7 @@ export default function LineView({ prices, onStationClick }: Props) {
             onClick={() => setPriceMode("psf")}
             className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
               priceMode === "psf"
-                ? "bg-emerald-500/20 text-emerald-700"
+                ? "bg-red-500/20 text-red-700"
                 : "text-black/50 hover:text-black/80"
             }`}
           >
@@ -230,12 +230,12 @@ export default function LineView({ prices, onStationClick }: Props) {
                 {/* Price badge on the line — replaces the station number entirely */}
                 <span
                   className={`relative z-10 grid place-items-center rounded-xl px-3 font-bold text-sm leading-none transition-transform group-hover:scale-110 group-active:scale-95 ${
-                    hasValue ? "text-black" : "text-white"
+                    hasValue ? "text-black" : "text-[#d6cbb0]"
                   }`}
                   style={{
                     height: BADGE_H,
                     minWidth: 56,
-                    background: hasValue ? "#ffffff" : "#3f3f46",
+                    background: hasValue ? "#ffffff" : "#f5f0e6",
                     boxShadow: ringShadow,
                   }}
                 >

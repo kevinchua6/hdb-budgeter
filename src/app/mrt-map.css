@@ -41,7 +41,7 @@ div#mrt-map-singapore li:before {
   box-sizing: unset;
 }
 body {
-  background: #ffffff;
+  background: #f5f0e6;
 }
 @media (max-width: 770px) {
   #map-container {
@@ -56,7 +56,7 @@ body {
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  background-color: #ffffff;
+  background-color: #f5f0e6;
   position: relative;
   margin: 0 auto;
   line-height: 15px;
@@ -422,7 +422,7 @@ ul.stations.left-spot li:before {
   content: "";
   left: 5px;
   margin: -5px 0 0 -3px;
-  border: 2px solid #ffffff;
+  border: 2px solid #f5f0e6;
 }
 ul.stations.left-spot span.station-nr.small {
   position: absolute;
@@ -450,7 +450,7 @@ ul.stations.right-spot li:after {
   content: "";
   left: 5px;
   margin: -3px 0 0 5px;
-  border: 2px solid #ffffff;
+  border: 2px solid #f5f0e6;
 }
 .right-spot span.station-nr.small {
   position: absolute;
@@ -1297,8 +1297,8 @@ a.line-number:hover {
   height: 160px;
   border-top-right-radius: 5px;
   border-bottom-left-radius: 5px;
-  border-left: 2px solid #ffffff;
-  border-right: 2px solid #ffffff;
+  border-left: 2px solid #f5f0e6;
+  border-right: 2px solid #f5f0e6;
 }
 .stretch.corner.ns22 {
   top: 633px;
@@ -1316,8 +1316,8 @@ a.line-number:hover {
   left: 893px;
   height: 322px;
   border-radius: 2px 0 0 0;
-  border-left: 2px solid #ffffff;
-  border-right: 2px solid #ffffff;
+  border-left: 2px solid #f5f0e6;
+  border-right: 2px solid #f5f0e6;
   z-index: 6;
 }
 .stretch.ns25-27 {
@@ -1325,8 +1325,8 @@ a.line-number:hover {
   left: 1008px;
   height: 218px;
   border-radius: 0 6px 0 0;
-  border-left: 2px solid #ffffff;
-  border-right: 2px solid #ffffff;
+  border-left: 2px solid #f5f0e6;
+  border-right: 2px solid #f5f0e6;
   z-index: 5;
 }
 .stretch.ns27-28 {
@@ -1569,7 +1569,7 @@ ul.stations.left-spot.ne-names.nes17-7 li:nth-child(16):before {
 .cc-cut-circle {
   width: 260px;
   height: 90px;
-  background: #ffffff;
+  background: #f5f0e6;
   top: 1085px;
   left: 754px;
   position: absolute;
@@ -1607,8 +1607,8 @@ ul.stations.right-spot.te-names li:after {
   left: 859px;
   height: 271px;
   border-radius: 3px 0 0 5px;
-  border-left: 2px solid #ffffff;
-  border-right: 2px solid #ffffff;
+  border-left: 2px solid #f5f0e6;
+  border-right: 2px solid #f5f0e6;
   z-index: 80;
 }
 .stretch.te20-21 {
@@ -1820,8 +1820,8 @@ ul.stations.left-spot.te-names.tes17-20 li:nth-child(4):before {
   top: 1038px;
   left: 869px;
   width: 125px;
-  border-top: 2px solid #ffffff;
-  border-bottom: 2px solid #ffffff;
+  border-top: 2px solid #f5f0e6;
+  border-bottom: 2px solid #f5f0e6;
   border-radius: 1px 2px 2px 0;
   z-index: 7;
 }
@@ -1846,7 +1846,7 @@ ul.stations.left-spot.te-names.tes17-20 li:nth-child(4):before {
   left: 1241px;
   height: 610px;
   border-radius: 5px 5px 0 5px;
-  border: 2px solid #ffffff;
+  border: 2px solid #f5f0e6;
   z-index: 10;
 }
 .stretch.corner.ew4-3 {
@@ -1871,7 +1871,7 @@ ul.stations.left-spot.te-names.tes17-20 li:nth-child(4):before {
   left: 1623px;
   height: 108px;
   z-index: 10;
-  border: 2px solid #ffffff;
+  border: 2px solid #f5f0e6;
 }
 .stretch.corner.cg-1 {
   top: 460px;
@@ -2187,16 +2187,16 @@ ul.stations.left-spot.ew-names.ews1-14 li:nth-child(14):before {
   border-radius: 1px;
   transform: rotate(49deg);
   z-index: 6;
-  border-left: 2px solid #ffffff;
-  border-right: 2px solid #ffffff;
+  border-left: 2px solid #f5f0e6;
+  border-right: 2px solid #f5f0e6;
 }
 .stretch.dt17 {
   top: 1057px;
   left: 993px;
   width: 124px;
   border-radius: 8px 2px 14px 13px;
-  border-top: 2px solid #ffffff;
-  border-bottom: 2px solid #ffffff;
+  border-top: 2px solid #f5f0e6;
+  border-bottom: 2px solid #f5f0e6;
   z-index: 3;
 }
 .stretch.dt18-19 {
@@ -2221,16 +2221,16 @@ ul.stations.left-spot.ew-names.ews1-14 li:nth-child(14):before {
   width: 180px;
   border-radius: 1px;
   z-index: 5;
-  border-top: 2px solid #ffffff;
-  border-bottom: 2px solid #ffffff;
+  border-top: 2px solid #f5f0e6;
+  border-bottom: 2px solid #f5f0e6;
 }
 .stretch.dt21-29 {
   top: 349px;
   left: 1194px;
   height: 575px;
   border-radius: 5px;
-  border-left: 2px solid #ffffff;
-  border-right: 2px solid #ffffff;
+  border-left: 2px solid #f5f0e6;
+  border-right: 2px solid #f5f0e6;
 }
 .stretch.dt30-32 {
   top: 432px;
@@ -2299,7 +2299,7 @@ span.sentosa-cable-car-2 i {
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
-  background-image: linear-gradient(0deg, #ffffff 17%, #e2e2e2 17%);
+  background-image: linear-gradient(0deg, #f5f0e6 17%, #e2e2e2 17%);
 }
 span.harbourfront-ferry i {
   font-size: 17px;
@@ -2752,7 +2752,7 @@ ul.empty-spot {
 .empty-spot li {
   width: 20px;
   height: 20px;
-  border: 2px solid #ffffff;
+  border: 2px solid #f5f0e6;
   list-style-type: none;
   border-radius: 20px;
   background: #6c6c6c;
@@ -3109,7 +3109,7 @@ span.standard-transfer-x em {
   padding: 5px 0;
   display: inline-block;
   text-align: center;
-  border: 2px solid #ffffff;
+  border: 2px solid #f5f0e6;
   line-height: 16px;
   margin: 2px -2px;
 }
@@ -3213,7 +3213,7 @@ span.under-construction {
   border-bottom: 6px dotted #6ab8eb;
 }
 .popover-body {
-  background: #ffffff;
+  background: #f5f0e6;
   box-shadow: 3px 3px 3px #000;
   border: 1px solid #8a6d00;
   border-radius: 5px;
@@ -3281,7 +3281,7 @@ span.marina-bay-name {
   position: absolute;
   right: 6px;
   top: 6px;
-  background: #ffffff;
+  background: #f5f0e6;
   cursor: pointer;
 }
 .close-popover i.material-icons {

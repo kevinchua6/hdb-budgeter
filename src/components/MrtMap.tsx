@@ -269,8 +269,8 @@ export default function MrtMap({ prices, onStationClick }: Props) {
               : `$${Math.round(value / 1000)}k`;
       label.style.left = `${cx + dx}px`;
       label.style.top = `${cy + dy}px`;
-      label.style.background = value == null ? "#3f3f46" : "#ffffff";
-      label.style.color = value == null ? "#ffffff" : "#0a0a0a";
+      label.style.background = value == null ? "#f5f0e6" : "#ffffff";
+      label.style.color = value == null ? "#d6cbb0" : "#0a0a0a";
       label.style.boxShadow = `${ringShadow}, 0 2px 8px -2px rgba(0, 0, 0, 0.7)`;
       overlay!.appendChild(label);
 
@@ -363,7 +363,7 @@ export default function MrtMap({ prices, onStationClick }: Props) {
           onClick={() => setPriceMode("total")}
           className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
             priceMode === "total"
-              ? "bg-emerald-500/20 text-emerald-700"
+              ? "bg-red-500/20 text-red-700"
               : "text-black/50 hover:text-black/80"
           }`}
         >
@@ -373,7 +373,7 @@ export default function MrtMap({ prices, onStationClick }: Props) {
           onClick={() => setPriceMode("psf")}
           className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
             priceMode === "psf"
-              ? "bg-emerald-500/20 text-emerald-700"
+              ? "bg-red-500/20 text-red-700"
               : "text-black/50 hover:text-black/80"
           }`}
         >
@@ -393,7 +393,7 @@ export default function MrtMap({ prices, onStationClick }: Props) {
           <select
             value={commuteOrigin ?? ""}
             onChange={(e) => setCommuteOrigin(e.target.value || null)}
-            className="bg-black/5 border border-black/10 rounded-lg px-2 py-1.5 text-black text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40 cursor-pointer hover:border-black/20 transition-colors"
+            className="bg-black/5 border border-black/10 rounded-lg px-2 py-1.5 text-black text-xs font-medium focus:outline-none focus:ring-1 focus:ring-red-500/40 focus:border-red-500/40 cursor-pointer hover:border-black/20 transition-colors"
           >
             <option value="" className="bg-white">
               Any station
@@ -436,7 +436,7 @@ export default function MrtMap({ prices, onStationClick }: Props) {
             <select
               value={commuteOrigin ?? ""}
               onChange={(e) => setCommuteOrigin(e.target.value || null)}
-              className="bg-black/5 border border-black/10 rounded-lg px-2 py-1.5 text-black text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/40 cursor-pointer"
+              className="bg-black/5 border border-black/10 rounded-lg px-2 py-1.5 text-black text-xs font-medium focus:outline-none focus:ring-1 focus:ring-red-500/40 focus:border-red-500/40 cursor-pointer"
             >
               <option value="" className="bg-white">Any station</option>
               {STATION_GROUPS.map((g) => (
@@ -464,7 +464,7 @@ export default function MrtMap({ prices, onStationClick }: Props) {
           onClick={() => setMobileCommuteOpen((o) => !o)}
           className={`h-10 px-3 rounded-xl border text-xs font-medium transition-all active:scale-95 flex items-center gap-1.5 ${
             commuteOrigin
-              ? "bg-emerald-500/15 border-emerald-500/35 text-emerald-700"
+              ? "bg-red-500/15 border-red-500/35 text-red-700"
               : "bg-black/10 border-black/15 text-black/70"
           }`}
         >
