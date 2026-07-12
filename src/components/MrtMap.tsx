@@ -15,6 +15,8 @@ import {
 interface Props {
   prices: Record<string, { avgPrice: number; avgPsf: number | null }>;
   onStationClick?: (code: string) => void;
+  commuteOrigin: string | null;
+  commuteMaxStops: number;
 }
 
 function ZoomControls({ scale }: { scale: number }) {
@@ -62,14 +64,16 @@ const LABEL_OFFSETS: Partial<
   NE15: { dy: -5 }, // Buangkok
 };
 
-export default function MrtMap({ prices, onStationClick }: Props) {
+export default function MrtMap({
+  prices,
+  onStationClick,
+  commuteOrigin,
+  commuteMaxStops,
+}: Props) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [htmlLoaded, setHtmlLoaded] = useState(false);
   const [scale, setScale] = useState(1.0);
   const didMove = useRef(false);
-  const [commuteOrigin, setCommuteOrigin] = useState<string | null>(null);
-  const [commuteMaxStops, setCommuteMaxStops] = useState(5);
-  const [mobileCommuteOpen, setMobileCommuteOpen] = useState(false);
   const [priceMode, setPriceMode] = useState<"total" | "psf">("total");
 
   const { reachable, originCodesSet } = useMemo(() => {
@@ -381,99 +385,6 @@ export default function MrtMap({ prices, onStationClick }: Props) {
         </button>
       </div>
 
-      {/* Commute distance panel */}
-      <div
-        className="hidden sm:block absolute top-4 left-4 z-50"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="glass backdrop-blur-md rounded-xl p-3 flex flex-col gap-2 w-44">
-          <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">
-            Commute from
-          </span>
-          <select
-            value={commuteOrigin ?? ""}
-            onChange={(e) => setCommuteOrigin(e.target.value || null)}
-            className="bg-black/5 border border-black/10 rounded-lg px-2 py-1.5 text-black text-xs font-medium focus:outline-none focus:ring-1 focus:ring-red-500/40 focus:border-red-500/40 cursor-pointer hover:border-black/20 transition-colors"
-          >
-            <option value="" className="bg-white">
-              Any station
-            </option>
-            {STATION_GROUPS.map((g) => (
-              <option key={g.name} value={g.name} className="bg-white">
-                {g.name}
-              </option>
-            ))}
-          </select>
-          {commuteOrigin && (
-            <div className="flex items-center gap-1">
-              <span className="text-black/40 text-[10px] shrink-0">Within</span>
-              <button
-                onClick={() => setCommuteMaxStops((s) => Math.max(1, s - 1))}
-                className="w-6 h-6 rounded bg-black/10 hover:bg-black/20 border border-black/10 text-black/60 hover:text-black text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
-              >
-                −
-              </button>
-              <span className="text-black text-sm font-semibold w-6 text-center tabular-nums">
-                {commuteMaxStops}
-              </span>
-              <button
-                onClick={() => setCommuteMaxStops((s) => Math.min(30, s + 1))}
-                className="w-6 h-6 rounded bg-black/10 hover:bg-black/20 border border-black/10 text-black/60 hover:text-black text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
-              >
-                +
-              </button>
-              <span className="text-black/40 text-[10px] shrink-0">stops</span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Mobile: commute FAB + panel */}
-      <div className="sm:hidden absolute bottom-4 right-4 z-50 flex flex-col items-end gap-2" onClick={(e) => e.stopPropagation()}>
-        {mobileCommuteOpen && (
-          <div className="glass backdrop-blur-md rounded-xl p-3 flex flex-col gap-2 w-48">
-            <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">Commute from</span>
-            <select
-              value={commuteOrigin ?? ""}
-              onChange={(e) => setCommuteOrigin(e.target.value || null)}
-              className="bg-black/5 border border-black/10 rounded-lg px-2 py-1.5 text-black text-xs font-medium focus:outline-none focus:ring-1 focus:ring-red-500/40 focus:border-red-500/40 cursor-pointer"
-            >
-              <option value="" className="bg-white">Any station</option>
-              {STATION_GROUPS.map((g) => (
-                <option key={g.name} value={g.name} className="bg-white">{g.name}</option>
-              ))}
-            </select>
-            {commuteOrigin && (
-              <div className="flex items-center gap-1">
-                <span className="text-black/40 text-[10px] shrink-0">Within</span>
-                <button
-                  onClick={() => setCommuteMaxStops((s) => Math.max(1, s - 1))}
-                  className="w-6 h-6 rounded bg-black/10 hover:bg-black/20 border border-black/10 text-black/60 text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
-                >−</button>
-                <span className="text-black text-sm font-semibold w-6 text-center tabular-nums">{commuteMaxStops}</span>
-                <button
-                  onClick={() => setCommuteMaxStops((s) => Math.min(30, s + 1))}
-                  className="w-6 h-6 rounded bg-black/10 hover:bg-black/20 border border-black/10 text-black/60 text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
-                >+</button>
-                <span className="text-black/40 text-[10px] shrink-0">stops</span>
-              </div>
-            )}
-          </div>
-        )}
-        <button
-          onClick={() => setMobileCommuteOpen((o) => !o)}
-          className={`h-10 px-3 rounded-xl border text-xs font-medium transition-all active:scale-95 flex items-center gap-1.5 ${
-            commuteOrigin
-              ? "bg-red-500/15 border-red-500/35 text-red-700"
-              : "bg-black/10 border-black/15 text-black/70"
-          }`}
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
-          </svg>
-          {commuteOrigin ? commuteOrigin : "Commute"}
-        </button>
-      </div>
 
       <TransformWrapper
         minScale={0.75}

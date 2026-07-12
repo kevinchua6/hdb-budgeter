@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { STATION_GROUPS } from "@/lib/stations";
 
 export interface Filters {
   flatType: string;
@@ -13,6 +14,10 @@ export interface Filters {
 interface Props {
   filters: Filters;
   onChange: (f: Filters) => void;
+  commuteOrigin: string | null;
+  onCommuteOriginChange: (origin: string | null) => void;
+  commuteMaxStops: number;
+  onCommuteMaxStopsChange: (updater: (s: number) => number) => void;
 }
 
 const FLAT_TYPES = ["1 ROOM", "2 ROOM", "3 ROOM", "4 ROOM", "5 ROOM", "EXECUTIVE"];
@@ -80,7 +85,14 @@ function leaseSummary(y: number) {
   return y === 0 ? "Any lease" : `${y} years left`;
 }
 
-export default function FilterBar({ filters, onChange }: Props) {
+export default function FilterBar({
+  filters,
+  onChange,
+  commuteOrigin,
+  onCommuteOriginChange,
+  commuteMaxStops,
+  onCommuteMaxStopsChange,
+}: Props) {
   const [open, setOpen] = useState(false);
   const set = <K extends keyof Filters>(k: K, v: Filters[K]) =>
     onChange({ ...filters, [k]: v });
@@ -156,6 +168,45 @@ export default function FilterBar({ filters, onChange }: Props) {
             {LEASE_OPTIONS.map((y) => (
               <Chip key={y} label={y === 0 ? "Any" : `≥${y}yr`} active={filters.minLeaseYears === y} onClick={() => set("minLeaseYears", y)} />
             ))}
+          </div>
+        </div>
+
+        <Divider />
+
+        <div className="flex flex-col gap-1.5">
+          <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">Commute from</span>
+          <div className="flex items-center gap-2">
+            <select
+              value={commuteOrigin ?? ""}
+              onChange={(e) => onCommuteOriginChange(e.target.value || null)}
+              className="bg-black/5 border border-black/10 rounded-lg px-3 py-1.5 text-black text-xs font-medium focus:outline-none focus:ring-1 focus:ring-red-500/40 focus:border-red-500/40 transition-all cursor-pointer hover:bg-black/8 hover:border-black/20"
+            >
+              <option value="" className="bg-white">Any station</option>
+              {STATION_GROUPS.map((g) => (
+                <option key={g.name} value={g.name} className="bg-white">{g.name}</option>
+              ))}
+            </select>
+            {commuteOrigin && (
+              <div className="flex items-center gap-1">
+                <span className="text-black/40 text-[10px] shrink-0">Within</span>
+                <button
+                  onClick={() => onCommuteMaxStopsChange((s) => Math.max(1, s - 1))}
+                  className="w-6 h-6 rounded bg-black/10 hover:bg-black/20 border border-black/10 text-black/60 hover:text-black text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
+                >
+                  −
+                </button>
+                <span className="text-black text-xs font-semibold w-5 text-center tabular-nums">
+                  {commuteMaxStops}
+                </span>
+                <button
+                  onClick={() => onCommuteMaxStopsChange((s) => Math.min(30, s + 1))}
+                  className="w-6 h-6 rounded bg-black/10 hover:bg-black/20 border border-black/10 text-black/60 hover:text-black text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
+                >
+                  +
+                </button>
+                <span className="text-black/40 text-[10px] shrink-0">stops</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -253,6 +304,41 @@ export default function FilterBar({ filters, onChange }: Props) {
                   <MobileChip key={y} label={y === 0 ? "Any" : `≥${y}yr`} active={filters.minLeaseYears === y} onClick={() => set("minLeaseYears", y)} />
                 ))}
               </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">Commute from</span>
+              <select
+                value={commuteOrigin ?? ""}
+                onChange={(e) => onCommuteOriginChange(e.target.value || null)}
+                className="bg-black/5 border border-black/10 rounded-xl px-4 py-3 text-black text-sm font-medium focus:outline-none focus:ring-1 focus:ring-red-500/40 focus:border-red-500/40"
+              >
+                <option value="" className="bg-white">Any station</option>
+                {STATION_GROUPS.map((g) => (
+                  <option key={g.name} value={g.name} className="bg-white">{g.name}</option>
+                ))}
+              </select>
+              {commuteOrigin && (
+                <div className="flex items-center gap-2 pt-1">
+                  <span className="text-black/40 text-xs shrink-0">Within</span>
+                  <button
+                    onClick={() => onCommuteMaxStopsChange((s) => Math.max(1, s - 1))}
+                    className="w-8 h-8 rounded-lg bg-black/10 hover:bg-black/20 border border-black/10 text-black/60 hover:text-black text-sm transition-all flex items-center justify-center shrink-0 active:scale-90"
+                  >
+                    −
+                  </button>
+                  <span className="text-black text-base font-semibold w-6 text-center tabular-nums">
+                    {commuteMaxStops}
+                  </span>
+                  <button
+                    onClick={() => onCommuteMaxStopsChange((s) => Math.min(30, s + 1))}
+                    className="w-8 h-8 rounded-lg bg-black/10 hover:bg-black/20 border border-black/10 text-black/60 hover:text-black text-sm transition-all flex items-center justify-center shrink-0 active:scale-90"
+                  >
+                    +
+                  </button>
+                  <span className="text-black/40 text-xs shrink-0">stops</span>
+                </div>
+              )}
             </div>
           </div>
         </>

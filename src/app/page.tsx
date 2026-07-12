@@ -4,6 +4,7 @@ import FilterBar, { type Filters } from "@/components/FilterBar";
 import MrtMap from "@/components/MrtMap";
 import LineView from "@/components/LineView";
 import StationModal from "@/components/StationModal";
+import { STATION_GROUPS } from "@/lib/stations";
 
 const DEFAULT_FILTERS: Filters = {
   flatType: "4 ROOM",
@@ -146,6 +147,8 @@ export default function Home() {
   const [selectedStation, setSelectedStation] = useState<string | null>(null);
   const [landingAnim, setLandingAnim] = useState<"in" | "exit">("in");
   const [mapAnim, setMapAnim] = useState<"hidden" | "enter" | "in">("hidden");
+  const [commuteOrigin, setCommuteOrigin] = useState<string | null>(null);
+  const [commuteMaxStops, setCommuteMaxStops] = useState(5);
 
   const fetchPrices = useCallback(async (f: Filters) => {
     setLoading(true);
@@ -239,7 +242,14 @@ export default function Home() {
               )}
             </header>
 
-            <FilterBar filters={filters} onChange={handleFiltersChange} />
+            <FilterBar
+              filters={filters}
+              onChange={handleFiltersChange}
+              commuteOrigin={commuteOrigin}
+              onCommuteOriginChange={setCommuteOrigin}
+              commuteMaxStops={commuteMaxStops}
+              onCommuteMaxStopsChange={setCommuteMaxStops}
+            />
 
             <div className="flex-1 min-h-0">
               <LineView prices={prices} onStationClick={setSelectedStation} />
@@ -305,6 +315,40 @@ export default function Home() {
               </div>
 
               <div className="flex flex-col gap-3">
+                <span className="text-black font-bold text-base">Floor</span>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="number"
+                    min={1}
+                    max={filters.maxFloor}
+                    value={filters.minFloor}
+                    onChange={(e) =>
+                      setFilters((f) => ({
+                        ...f,
+                        minFloor: Math.max(1, parseInt(e.target.value) || 1),
+                      }))
+                    }
+                    className="w-24 bg-white border-2 border-black/15 rounded-full px-4 py-3 text-black text-sm text-center focus:outline-none focus:border-black transition-all"
+                  />
+                  <span className="text-black/40 text-sm select-none">—</span>
+                  <input
+                    type="number"
+                    min={filters.minFloor}
+                    value={filters.maxFloor >= 999 ? "" : filters.maxFloor}
+                    placeholder="any"
+                    onChange={(e) => {
+                      const v = parseInt(e.target.value);
+                      setFilters((f) => ({
+                        ...f,
+                        maxFloor: isNaN(v) ? 999 : Math.max(f.minFloor, v),
+                      }));
+                    }}
+                    className="w-24 bg-white border-2 border-black/15 rounded-full px-4 py-3 text-black text-sm text-center placeholder:text-black/30 focus:outline-none focus:border-black transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3">
                 <span className="text-black font-bold text-base">Lease left</span>
                 <div className="flex flex-wrap gap-2">
                   {LEASE_OPTIONS.map((y) => (
@@ -334,6 +378,47 @@ export default function Home() {
                     </PillButton>
                   ))}
                 </div>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <span className="text-black font-bold text-base">Commute from</span>
+                <select
+                  value={commuteOrigin ?? ""}
+                  onChange={(e) => setCommuteOrigin(e.target.value || null)}
+                  className="w-full bg-white border-2 border-black/15 rounded-full px-5 py-3 text-black text-sm font-medium focus:outline-none focus:border-black transition-all cursor-pointer"
+                >
+                  <option value="">Any station</option>
+                  {STATION_GROUPS.map((g) => (
+                    <option key={g.name} value={g.name}>
+                      {g.name}
+                    </option>
+                  ))}
+                </select>
+                {commuteOrigin && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-black/50 text-sm">Within</span>
+                    <button
+                      onClick={() =>
+                        setCommuteMaxStops((s) => Math.max(1, s - 1))
+                      }
+                      className="w-9 h-9 rounded-full border-2 border-black/15 bg-white text-black text-base flex items-center justify-center active:scale-90 transition-all"
+                    >
+                      −
+                    </button>
+                    <span className="text-black font-bold text-base w-6 text-center tabular-nums">
+                      {commuteMaxStops}
+                    </span>
+                    <button
+                      onClick={() =>
+                        setCommuteMaxStops((s) => Math.min(30, s + 1))
+                      }
+                      className="w-9 h-9 rounded-full border-2 border-black/15 bg-white text-black text-base flex items-center justify-center active:scale-90 transition-all"
+                    >
+                      +
+                    </button>
+                    <span className="text-black/50 text-sm">stops</span>
+                  </div>
+                )}
               </div>
 
               <button
@@ -371,10 +456,22 @@ export default function Home() {
               )}
             </header>
 
-            <FilterBar filters={filters} onChange={handleFiltersChange} />
+            <FilterBar
+              filters={filters}
+              onChange={handleFiltersChange}
+              commuteOrigin={commuteOrigin}
+              onCommuteOriginChange={setCommuteOrigin}
+              commuteMaxStops={commuteMaxStops}
+              onCommuteMaxStopsChange={setCommuteMaxStops}
+            />
 
             <div className="flex-1 min-h-0">
-              <MrtMap prices={prices} onStationClick={setSelectedStation} />
+              <MrtMap
+                prices={prices}
+                onStationClick={setSelectedStation}
+                commuteOrigin={commuteOrigin}
+                commuteMaxStops={commuteMaxStops}
+              />
             </div>
           </main>
         )}
