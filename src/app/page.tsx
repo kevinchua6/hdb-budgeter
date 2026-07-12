@@ -106,34 +106,9 @@ function LinesIcon() {
   );
 }
 
-function CalcIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="4" y="2" width="16" height="20" rx="2" />
-      <line x1="8" y1="6" x2="16" y2="6" />
-      <line x1="8" y1="10" x2="10" y2="10" />
-      <line x1="14" y1="10" x2="16" y2="10" />
-      <line x1="8" y1="14" x2="10" y2="14" />
-      <line x1="14" y1="14" x2="16" y2="14" />
-      <line x1="8" y1="18" x2="10" y2="18" />
-      <line x1="14" y1="18" x2="16" y2="18" />
-    </svg>
-  );
-}
-
 const NAV_ITEMS = [
   { id: "map" as Tab, label: "Map", fullLabel: "MRT Prices", Icon: MapIcon },
   { id: "lines" as Tab, label: "Lines", fullLabel: "By Line", Icon: LinesIcon },
-  { id: "calc" as Tab, label: "Calc", fullLabel: "Calculator", Icon: CalcIcon },
 ];
 
 export default function Home() {
@@ -220,28 +195,9 @@ export default function Home() {
       </nav>
 
       {/* Content area */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-0 pb-14 sm:pb-0">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
         {tab === "lines" ? (
           <main className="flex-1 flex flex-col min-h-0">
-            <header className="flex items-center gap-3 px-4 py-2.5 border-b border-black/10 shrink-0">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <span className="shrink-0 w-2 h-2 rounded-full bg-red-400 shadow-[0_0_6px_2px_rgba(192,69,58,0.4)]" />
-                <h1 className="text-black font-semibold text-sm tracking-wide truncate">
-                  Prices by line
-                </h1>
-                <span className="text-black/20 hidden sm:inline">·</span>
-                <span className="text-black/35 text-xs hidden sm:inline truncate">
-                  {filters.flatType} · ≤{filters.maxWalkMin} min walk
-                </span>
-              </div>
-              {loading && (
-                <div className="ml-auto flex items-center gap-1.5 text-black/30 text-xs shrink-0">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-400/60 animate-pulse" />
-                  <span className="hidden sm:inline">Updating…</span>
-                </div>
-              )}
-            </header>
-
             <FilterBar
               filters={filters}
               onChange={handleFiltersChange}
@@ -269,13 +225,14 @@ export default function Home() {
           </div>
         ) : phase === "landing" ? (
           <div
-            className={`flex-1 flex flex-col justify-start overflow-y-auto overflow-x-hidden pt-12 pb-10 px-5 transition-all duration-[280ms] ease-in-out ${
+            className={`flex-1 flex flex-col min-h-0 transition-all duration-[280ms] ease-in-out ${
               landingAnim === "exit"
                 ? "opacity-0 -translate-y-5"
                 : "opacity-100 translate-y-0"
             }`}
           >
-            <div className="self-center w-[min(calc(100vw-2rem),26rem)] flex flex-col gap-7">
+            <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pt-12 px-5">
+            <div className="self-center w-[min(calc(100vw-2rem),26rem)] flex flex-col gap-7 pb-6 mx-auto">
               <h1 className="text-black font-bold text-3xl leading-tight tracking-tight">
                 Find HDB resale prices near any MRT
               </h1>
@@ -420,10 +377,13 @@ export default function Home() {
                   </div>
                 )}
               </div>
+            </div>
+            </div>
 
+            <div className="shrink-0 px-5 pb-6 pt-3">
               <button
                 onClick={goToMap}
-                className="btn-primary w-full py-4 rounded-full text-white font-semibold text-sm mt-1"
+                className="w-[min(calc(100vw-2rem),26rem)] mx-auto block btn-primary py-4 rounded-full text-white font-semibold text-sm"
               >
                 See prices on map
               </button>
@@ -437,25 +397,6 @@ export default function Home() {
                 : "opacity-0 translate-y-3"
             }`}
           >
-            <header className="flex items-center gap-3 px-4 py-2.5 border-b border-black/10 shrink-0">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <span className="shrink-0 w-2 h-2 rounded-full bg-red-400 shadow-[0_0_6px_2px_rgba(192,69,58,0.4)]" />
-                <h1 className="text-black font-semibold text-sm tracking-wide truncate">
-                  HDB Budgeter
-                </h1>
-                <span className="text-black/20 hidden sm:inline">·</span>
-                <span className="text-black/35 text-xs hidden sm:inline truncate">
-                  Singapore resale prices
-                </span>
-              </div>
-              {loading && (
-                <div className="ml-auto flex items-center gap-1.5 text-black/30 text-xs shrink-0">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-400/60 animate-pulse" />
-                  <span className="hidden sm:inline">Updating…</span>
-                </div>
-              )}
-            </header>
-
             <FilterBar
               filters={filters}
               onChange={handleFiltersChange}
@@ -486,21 +427,24 @@ export default function Home() {
         />
       )}
 
-      {/* Mobile bottom nav */}
-      <nav className="sm:hidden fixed bottom-0 inset-x-0 flex h-14 bg-white/95 backdrop-blur-sm border-t border-black/[0.07] z-50">
-        {NAV_ITEMS.map(({ id, fullLabel, Icon }) => (
-          <button
-            key={id}
-            onClick={() => handleTabChange(id)}
-            className={`flex-1 flex flex-col items-center justify-center gap-1 transition-all ${
-              tab === id ? "text-red-700" : "text-black/30"
-            }`}
-          >
-            <Icon />
-            <span className="text-[10px] font-medium">{fullLabel}</span>
-          </button>
-        ))}
-      </nav>
+      {/* Mobile: view switcher, floating bottom-left — hidden on the initial
+          landing/filter screen, which has its own pinned CTA in that spot */}
+      {!(tab === "map" && phase === "landing") && (
+        <nav className="sm:hidden fixed bottom-4 left-4 z-50 bg-white rounded-full shadow-lg border border-black/[0.06] p-1 flex items-center gap-1">
+          {NAV_ITEMS.map(({ id, label, Icon }) => (
+            <button
+              key={id}
+              onClick={() => handleTabChange(id)}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-all active:scale-95 ${
+                tab === id ? "bg-red-500/15 text-red-700" : "text-black/40 hover:text-black/60"
+              }`}
+            >
+              <Icon />
+              {label}
+            </button>
+          ))}
+        </nav>
+      )}
     </div>
   );
 }

@@ -32,27 +32,6 @@ function fmtValue(value: number, mode: "total" | "psf") {
   return `$${Math.round(value / 1000)}k`;
 }
 
-function TrainIcon() {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="4" y="3" width="16" height="14" rx="3" />
-      <path d="M4 11h16" />
-      <path d="M8 17l-2 4M16 17l2 4" />
-      <circle cx="8.5" cy="14" r="0.5" fill="currentColor" />
-      <circle cx="15.5" cy="14" r="0.5" fill="currentColor" />
-    </svg>
-  );
-}
-
 export default function LineView({ prices, onStationClick }: Props) {
   const [lineId, setLineId] = useState(LINES[0].id);
   const [priceMode, setPriceMode] = useState<"total" | "psf">("total");
@@ -124,29 +103,6 @@ export default function LineView({ prices, onStationClick }: Props) {
         </div>
       </div>
 
-      {/* Line title — official-style pill + code box */}
-      <div className="flex items-center gap-2.5 px-4 py-3 shrink-0">
-        <div
-          className="flex items-center gap-2 rounded-full pl-3 pr-4 py-1.5 shadow-sm"
-          style={{ background: line.color }}
-        >
-          <span className="text-white/95">
-            <TrainIcon />
-          </span>
-          <span className="text-white text-base font-semibold tracking-wide">
-            {line.name}
-          </span>
-        </div>
-        <span
-          className="rounded-md px-2.5 py-1.5 text-base font-bold text-white leading-none"
-          style={{ background: line.color }}
-        >
-          {line.shortName}
-        </span>
-        <span className="text-black/25 text-xs shrink-0 hidden sm:inline ml-auto">
-          {line.codes.length} stations · scroll →
-        </span>
-      </div>
 
       {/* Scrollable straight line */}
       <div
