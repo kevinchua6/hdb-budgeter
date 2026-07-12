@@ -10,6 +10,8 @@ import {
 interface Props {
   prices: Record<string, { avgPrice: number; avgPsf: number | null }>;
   onStationClick?: (code: string) => void;
+  priceMode: "total" | "psf";
+  onPriceModeChange: (mode: "total" | "psf") => void;
 }
 
 // Station codes that serve more than one line (shared name) are interchanges.
@@ -32,17 +34,23 @@ function fmtValue(value: number, mode: "total" | "psf") {
   return `$${Math.round(value / 1000)}k`;
 }
 
-export default function LineView({ prices, onStationClick }: Props) {
+export default function LineView({
+  prices,
+  onStationClick,
+  priceMode,
+  onPriceModeChange,
+}: Props) {
   const [lineId, setLineId] = useState(LINES[0].id);
-  const [priceMode, setPriceMode] = useState<"total" | "psf">("total");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const line = LINES.find((l) => l.id === lineId) ?? LINES[0];
 
   return (
     <div className="relative h-full w-full flex flex-col select-none">
-      {/* Controls */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-black/[0.07] shrink-0">
+      {/* Controls — extra top clearance on mobile so the line selector
+          clears FilterBar's floating summary bubble instead of sitting
+          underneath it. */}
+      <div className="flex items-center gap-3 px-4 pt-20 pb-3 sm:py-3 border-b border-black/[0.07] shrink-0">
         {/* Line selector */}
         <div className="flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
           {LINES.map((l) => {
@@ -78,10 +86,11 @@ export default function LineView({ prices, onStationClick }: Props) {
           })}
         </div>
 
-        {/* Price mode toggle */}
-        <div className="shrink-0 glass backdrop-blur-md rounded-xl p-1 flex items-center gap-0.5">
+        {/* Price mode toggle — hidden on mobile, where it lives instead in
+            the floating bottom-left cluster beside the view switcher. */}
+        <div className="hidden sm:flex shrink-0 glass backdrop-blur-md rounded-xl p-1 items-center gap-0.5">
           <button
-            onClick={() => setPriceMode("total")}
+            onClick={() => onPriceModeChange("total")}
             className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
               priceMode === "total"
                 ? "bg-red-500/20 text-red-700"
@@ -91,7 +100,7 @@ export default function LineView({ prices, onStationClick }: Props) {
             Total
           </button>
           <button
-            onClick={() => setPriceMode("psf")}
+            onClick={() => onPriceModeChange("psf")}
             className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
               priceMode === "psf"
                 ? "bg-red-500/20 text-red-700"

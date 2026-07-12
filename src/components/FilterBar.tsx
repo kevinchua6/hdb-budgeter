@@ -212,7 +212,7 @@ export default function FilterBar({
       </div>
 
       {/* Mobile: floating summary bubble, overlaying the content below it */}
-      <div className="sm:hidden fixed left-1/2 -translate-x-1/2 top-16 z-40">
+      <div className="sm:hidden fixed left-1/2 -translate-x-1/2 top-3 z-40">
         <button
           onClick={() => setOpen((o) => !o)}
           className="bg-white rounded-full shadow-lg border border-black/[0.06] px-6 py-2.5 flex flex-col items-center active:scale-95 transition-transform"

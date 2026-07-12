@@ -124,6 +124,7 @@ export default function Home() {
   const [mapAnim, setMapAnim] = useState<"hidden" | "enter" | "in">("hidden");
   const [commuteOrigin, setCommuteOrigin] = useState<string | null>(null);
   const [commuteMaxStops, setCommuteMaxStops] = useState(5);
+  const [priceMode, setPriceMode] = useState<"total" | "psf">("total");
 
   const fetchPrices = useCallback(async (f: Filters) => {
     setLoading(true);
@@ -208,7 +209,12 @@ export default function Home() {
             />
 
             <div className="flex-1 min-h-0">
-              <LineView prices={prices} onStationClick={setSelectedStation} />
+              <LineView
+                prices={prices}
+                onStationClick={setSelectedStation}
+                priceMode={priceMode}
+                onPriceModeChange={setPriceMode}
+              />
             </div>
           </main>
         ) : tab === "calc" ? (
@@ -272,6 +278,23 @@ export default function Home() {
               </div>
 
               <div className="flex flex-col gap-3">
+                <span className="text-black font-bold text-base">Lease left</span>
+                <div className="flex flex-wrap gap-2">
+                  {LEASE_OPTIONS.map((y) => (
+                    <PillButton
+                      key={y}
+                      active={filters.minLeaseYears === y}
+                      onClick={() =>
+                        setFilters((f) => ({ ...f, minLeaseYears: y }))
+                      }
+                    >
+                      {leaseLabel(y)}
+                    </PillButton>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3">
                 <span className="text-black font-bold text-base">Floor</span>
                 <div className="flex items-center gap-3">
                   <input
@@ -302,23 +325,6 @@ export default function Home() {
                     }}
                     className="w-24 bg-white border-2 border-black/15 rounded-full px-4 py-3 text-black text-sm text-center placeholder:text-black/30 focus:outline-none focus:border-black transition-all"
                   />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <span className="text-black font-bold text-base">Lease left</span>
-                <div className="flex flex-wrap gap-2">
-                  {LEASE_OPTIONS.map((y) => (
-                    <PillButton
-                      key={y}
-                      active={filters.minLeaseYears === y}
-                      onClick={() =>
-                        setFilters((f) => ({ ...f, minLeaseYears: y }))
-                      }
-                    >
-                      {leaseLabel(y)}
-                    </PillButton>
-                  ))}
                 </div>
               </div>
 
@@ -412,6 +418,8 @@ export default function Home() {
                 onStationClick={setSelectedStation}
                 commuteOrigin={commuteOrigin}
                 commuteMaxStops={commuteMaxStops}
+                priceMode={priceMode}
+                onPriceModeChange={setPriceMode}
               />
             </div>
           </main>
@@ -427,23 +435,45 @@ export default function Home() {
         />
       )}
 
-      {/* Mobile: view switcher, floating bottom-left — hidden on the initial
-          landing/filter screen, which has its own pinned CTA in that spot */}
+      {/* Mobile: view switcher + price mode toggle, floating bottom-left —
+          hidden on the initial landing/filter screen, which has its own
+          pinned CTA in that spot */}
       {!(tab === "map" && phase === "landing") && (
-        <nav className="sm:hidden fixed bottom-4 left-4 z-50 bg-white rounded-full shadow-lg border border-black/[0.06] p-1 flex items-center gap-1">
-          {NAV_ITEMS.map(({ id, label, Icon }) => (
+        <div className="sm:hidden fixed bottom-4 left-4 z-50 flex items-center gap-2">
+          <nav className="bg-white rounded-full shadow-lg border border-black/[0.06] p-1 flex items-center gap-1">
+            {NAV_ITEMS.map(({ id, label, Icon }) => (
+              <button
+                key={id}
+                onClick={() => handleTabChange(id)}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-all active:scale-95 ${
+                  tab === id ? "bg-red-500/15 text-red-700" : "text-black/40 hover:text-black/60"
+                }`}
+              >
+                <Icon />
+                {label}
+              </button>
+            ))}
+          </nav>
+
+          <div className="bg-white rounded-full shadow-lg border border-black/[0.06] p-1 flex items-center gap-0.5">
             <button
-              key={id}
-              onClick={() => handleTabChange(id)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-all active:scale-95 ${
-                tab === id ? "bg-red-500/15 text-red-700" : "text-black/40 hover:text-black/60"
+              onClick={() => setPriceMode("total")}
+              className={`px-2.5 py-2 rounded-full text-xs font-medium transition-all active:scale-95 ${
+                priceMode === "total" ? "bg-red-500/15 text-red-700" : "text-black/40 hover:text-black/60"
               }`}
             >
-              <Icon />
-              {label}
+              Total
             </button>
-          ))}
-        </nav>
+            <button
+              onClick={() => setPriceMode("psf")}
+              className={`px-2.5 py-2 rounded-full text-xs font-medium transition-all active:scale-95 ${
+                priceMode === "psf" ? "bg-red-500/15 text-red-700" : "text-black/40 hover:text-black/60"
+              }`}
+            >
+              PSF
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
