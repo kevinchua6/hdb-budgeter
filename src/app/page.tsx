@@ -98,9 +98,68 @@ function LinesIcon() {
 }
 
 const NAV_ITEMS = [
-  { id: "map" as Tab, label: "Map", fullLabel: "MRT Prices", Icon: MapIcon },
-  { id: "lines" as Tab, label: "Lines", fullLabel: "By Line", Icon: LinesIcon },
+  { id: "map" as Tab, label: "Map", Icon: MapIcon },
+  { id: "lines" as Tab, label: "Lines", Icon: LinesIcon },
 ];
+
+// Desktop-only inline view switcher, styled to match the mobile floating
+// pill — sits in its own row below the filters on the map view, and to the
+// left of the line selector on the lines view.
+function ViewSwitcher({
+  tab,
+  onTabChange,
+}: {
+  tab: Tab;
+  onTabChange: (id: Tab) => void;
+}) {
+  return (
+    <div className="hidden sm:flex items-center gap-1 shrink-0 bg-white rounded-full shadow-sm border border-black/[0.06] p-1">
+      {NAV_ITEMS.map(({ id, label, Icon }) => (
+        <button
+          key={id}
+          onClick={() => onTabChange(id)}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+            tab === id ? "bg-red-500/15 text-red-700" : "text-black/40 hover:text-black/60"
+          }`}
+        >
+          <Icon />
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// Desktop-only price mode toggle, styled to match the mobile floating pill —
+// shares a row with ViewSwitcher on both the map and lines views.
+function PriceToggle({
+  priceMode,
+  onPriceModeChange,
+}: {
+  priceMode: "total" | "psf";
+  onPriceModeChange: (mode: "total" | "psf") => void;
+}) {
+  return (
+    <div className="hidden sm:flex items-center gap-0.5 shrink-0 bg-white rounded-full shadow-sm border border-black/[0.06] p-1">
+      <button
+        onClick={() => onPriceModeChange("total")}
+        className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+          priceMode === "total" ? "bg-red-500/15 text-red-700" : "text-black/40 hover:text-black/60"
+        }`}
+      >
+        Total
+      </button>
+      <button
+        onClick={() => onPriceModeChange("psf")}
+        className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+          priceMode === "psf" ? "bg-red-500/15 text-red-700" : "text-black/40 hover:text-black/60"
+        }`}
+      >
+        PSF
+      </button>
+    </div>
+  );
+}
 
 export default function Home() {
   const [tab, setTab] = useState<Tab>("map");
@@ -163,29 +222,6 @@ export default function Home() {
 
   return (
     <div className="app-bg flex h-[100dvh] overflow-hidden">
-      {/* Desktop sidebar */}
-      <nav className="hidden sm:flex flex-col items-center py-5 w-[60px] border-r border-black/[0.07] shrink-0">
-        <span className="w-2 h-2 rounded-full bg-red-400 mb-6 shrink-0 shadow-[0_0_8px_3px_rgba(192,69,58,0.45)]" />
-        <div className="flex flex-col gap-1 w-full px-2">
-          {NAV_ITEMS.map(({ id, label, Icon }) => (
-            <button
-              key={id}
-              onClick={() => handleTabChange(id)}
-              className={`flex flex-col items-center gap-1.5 py-3 rounded-xl w-full transition-all ${
-                tab === id
-                  ? "bg-red-500/15 text-red-700"
-                  : "text-black/30 hover:text-black/60 hover:bg-black/5"
-              }`}
-            >
-              <Icon />
-              <span className="text-[9px] font-medium leading-none">
-                {label}
-              </span>
-            </button>
-          ))}
-        </div>
-      </nav>
-
       {/* Content area */}
       <div className="flex-1 flex flex-col min-w-0 min-h-0">
         {tab === "lines" ? (
@@ -204,7 +240,12 @@ export default function Home() {
                 prices={prices}
                 onStationClick={setSelectedStation}
                 priceMode={priceMode}
-                onPriceModeChange={setPriceMode}
+                extraControls={
+                  <ViewSwitcher tab={tab} onTabChange={handleTabChange} />
+                }
+                trailingControls={
+                  <PriceToggle priceMode={priceMode} onPriceModeChange={setPriceMode} />
+                }
               />
             </div>
           </main>
@@ -403,6 +444,11 @@ export default function Home() {
               onCommuteMaxStopsChange={setCommuteMaxStops}
             />
 
+            <div className="hidden sm:flex items-center justify-between px-4 py-2 border-b border-black/[0.07]">
+              <ViewSwitcher tab={tab} onTabChange={handleTabChange} />
+              <PriceToggle priceMode={priceMode} onPriceModeChange={setPriceMode} />
+            </div>
+
             <div className="flex-1 min-h-0">
               <MrtMap
                 prices={prices}
@@ -410,7 +456,6 @@ export default function Home() {
                 commuteOrigin={commuteOrigin}
                 commuteMaxStops={commuteMaxStops}
                 priceMode={priceMode}
-                onPriceModeChange={setPriceMode}
               />
             </div>
           </main>
@@ -427,8 +472,9 @@ export default function Home() {
       )}
 
       {/* Mobile: view switcher + price mode toggle, floating bottom-left —
-          hidden on the initial landing/filter screen, which has its own
-          pinned CTA in that spot */}
+          desktop has its own inline instances below the filters (map) and
+          beside the line selector (lines). Hidden on the initial
+          landing/filter screen, which has its own pinned CTA in that spot */}
       {!(tab === "map" && phase === "landing") && (
         <div className="sm:hidden fixed bottom-4 left-4 z-50 flex items-center gap-2">
           <nav className="bg-white rounded-full shadow-lg border border-black/[0.06] p-1 flex items-center gap-1">

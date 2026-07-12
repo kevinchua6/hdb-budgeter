@@ -18,7 +18,6 @@ interface Props {
   commuteOrigin: string | null;
   commuteMaxStops: number;
   priceMode: "total" | "psf";
-  onPriceModeChange: (mode: "total" | "psf") => void;
 }
 
 function ZoomControls({ scale }: { scale: number }) {
@@ -72,7 +71,6 @@ export default function MrtMap({
   commuteOrigin,
   commuteMaxStops,
   priceMode,
-  onPriceModeChange,
 }: Props) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [htmlLoaded, setHtmlLoaded] = useState(false);
@@ -361,33 +359,6 @@ export default function MrtMap({
         </div>
       )}
 
-      {/* Price mode toggle — hidden on mobile, where it lives instead in
-          the floating bottom-left cluster beside the view switcher. */}
-      <div
-        className="hidden sm:flex absolute top-4 right-4 z-50 glass backdrop-blur-md rounded-xl p-1 items-center gap-0.5"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={() => onPriceModeChange("total")}
-          className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-            priceMode === "total"
-              ? "bg-red-500/20 text-red-700"
-              : "text-black/50 hover:text-black/80"
-          }`}
-        >
-          Total
-        </button>
-        <button
-          onClick={() => onPriceModeChange("psf")}
-          className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-            priceMode === "psf"
-              ? "bg-red-500/20 text-red-700"
-              : "text-black/50 hover:text-black/80"
-          }`}
-        >
-          PSF
-        </button>
-      </div>
 
 
       <TransformWrapper

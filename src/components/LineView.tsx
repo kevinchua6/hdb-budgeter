@@ -11,7 +11,8 @@ interface Props {
   prices: Record<string, { avgPrice: number; avgPsf: number | null }>;
   onStationClick?: (code: string) => void;
   priceMode: "total" | "psf";
-  onPriceModeChange: (mode: "total" | "psf") => void;
+  extraControls?: React.ReactNode;
+  trailingControls?: React.ReactNode;
 }
 
 // Station codes that serve more than one line (shared name) are interchanges.
@@ -38,7 +39,8 @@ export default function LineView({
   prices,
   onStationClick,
   priceMode,
-  onPriceModeChange,
+  extraControls,
+  trailingControls,
 }: Props) {
   const [lineId, setLineId] = useState(LINES[0].id);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -51,6 +53,8 @@ export default function LineView({
           clears FilterBar's floating summary bubble instead of sitting
           underneath it. */}
       <div className="flex items-center gap-3 px-4 pt-20 pb-3 sm:py-3 border-b border-black/[0.07] shrink-0">
+        {extraControls}
+
         {/* Line selector */}
         <div className="flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
           {LINES.map((l) => {
@@ -62,19 +66,11 @@ export default function LineView({
                   setLineId(l.id);
                   scrollRef.current?.scrollTo({ left: 0 });
                 }}
-                className={`shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-95 border ${
+                className={`shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all active:scale-95 border-2 whitespace-nowrap ${
                   active
-                    ? "text-black border-black/20"
-                    : "text-black/45 border-black/[0.08] hover:text-black/75 hover:border-black/15"
+                    ? "bg-white text-black border-black"
+                    : "bg-white text-black/50 border-black/15 hover:border-black/30 hover:text-black/75"
                 }`}
-                style={
-                  active
-                    ? {
-                        background: `${l.color}26`,
-                        borderColor: `${l.color}80`,
-                      }
-                    : undefined
-                }
               >
                 <span
                   className="w-2 h-2 rounded-full shrink-0"
@@ -86,30 +82,7 @@ export default function LineView({
           })}
         </div>
 
-        {/* Price mode toggle — hidden on mobile, where it lives instead in
-            the floating bottom-left cluster beside the view switcher. */}
-        <div className="hidden sm:flex shrink-0 glass backdrop-blur-md rounded-xl p-1 items-center gap-0.5">
-          <button
-            onClick={() => onPriceModeChange("total")}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-              priceMode === "total"
-                ? "bg-red-500/20 text-red-700"
-                : "text-black/50 hover:text-black/80"
-            }`}
-          >
-            Total
-          </button>
-          <button
-            onClick={() => onPriceModeChange("psf")}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-              priceMode === "psf"
-                ? "bg-red-500/20 text-red-700"
-                : "text-black/50 hover:text-black/80"
-            }`}
-          >
-            PSF
-          </button>
-        </div>
+        {trailingControls}
       </div>
 
 
