@@ -1,6 +1,12 @@
 "use client";
 import { useState } from "react";
 import { STATION_GROUPS } from "@/lib/stations";
+import {
+  flatTypeLabel,
+  walkLabel,
+  leaseLabel,
+  monthsLabel,
+} from "@/lib/filterLabels";
 
 export interface Filters {
   flatType: string;
@@ -29,6 +35,10 @@ function Divider() {
   return <div className="hidden sm:block h-7 w-px bg-black/10 shrink-0" />;
 }
 
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return <span className="text-black font-bold text-sm">{children}</span>;
+}
+
 function Chip({
   label,
   active,
@@ -41,10 +51,10 @@ function Chip({
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border-2 ${
+      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border-2 whitespace-nowrap ${
         active
           ? "bg-white text-black border-black"
-          : "bg-white text-black/50 border-black/12 hover:border-black/25 hover:text-black/75"
+          : "bg-white text-black/50 border-black/15 hover:border-black/30 hover:text-black/75"
       }`}
     >
       {label}
@@ -64,10 +74,10 @@ function MobileChip({
   return (
     <button
       onClick={onClick}
-      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all active:scale-95 border-2 ${
+      className={`px-4 py-2 rounded-full text-sm font-medium transition-all active:scale-95 border-2 whitespace-nowrap ${
         active
           ? "bg-white text-black border-black"
-          : "bg-white text-black/50 border-black/12 hover:border-black/25 hover:text-black/75"
+          : "bg-white text-black/50 border-black/15 hover:border-black/30 hover:text-black/75"
       }`}
     >
       {label}
@@ -102,25 +112,15 @@ export default function FilterBar({
       {/* Desktop: horizontal bar */}
       <div className="hidden sm:flex flex-wrap items-center gap-x-5 gap-y-3 bg-black/[0.025] backdrop-blur-md border-b border-black/10 px-5 py-3 shrink-0">
         <div className="flex flex-col gap-1.5">
-          <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">Flat type</span>
-          <select
-            value={filters.flatType}
-            onChange={(e) => set("flatType", e.target.value)}
-            className="bg-black/5 border border-black/10 rounded-lg px-3 py-1.5 text-black text-xs font-medium focus:outline-none focus:ring-1 focus:ring-red-500/40 focus:border-red-500/40 transition-all cursor-pointer hover:bg-black/8 hover:border-black/20"
-          >
+          <SectionLabel>Flat type</SectionLabel>
+          <div className="flex flex-wrap gap-1">
             {FLAT_TYPES.map((t) => (
-              <option key={t} value={t} className="bg-white">{t}</option>
-            ))}
-          </select>
-        </div>
-
-        <Divider />
-
-        <div className="flex flex-col gap-1.5">
-          <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">Walk from MRT</span>
-          <div className="flex gap-1">
-            {WALK_OPTIONS.map((m) => (
-              <Chip key={m} label={`≤${m} min`} active={filters.maxWalkMin === m} onClick={() => set("maxWalkMin", m)} />
+              <Chip
+                key={t}
+                label={flatTypeLabel(t)}
+                active={filters.flatType === t}
+                onClick={() => set("flatType", t)}
+              />
             ))}
           </div>
         </div>
@@ -128,14 +128,36 @@ export default function FilterBar({
         <Divider />
 
         <div className="flex flex-col gap-1.5">
-          <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">Floor</span>
+          <SectionLabel>Walk from MRT</SectionLabel>
+          <div className="flex gap-1">
+            {WALK_OPTIONS.map((m) => (
+              <Chip key={m} label={walkLabel(m)} active={filters.maxWalkMin === m} onClick={() => set("maxWalkMin", m)} />
+            ))}
+          </div>
+        </div>
+
+        <Divider />
+
+        <div className="flex flex-col gap-1.5">
+          <SectionLabel>Lease left</SectionLabel>
+          <div className="flex gap-1">
+            {LEASE_OPTIONS.map((y) => (
+              <Chip key={y} label={leaseLabel(y)} active={filters.minLeaseYears === y} onClick={() => set("minLeaseYears", y)} />
+            ))}
+          </div>
+        </div>
+
+        <Divider />
+
+        <div className="flex flex-col gap-1.5">
+          <SectionLabel>Floor</SectionLabel>
           <div className="flex items-center gap-2">
             <input
               type="number" min={1} max={filters.maxFloor} value={filters.minFloor}
               onChange={(e) => set("minFloor", Math.max(1, parseInt(e.target.value) || 1))}
-              className="w-14 bg-black/5 border border-black/10 rounded-lg px-2 py-1.5 text-black text-xs text-center focus:outline-none focus:ring-1 focus:ring-red-500/40 focus:border-red-500/40 transition-all hover:border-black/20"
+              className="w-14 bg-white border-2 border-black/15 rounded-full px-2 py-1.5 text-black text-xs text-center focus:outline-none focus:border-black transition-all"
             />
-            <span className="text-black/25 text-xs select-none">—</span>
+            <span className="text-black/40 text-xs select-none">—</span>
             <input
               type="number" min={filters.minFloor}
               value={filters.maxFloor >= 999 ? "" : filters.maxFloor}
@@ -144,7 +166,7 @@ export default function FilterBar({
                 const v = parseInt(e.target.value);
                 set("maxFloor", isNaN(v) ? 999 : Math.max(filters.minFloor, v));
               }}
-              className="w-14 bg-black/5 border border-black/10 rounded-lg px-2 py-1.5 text-black text-xs text-center placeholder:text-black/20 focus:outline-none focus:ring-1 focus:ring-red-500/40 focus:border-red-500/40 transition-all hover:border-black/20"
+              className="w-14 bg-white border-2 border-black/15 rounded-full px-2 py-1.5 text-black text-xs text-center placeholder:text-black/30 focus:outline-none focus:border-black transition-all"
             />
           </div>
         </div>
@@ -152,10 +174,10 @@ export default function FilterBar({
         <Divider />
 
         <div className="flex flex-col gap-1.5">
-          <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">Period</span>
+          <SectionLabel>Based on sales from</SectionLabel>
           <div className="flex gap-1">
             {MONTH_OPTIONS.map((m) => (
-              <Chip key={m} label={m < 12 ? `${m}mo` : `${m / 12}yr`} active={filters.months === m} onClick={() => set("months", m)} />
+              <Chip key={m} label={monthsLabel(m)} active={filters.months === m} onClick={() => set("months", m)} />
             ))}
           </div>
         </div>
@@ -163,23 +185,12 @@ export default function FilterBar({
         <Divider />
 
         <div className="flex flex-col gap-1.5">
-          <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">Lease left</span>
-          <div className="flex gap-1">
-            {LEASE_OPTIONS.map((y) => (
-              <Chip key={y} label={y === 0 ? "Any" : `≥${y}yr`} active={filters.minLeaseYears === y} onClick={() => set("minLeaseYears", y)} />
-            ))}
-          </div>
-        </div>
-
-        <Divider />
-
-        <div className="flex flex-col gap-1.5">
-          <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">Commute from</span>
+          <SectionLabel>Commute from</SectionLabel>
           <div className="flex items-center gap-2">
             <select
               value={commuteOrigin ?? ""}
               onChange={(e) => onCommuteOriginChange(e.target.value || null)}
-              className="bg-black/5 border border-black/10 rounded-lg px-3 py-1.5 text-black text-xs font-medium focus:outline-none focus:ring-1 focus:ring-red-500/40 focus:border-red-500/40 transition-all cursor-pointer hover:bg-black/8 hover:border-black/20"
+              className="bg-white border-2 border-black/15 rounded-full px-3 py-1.5 text-black text-xs font-medium focus:outline-none focus:border-black transition-all cursor-pointer"
             >
               <option value="" className="bg-white">Any station</option>
               {STATION_GROUPS.map((g) => (
@@ -191,7 +202,7 @@ export default function FilterBar({
                 <span className="text-black/40 text-[10px] shrink-0">Within</span>
                 <button
                   onClick={() => onCommuteMaxStopsChange((s) => Math.max(1, s - 1))}
-                  className="w-6 h-6 rounded bg-black/10 hover:bg-black/20 border border-black/10 text-black/60 hover:text-black text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
+                  className="w-6 h-6 rounded-full bg-white hover:bg-black/5 border-2 border-black/15 text-black/60 hover:text-black text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
                 >
                   −
                 </button>
@@ -200,7 +211,7 @@ export default function FilterBar({
                 </span>
                 <button
                   onClick={() => onCommuteMaxStopsChange((s) => Math.min(30, s + 1))}
-                  className="w-6 h-6 rounded bg-black/10 hover:bg-black/20 border border-black/10 text-black/60 hover:text-black text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
+                  className="w-6 h-6 rounded-full bg-white hover:bg-black/5 border-2 border-black/15 text-black/60 hover:text-black text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
                 >
                   +
                 </button>
@@ -245,36 +256,46 @@ export default function FilterBar({
             </div>
 
             <div className="flex flex-col gap-2">
-              <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">Flat type</span>
-              <select
-                value={filters.flatType}
-                onChange={(e) => set("flatType", e.target.value)}
-                className="bg-black/5 border border-black/10 rounded-xl px-4 py-3 text-black text-sm font-medium focus:outline-none focus:ring-1 focus:ring-red-500/40 focus:border-red-500/40"
-              >
+              <SectionLabel>Flat type</SectionLabel>
+              <div className="flex flex-wrap gap-2">
                 {FLAT_TYPES.map((t) => (
-                  <option key={t} value={t} className="bg-white">{t}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">Walk from MRT</span>
-              <div className="flex gap-2">
-                {WALK_OPTIONS.map((m) => (
-                  <MobileChip key={m} label={`≤${m} min`} active={filters.maxWalkMin === m} onClick={() => set("maxWalkMin", m)} />
+                  <MobileChip
+                    key={t}
+                    label={flatTypeLabel(t)}
+                    active={filters.flatType === t}
+                    onClick={() => set("flatType", t)}
+                  />
                 ))}
               </div>
             </div>
 
             <div className="flex flex-col gap-2">
-              <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">Floor</span>
+              <SectionLabel>Walk from MRT</SectionLabel>
+              <div className="flex gap-2 flex-wrap">
+                {WALK_OPTIONS.map((m) => (
+                  <MobileChip key={m} label={walkLabel(m)} active={filters.maxWalkMin === m} onClick={() => set("maxWalkMin", m)} />
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <SectionLabel>Lease left</SectionLabel>
+              <div className="flex gap-2 flex-wrap">
+                {LEASE_OPTIONS.map((y) => (
+                  <MobileChip key={y} label={leaseLabel(y)} active={filters.minLeaseYears === y} onClick={() => set("minLeaseYears", y)} />
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <SectionLabel>Floor</SectionLabel>
               <div className="flex items-center gap-3">
                 <input
                   type="number" min={1} max={filters.maxFloor} value={filters.minFloor}
                   onChange={(e) => set("minFloor", Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-20 bg-black/5 border border-black/10 rounded-xl px-3 py-2.5 text-black text-sm text-center focus:outline-none focus:ring-1 focus:ring-red-500/40"
+                  className="w-24 bg-white border-2 border-black/15 rounded-full px-4 py-3 text-black text-sm text-center focus:outline-none focus:border-black transition-all"
                 />
-                <span className="text-black/25 text-sm">—</span>
+                <span className="text-black/40 text-sm select-none">—</span>
                 <input
                   type="number" min={filters.minFloor}
                   value={filters.maxFloor >= 999 ? "" : filters.maxFloor}
@@ -283,35 +304,26 @@ export default function FilterBar({
                     const v = parseInt(e.target.value);
                     set("maxFloor", isNaN(v) ? 999 : Math.max(filters.minFloor, v));
                   }}
-                  className="w-20 bg-black/5 border border-black/10 rounded-xl px-3 py-2.5 text-black text-sm text-center placeholder:text-black/20 focus:outline-none focus:ring-1 focus:ring-red-500/40"
+                  className="w-24 bg-white border-2 border-black/15 rounded-full px-4 py-3 text-black text-sm text-center placeholder:text-black/30 focus:outline-none focus:border-black transition-all"
                 />
               </div>
             </div>
 
             <div className="flex flex-col gap-2">
-              <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">Period</span>
+              <SectionLabel>Based on sales from</SectionLabel>
               <div className="flex gap-2 flex-wrap">
                 {MONTH_OPTIONS.map((m) => (
-                  <MobileChip key={m} label={m < 12 ? `${m}mo` : `${m / 12}yr`} active={filters.months === m} onClick={() => set("months", m)} />
+                  <MobileChip key={m} label={monthsLabel(m)} active={filters.months === m} onClick={() => set("months", m)} />
                 ))}
               </div>
             </div>
 
             <div className="flex flex-col gap-2">
-              <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">Lease left</span>
-              <div className="flex gap-2 flex-wrap">
-                {LEASE_OPTIONS.map((y) => (
-                  <MobileChip key={y} label={y === 0 ? "Any" : `≥${y}yr`} active={filters.minLeaseYears === y} onClick={() => set("minLeaseYears", y)} />
-                ))}
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <span className="text-black/40 text-[10px] font-medium uppercase tracking-widest">Commute from</span>
+              <SectionLabel>Commute from</SectionLabel>
               <select
                 value={commuteOrigin ?? ""}
                 onChange={(e) => onCommuteOriginChange(e.target.value || null)}
-                className="bg-black/5 border border-black/10 rounded-xl px-4 py-3 text-black text-sm font-medium focus:outline-none focus:ring-1 focus:ring-red-500/40 focus:border-red-500/40"
+                className="w-full bg-white border-2 border-black/15 rounded-full px-5 py-3 text-black text-sm font-medium focus:outline-none focus:border-black transition-all cursor-pointer"
               >
                 <option value="" className="bg-white">Any station</option>
                 {STATION_GROUPS.map((g) => (
@@ -320,23 +332,23 @@ export default function FilterBar({
               </select>
               {commuteOrigin && (
                 <div className="flex items-center gap-2 pt-1">
-                  <span className="text-black/40 text-xs shrink-0">Within</span>
+                  <span className="text-black/50 text-sm shrink-0">Within</span>
                   <button
                     onClick={() => onCommuteMaxStopsChange((s) => Math.max(1, s - 1))}
-                    className="w-8 h-8 rounded-lg bg-black/10 hover:bg-black/20 border border-black/10 text-black/60 hover:text-black text-sm transition-all flex items-center justify-center shrink-0 active:scale-90"
+                    className="w-9 h-9 rounded-full bg-white hover:bg-black/5 border-2 border-black/15 text-black text-base transition-all flex items-center justify-center shrink-0 active:scale-90"
                   >
                     −
                   </button>
-                  <span className="text-black text-base font-semibold w-6 text-center tabular-nums">
+                  <span className="text-black font-bold text-base w-6 text-center tabular-nums">
                     {commuteMaxStops}
                   </span>
                   <button
                     onClick={() => onCommuteMaxStopsChange((s) => Math.min(30, s + 1))}
-                    className="w-8 h-8 rounded-lg bg-black/10 hover:bg-black/20 border border-black/10 text-black/60 hover:text-black text-sm transition-all flex items-center justify-center shrink-0 active:scale-90"
+                    className="w-9 h-9 rounded-full bg-white hover:bg-black/5 border-2 border-black/15 text-black text-base transition-all flex items-center justify-center shrink-0 active:scale-90"
                   >
                     +
                   </button>
-                  <span className="text-black/40 text-xs shrink-0">stops</span>
+                  <span className="text-black/50 text-sm shrink-0">stops</span>
                 </div>
               )}
             </div>

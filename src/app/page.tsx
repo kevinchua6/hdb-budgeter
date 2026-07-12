@@ -5,6 +5,12 @@ import MrtMap from "@/components/MrtMap";
 import LineView from "@/components/LineView";
 import StationModal from "@/components/StationModal";
 import { STATION_GROUPS } from "@/lib/stations";
+import {
+  flatTypeLabel,
+  walkLabel,
+  leaseLabel,
+  monthsLabel,
+} from "@/lib/filterLabels";
 
 const DEFAULT_FILTERS: Filters = {
   flatType: "4 ROOM",
@@ -26,21 +32,6 @@ const FLAT_TYPES = [
 const WALK_OPTIONS = [5, 10, 15, 20];
 const MONTH_OPTIONS = [6, 12, 24, 36, 60];
 const LEASE_OPTIONS = [0, 50, 60, 70, 80];
-
-function flatTypeLabel(t: string) {
-  return t.charAt(0) + t.slice(1).toLowerCase();
-}
-function walkLabel(m: number) {
-  return `${m} mins`;
-}
-function leaseLabel(y: number) {
-  return y === 0 ? "Any" : `${y} years`;
-}
-function monthsLabel(m: number) {
-  if (m < 12) return `${m} months`;
-  const y = m / 12;
-  return `${y} year${y > 1 ? "s" : ""}`;
-}
 
 type Phase = "landing" | "map";
 type Tab = "map" | "lines" | "calc";
