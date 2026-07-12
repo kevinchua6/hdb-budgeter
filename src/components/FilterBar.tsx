@@ -31,10 +31,6 @@ const WALK_OPTIONS = [5, 10, 15, 20];
 const MONTH_OPTIONS = [6, 12, 24, 36, 60];
 const LEASE_OPTIONS = [0, 50, 60, 70, 80];
 
-function Divider() {
-  return <div className="hidden sm:block h-7 w-px bg-black/10 shrink-0" />;
-}
-
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return <span className="text-black font-bold text-sm">{children}</span>;
 }
@@ -109,11 +105,11 @@ export default function FilterBar({
 
   return (
     <>
-      {/* Desktop: horizontal bar */}
-      <div className="hidden sm:flex flex-wrap items-center gap-x-5 gap-y-3 bg-black/[0.025] backdrop-blur-md border-b border-black/10 px-5 py-3 shrink-0">
-        <div className="flex flex-col gap-1.5">
+      {/* Desktop: vertical column on the left */}
+      <div className="hidden sm:flex flex-col gap-5 w-72 shrink-0 border-r border-black/10 px-5 py-5 overflow-y-auto">
+        <div className="flex flex-col gap-2">
           <SectionLabel>Flat type</SectionLabel>
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1.5">
             {FLAT_TYPES.map((t) => (
               <Chip
                 key={t}
@@ -125,37 +121,31 @@ export default function FilterBar({
           </div>
         </div>
 
-        <Divider />
-
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <SectionLabel>Walk from MRT</SectionLabel>
-          <div className="flex gap-1">
+          <div className="flex flex-wrap gap-1.5">
             {WALK_OPTIONS.map((m) => (
               <Chip key={m} label={walkLabel(m)} active={filters.maxWalkMin === m} onClick={() => set("maxWalkMin", m)} />
             ))}
           </div>
         </div>
 
-        <Divider />
-
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <SectionLabel>Lease left</SectionLabel>
-          <div className="flex gap-1">
+          <div className="flex flex-wrap gap-1.5">
             {LEASE_OPTIONS.map((y) => (
               <Chip key={y} label={leaseLabel(y)} active={filters.minLeaseYears === y} onClick={() => set("minLeaseYears", y)} />
             ))}
           </div>
         </div>
 
-        <Divider />
-
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <SectionLabel>Floor</SectionLabel>
           <div className="flex items-center gap-2">
             <input
               type="number" min={1} max={filters.maxFloor} value={filters.minFloor}
               onChange={(e) => set("minFloor", Math.max(1, parseInt(e.target.value) || 1))}
-              className="w-14 bg-white border-2 border-black/15 rounded-full px-2 py-1.5 text-black text-xs text-center focus:outline-none focus:border-black transition-all"
+              className="w-16 bg-white border-2 border-black/15 rounded-full px-2 py-1.5 text-black text-xs text-center focus:outline-none focus:border-black transition-all"
             />
             <span className="text-black/40 text-xs select-none">—</span>
             <input
@@ -166,59 +156,53 @@ export default function FilterBar({
                 const v = parseInt(e.target.value);
                 set("maxFloor", isNaN(v) ? 999 : Math.max(filters.minFloor, v));
               }}
-              className="w-14 bg-white border-2 border-black/15 rounded-full px-2 py-1.5 text-black text-xs text-center placeholder:text-black/30 focus:outline-none focus:border-black transition-all"
+              className="w-16 bg-white border-2 border-black/15 rounded-full px-2 py-1.5 text-black text-xs text-center placeholder:text-black/30 focus:outline-none focus:border-black transition-all"
             />
           </div>
         </div>
 
-        <Divider />
-
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <SectionLabel>Based on sales from</SectionLabel>
-          <div className="flex gap-1">
+          <div className="flex flex-wrap gap-1.5">
             {MONTH_OPTIONS.map((m) => (
               <Chip key={m} label={monthsLabel(m)} active={filters.months === m} onClick={() => set("months", m)} />
             ))}
           </div>
         </div>
 
-        <Divider />
-
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <SectionLabel>Commute from</SectionLabel>
-          <div className="flex items-center gap-2">
-            <select
-              value={commuteOrigin ?? ""}
-              onChange={(e) => onCommuteOriginChange(e.target.value || null)}
-              className="bg-white border-2 border-black/15 rounded-full px-3 py-1.5 text-black text-xs font-medium focus:outline-none focus:border-black transition-all cursor-pointer"
-            >
-              <option value="" className="bg-white">Any station</option>
-              {STATION_GROUPS.map((g) => (
-                <option key={g.name} value={g.name} className="bg-white">{g.name}</option>
-              ))}
-            </select>
-            {commuteOrigin && (
-              <div className="flex items-center gap-1">
-                <span className="text-black/40 text-[10px] shrink-0">Within</span>
-                <button
-                  onClick={() => onCommuteMaxStopsChange((s) => Math.max(1, s - 1))}
-                  className="w-6 h-6 rounded-full bg-white hover:bg-black/5 border-2 border-black/15 text-black/60 hover:text-black text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
-                >
-                  −
-                </button>
-                <span className="text-black text-xs font-semibold w-5 text-center tabular-nums">
-                  {commuteMaxStops}
-                </span>
-                <button
-                  onClick={() => onCommuteMaxStopsChange((s) => Math.min(30, s + 1))}
-                  className="w-6 h-6 rounded-full bg-white hover:bg-black/5 border-2 border-black/15 text-black/60 hover:text-black text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
-                >
-                  +
-                </button>
-                <span className="text-black/40 text-[10px] shrink-0">stops</span>
-              </div>
-            )}
-          </div>
+          <select
+            value={commuteOrigin ?? ""}
+            onChange={(e) => onCommuteOriginChange(e.target.value || null)}
+            className="bg-white border-2 border-black/15 rounded-full px-3 py-1.5 text-black text-xs font-medium focus:outline-none focus:border-black transition-all cursor-pointer"
+          >
+            <option value="" className="bg-white">Any station</option>
+            {STATION_GROUPS.map((g) => (
+              <option key={g.name} value={g.name} className="bg-white">{g.name}</option>
+            ))}
+          </select>
+          {commuteOrigin && (
+            <div className="flex items-center gap-1 pt-0.5">
+              <span className="text-black/40 text-[10px] shrink-0">Within</span>
+              <button
+                onClick={() => onCommuteMaxStopsChange((s) => Math.max(1, s - 1))}
+                className="w-6 h-6 rounded-full bg-white hover:bg-black/5 border-2 border-black/15 text-black/60 hover:text-black text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
+              >
+                −
+              </button>
+              <span className="text-black text-xs font-semibold w-5 text-center tabular-nums">
+                {commuteMaxStops}
+              </span>
+              <button
+                onClick={() => onCommuteMaxStopsChange((s) => Math.min(30, s + 1))}
+                className="w-6 h-6 rounded-full bg-white hover:bg-black/5 border-2 border-black/15 text-black/60 hover:text-black text-xs transition-all flex items-center justify-center shrink-0 active:scale-90"
+              >
+                +
+              </button>
+              <span className="text-black/40 text-[10px] shrink-0">stops</span>
+            </div>
+          )}
         </div>
       </div>
 

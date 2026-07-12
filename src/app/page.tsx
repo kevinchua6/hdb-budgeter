@@ -224,8 +224,18 @@ export default function Home() {
     <div className="app-bg flex h-[100dvh] overflow-hidden">
       {/* Content area */}
       <div className="flex-1 flex flex-col min-w-0 min-h-0">
+        {/* Shared switcher + price toggle row (desktop) — sits above the
+            filters column on every view except the initial landing screen,
+            which has its own pinned CTA in that spot. */}
+        {!(tab === "map" && phase === "landing") && (
+          <div className="hidden sm:flex items-center justify-between px-4 py-2 border-b border-black/[0.07] shrink-0">
+            <ViewSwitcher tab={tab} onTabChange={handleTabChange} />
+            <PriceToggle priceMode={priceMode} onPriceModeChange={setPriceMode} />
+          </div>
+        )}
+
         {tab === "lines" ? (
-          <main className="flex-1 flex flex-col min-h-0">
+          <main className="flex-1 flex min-h-0">
             <FilterBar
               filters={filters}
               onChange={handleFiltersChange}
@@ -235,17 +245,11 @@ export default function Home() {
               onCommuteMaxStopsChange={setCommuteMaxStops}
             />
 
-            <div className="flex-1 min-h-0">
+            <div className="flex-1 min-h-0 min-w-0">
               <LineView
                 prices={prices}
                 onStationClick={setSelectedStation}
                 priceMode={priceMode}
-                extraControls={
-                  <ViewSwitcher tab={tab} onTabChange={handleTabChange} />
-                }
-                trailingControls={
-                  <PriceToggle priceMode={priceMode} onPriceModeChange={setPriceMode} />
-                }
               />
             </div>
           </main>
@@ -429,7 +433,7 @@ export default function Home() {
           </div>
         ) : (
           <main
-            className={`flex-1 flex flex-col min-h-0 transition-all duration-[280ms] ease-in-out ${
+            className={`flex-1 flex min-h-0 transition-all duration-[280ms] ease-in-out ${
               mapAnim === "in"
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-3"
@@ -444,12 +448,7 @@ export default function Home() {
               onCommuteMaxStopsChange={setCommuteMaxStops}
             />
 
-            <div className="hidden sm:flex items-center justify-between px-4 py-2 border-b border-black/[0.07]">
-              <ViewSwitcher tab={tab} onTabChange={handleTabChange} />
-              <PriceToggle priceMode={priceMode} onPriceModeChange={setPriceMode} />
-            </div>
-
-            <div className="flex-1 min-h-0">
+            <div className="flex-1 min-h-0 min-w-0">
               <MrtMap
                 prices={prices}
                 onStationClick={setSelectedStation}
